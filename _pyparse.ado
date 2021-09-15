@@ -204,7 +204,8 @@ program define parse_ElasticCV, rclass
 	syntax [anything], [ ///
 					l1_ratio(real .5) ///
 					eps(real 1e-3) ///
-					n_alphas(integer 100) ///					
+					n_alphas(integer 100) ///	
+					alphas(numlist >0) ///			
 					NOCONStant ///
 					NONormalize ///
 					eps(real 1e-3) ///
@@ -218,6 +219,20 @@ program define parse_ElasticCV, rclass
 					]
 	local optstr 
 
+	** alphas
+	if ("`alphas'"==""&`l1_ratio'>0) {
+		local optstr `optstr' 'alphas':None,
+	}
+	else if ("`alphas'"==""&`l1_ratio'==0) {
+		local optstr `optstr' 'alphas':[0,1,10],
+	}
+	else {
+		local allist 
+		foreach i of numlist `alphas' {
+			local allist `allist',`i'
+		}
+		local optstr `optstr' 'alphas':[`allist'],
+	}
 	** l1 ratios
 	if `l1_ratio'>=0 & `l1_ratio'<= 1 {
 		local optstr `optstr' 'l1_ratio':`l1_ratio',

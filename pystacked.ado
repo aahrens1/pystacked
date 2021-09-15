@@ -49,6 +49,8 @@ version 16.0
 					pipe8(string asis) ///
 					pipe9(string asis) ///
 					pipe10(string asis) ///
+					///
+					showpywarnings ///
 				]
 
 	** set data signature for pystacked_p;
@@ -182,7 +184,8 @@ version 16.0
 					"`voteweights'", ///
 					`njobs' , ///
 					`folds', ///
-					"`nostandardscaler'" ///
+					"`nostandardscaler'", ///
+					"`showpywarnings'" ///
 					)
 
 	ereturn local cmd				pystacked
@@ -285,7 +288,6 @@ from sklearn.ensemble import VotingRegressor,VotingClassifier
 from sklearn.ensemble import RandomForestRegressor,RandomForestClassifier
 from sklearn.ensemble import GradientBoostingRegressor,GradientBoostingClassifier
 from sklearn.svm import LinearSVR,LinearSVC,SVC,SVR
-#from packaging import version
 import numpy as np
 import scipy 
 import sys
@@ -303,8 +305,7 @@ print('The numpy version is {}.'.format(np.__version__))
 print('The scipy version is {}.'.format(scipy.__version__))
 print('The Python version is {}.'.format(sys.version))
 
-import warnings
-warnings.filterwarnings('ignore') 
+
 
 #-------------------------------------------------------------------------------
 # Define Python function: run_stacked
@@ -332,12 +333,11 @@ def build_pipeline(pipes):
 			ll.append(('poly2',PolynomialFeatures(degree=2)))
 		elif pipes[p]=="poly3":
 			ll.append(('poly3',PolynomialFeatures(degree=3)))
-	print(ll)
 	return ll
 
 def run_stacked(type,finalest,methods,yvar,xvars,training,allopt,allpipe,
 	touse,seed,nosavepred,nosavetransform,
-	voting,votetype,voteweights,njobs,nfolds,nostandardscaler):
+	voting,votetype,voteweights,njobs,nfolds,nostandardscaler,showpywarnings):
 
 	# Set random seed
 	if seed>0:
@@ -347,6 +347,10 @@ def run_stacked(type,finalest,methods,yvar,xvars,training,allopt,allpipe,
 		stdscaler = StandardScaler()
 	else: 
 		stdscaler = 'passthrough'
+
+	if showpywarnings=="":
+		import warnings
+		warnings.filterwarnings('ignore') 
 		
 	##############################################################
 	### load data  											   ###
@@ -444,9 +448,6 @@ def run_stacked(type,finalest,methods,yvar,xvars,training,allopt,allpipe,
 			sfi.SFIToolkit.stata("di as err method not known")
 			sfi.SFIToolkit.error()
 		est_list.append((methods[m],Pipeline(newmethod)))
-
-	print(newmethod)
-	print(est_list)
 
 	if finalest == "logit": 
 		fin_est=LogisticRegression()
