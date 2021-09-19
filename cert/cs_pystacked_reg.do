@@ -8,6 +8,30 @@ which pystacked
 adopath + "/Users/kahrens/MyProjects/pystacked"
 which pystacked
 
+global xvars lcavol lweight age lbph svi lcp gleason pgg45
+
+*******************************************************************************
+*** voting															 		***
+*******************************************************************************
+
+clear
+insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
+
+set seed 124345
+
+pystacked lpsa $xvars, ///
+						 type(regress) pyseed(243) ///
+						 methods(ols lassoic rf) ///
+						 pipe1(poly2) pipe2(poly2) /// 
+						 voting voteweights(.5 .1)
+
+// should cause error
+cap pystacked lpsa $xvars, ///
+						 type(regress) pyseed(243) ///
+						 methods(ols lassoic rf) ///
+						 pipe1(poly2) pipe2(poly2) /// 
+						 voting voteweights(.5 .9)	
+						 
 *******************************************************************************
 *** check pipeline													 		***
 *******************************************************************************
@@ -17,7 +41,6 @@ insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.d
 
 set seed 124345
 
-global xvars lcavol lweight age lbph svi lcp gleason pgg45
 
 pystacked lpsa $xvars, ///
 						 type(regress) pyseed(243) ///

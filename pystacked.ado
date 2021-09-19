@@ -68,8 +68,12 @@ version 16.0
 	if substr("`type'",1,3)=="reg" {
 		local type reg
 	}
-	if substr("`type'",1,5)=="class" {
+	else if substr("`type'",1,5)=="class" {
 		local type class
+	}
+	else {
+		di as err "type(`type') not recognized"
+		exit 198
 	}
 
 	* defaults
@@ -90,7 +94,12 @@ version 16.0
 	}
 
 	if (`doublebarsyntax'==0)&("`methods'"=="") {
-		local methods lassoic rf gradboost
+		if ("`type'"=="reg") {
+			local methods ols lassoic gradboost
+		}
+		else {
+			local methods logit lassocv gradboost
+		}
 	}
 	if (`doublebarsyntax'==0)&("`methods'"!="") {
 		local mcount : word count `methods'
@@ -319,7 +328,7 @@ def run_stacked(type,finalest,methods,yvar,xvars,training,allopt,allpipe,
 	touse,seed,nosavepred,nosavetransform,
 	voting,votetype,voteweights,njobs,nfolds,nostandardscaler,showpywarnings):
 
-	if int(format(sklearn.__version__).split(".")[1])<25:
+	if int(format(sklearn.__version__).split(".")[1])<24:
 		sfi.SFIToolkit.stata('di as err "pystacked requires sklearn 0.24.0 or higher. Please update sklearn."')
 		sfi.SFIToolkit.stata('di as err "See instructions on https://scikit-learn.org/stable/install.html, and in the help file."')
 		sfi.SFIToolkit.error(198)
@@ -441,7 +450,7 @@ def run_stacked(type,finalest,methods,yvar,xvars,training,allopt,allpipe,
 
 	if finalest == "nnls" and type == "class": 
 		fin_est = LinearRegressionClassifier(fit_intercept=False,positive=True)
-	elif finalest == "logit" and type == "class": 
+	elif finalest == "ridge" and type == "class": 
 		fin_est = LogisticRegression()
 	elif finalest == "nnls" and type == "reg": 
 		fin_est = LinearRegression(fit_intercept=False,positive=True)
@@ -466,17 +475,35 @@ def run_stacked(type,finalest,methods,yvar,xvars,training,allopt,allpipe,
 					   n_jobs=njobs,
 					   cv=nfolds
 				)
-	elif voting!="" and type=="reg":
-		model = VotingRegressor(
-					   estimators=est_list,
-					   n_jobs=njobs
-				)
-	elif voting!="" and type=="class":
-		model = VotingClassifier(
-					   estimators=est_list,
-					   n_jobs=njobs, 
-					   voting=votetype
-				)
+	elif voting!="":
+		if voteweights!="":
+			vweights = voteweights.split(" ")
+			if len(vweights)!=len(methods)-1:
+				sfi.SFIToolkit.stata('di as err "numlist in voteweights should be number of base learners - 1"')
+				#"
+				sfi.SFIToolkit.error(198)				
+			vweights = [float(i) for i in vweights]
+			vw_sum = sum(vweights)
+			if vw_sum>1:
+				sfi.SFIToolkit.stata('di as err "sum of voting weights larger than 1."')
+				#"
+				sfi.SFIToolkit.error(198)
+			vweights.append(1-vw_sum)
+		else: 
+			vweights=None
+		if type=="reg":
+			model = VotingRegressor(
+						   estimators=est_list,
+						   n_jobs=njobs,
+						   weights=vweights
+					)
+		else: 
+			model = VotingClassifier(
+						   estimators=est_list,
+						   n_jobs=njobs, 
+						   voting=votetype,
+						   weights=vweights
+					)
 
 	##############################################################
 	### fitting; save predictions in __main__				   ###
@@ -488,14 +515,19 @@ def run_stacked(type,finalest,methods,yvar,xvars,training,allopt,allpipe,
 	model = model.fit(x,y)
 
 	# for NNLS: standardize coefficients to sum to one
-	if finalest == "nnls":
-		model.final_estimator_.coef_ = model.final_estimator_.coef_ / model.final_estimator_.coef_.sum()
+	if voting=="":
+		if finalest == "nnls":
+			model.final_estimator_.coef_ = model.final_estimator_.coef_ / model.final_estimator_.coef_.sum()
 
-	w = model.final_estimator_.coef_
-	if len(w.shape)==1:
+		w = model.final_estimator_.coef_
+		if len(w.shape)==1:
+			sfi.Matrix.store("e(weights)",w)
+		else:
+			sfi.Matrix.store("e(weights)",w[0])
+	else: 
+		w = np.array(vweights)
 		sfi.Matrix.store("e(weights)",w)
-	else:
-		sfi.Matrix.store("e(weights)",w[0])
+		
 	sfi.Macro.setGlobal("e(base_est)"," ".join(methods))  
 
 	__main__.type = type

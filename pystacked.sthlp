@@ -158,10 +158,9 @@ or {it:class(ify)} for classification problems.
 {synopt:{opt final:est(string)}}
 final estimator used to combine base learners. 
 This can be
-{it:nnls} (non-negative least squares; the default) or
-{it:ridge} and {it:logit} for regression and
-classification, respecitively; these
-are the sklearn defaults.
+{it:nnls} (non-negative least squares, the default) or
+{it:ridge} for (logistic) ridge, which is the
+sklearn default.
 {p_end}
 {synopt:{opt nosavep:red}} do not save predicted values
 (do not use if {cmd:predict} is used after estimation)
@@ -179,7 +178,7 @@ default is 5
 {p_end}
 {synopt:{opt pyseed(int)}} 
 set the Python seed. Note that, since {cmd:pystacked} uses
-Python, it's not enough to set the Stata seed. 
+Python, using {helpb "set seed"} won't be sufficient. 
 {p_end}
 {synoptline}
 
@@ -194,10 +193,11 @@ or voting classifier
 {synopt:{opt votet:ype(string)}} type of voting classifier:
 {it:hard} (default) or {it:soft}
 {p_end}
-{synopt:{opt votew:eights(numlist)}} weights used
-for voting regression/classification. Each weight corresponds
-to one base learner; thus, length of {it:numlist}
-should be equal to number of base learners in {opt methods(string)}.
+{synopt:{opt votew:eights(numlist)}} positive weights used
+for voting regression/classification. 
+The length of {it:numlist} should be the number of 
+base learners - 1. The last weight is calculated to 
+ensure that sum(weights)=1.
 {p_end}
 {synoptline}
 
@@ -594,14 +594,14 @@ by town{p_end}
 {phang2}. {stata "insheet using https://statalasso.github.io/dta/housing.csv, clear"}
 
 {pstd}
-Define a global for the predictors:
+Define a global for the model:
 {p_end}
-{phang2}. {stata "global xvars medv crim-lstat"}{p_end}
+{phang2}. {stata "global model medv crim-lstat"}{p_end}
 
 {pstd}
 Stacking regression with lasso, random forest and gradient boosting.
 {p_end}
-{phang2}. {stata "pystacked $xvars, type(regress) pyseed(123) methods(lassoic rf gradboost)"}{p_end}
+{phang2}. {stata "pystacked $model, type(regress) pyseed(123) methods(lassoic rf gradboost)"}{p_end}
 
 {pstd}
 The weights determine how much each base learner contributes
@@ -626,7 +626,7 @@ provided as inputs. Here, we use interactions and 2nd-order polynomials
 for ols and lasso, but not for the random forest. Note that the base inputs
 in Stata are only provided in levels. 
 {p_end}
-{phang2}. {stata "pystacked $xvars, type(regress) pyseed(123) methods(ols lassoic rf) pipe1(poly2) pipe2(poly2)"}{p_end}
+{phang2}. {stata "pystacked $model, type(regress) pyseed(123) methods(ols lassoic rf) pipe1(poly2) pipe2(poly2)"}{p_end}
 {phang2}. {stata "predict a, transf"}{p_end}
 
 {pstd}
@@ -641,7 +641,7 @@ creating the polynomials in Stata:
 You can also use the same base learner more than once with different pipelines and/or
 different options.
 {p_end}
-{phang2}. {stata "pystacked $xvars, type(regress) pyseed(123) methods(lassoic lassoic lassoic) pipe2(poly2) pipe3(poly3)"}{p_end}
+{phang2}. {stata "pystacked $model, type(regress) pyseed(123) methods(lassoic lassoic lassoic) pipe2(poly2) pipe3(poly3)"}{p_end}
 
 {pstd}
 {ul:Options of base learners (Syntax 1)}
@@ -651,7 +651,7 @@ We can pass options to the base learners using {cmdopt*(string)}. In this exampl
 we change the maximum tree depth for the random forest. Since random forest is
 the third base learner, we use {cmdopt3(max_depth(3))}.
 {p_end}
-{phang2}. {stata "pystacked $xvars, type(regress) pyseed(123) methods(ols lassoic rf) pipe1(poly2) pipe2(poly2) cmdopt3(max_depth(3))"}{p_end}
+{phang2}. {stata "pystacked $model, type(regress) pyseed(123) methods(ols lassoic rf) pipe1(poly2) pipe2(poly2) cmdopt3(max_depth(3))"}{p_end}
 
 {pstd}
 You can verify that the option has been passed to Python correctly:
@@ -665,7 +665,7 @@ You can verify that the option has been passed to Python correctly:
 The same results as above can be achieved using the alternative syntax, which 
 imposes no limit on the number of base learners.
 {p_end}
-{phang2}. {stata "pystacked $xvars || m(ols) pipe(poly2) || m(lassoic) pipe(poly2) || m(rf) opt(max_depth(3)) , type(regress) pyseed(123)"}{p_end}
+{phang2}. {stata "pystacked $model || m(ols) pipe(poly2) || m(lassoic) pipe(poly2) || m(rf) opt(max_depth(3)) , type(regress) pyseed(123)"}{p_end}
 
 {pstd}
 {ul:Single base learners}
@@ -674,7 +674,16 @@ imposes no limit on the number of base learners.
 If you are facing computational constraints, you can use {cmd:pystacked} with a single base learner. 
 In this example, we are using a convential random forest:
 {p_end}
-{phang2}. {stata "pystacked $xvars, type(regress) pyseed(123) methods(rf)"}{p_end}
+{phang2}. {stata "pystacked $model, type(regress) pyseed(123) methods(rf)"}{p_end}
+
+{pstd}
+{ul:Voting}
+
+{pstd}
+You can also use pre-defined weights. Here, we assign weights of 0.5 to OLS, 
+.1 to the lasso and, implicitly, .4 to the random foreset.
+{p_end}
+{phang2}. {stata "pystacked lpsa $xvars, type(regress) pyseed(123) methods(ols lassoic rf) pipe1(poly2) pipe2(poly2) voting voteweights(.5 .1)"}{p_end}
 
 {marker example_spam}{...}
 {title:Classification Example using Spam data}

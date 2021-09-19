@@ -7,6 +7,21 @@ net install pystacked, ///
 adopath + "/Users/kahrens/MyProjects/pystacked"
 which pystacked 
 
+
+*******************************************************************************
+*** try other estimators											 		***
+*******************************************************************************
+
+insheet using https://archive.ics.uci.edu/ml/machine-learning-databases/spambase/spambase.data, clear comma
+
+pystacked v58 v1-v57, type(class) pyseed(123) ///
+							methods(lassocv rf nnet) /// 
+							njobs(4) pipe1(poly2) ///
+							voting voteweights(0.1 .4) ///
+							votetype(soft)
+			
+
+
 *******************************************************************************
 *** try other estimators											 		***
 *******************************************************************************
