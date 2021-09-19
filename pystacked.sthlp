@@ -17,9 +17,41 @@
 {browse "https://scikit-learn.org/stable/index.html":scikit-learn}'s 
 {browse "https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.StackingRegressor.html":sklearn.ensemble.StackingRegressor} and 
 {browse "https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.StackingClassifier.html":sklearn.ensemble.StackingClassifier}. 
+Stacking is a way of combining predictions from multiple base learners
+(e.g. lasso, random forest, neural nets) into
+a final prediction to improve performance.
+
+{pstd}
 {opt pystacked} requires at least Stata 16 (or higher),  
 a Python installation and scikit-learn (0.24 or higher).
-See {helpb python:here} for how to set up Python on your system.
+See {helpb python:here} and {browse "https://blog.stata.com/2020/08/18/stata-python-integration-part-1-setting-up-stata-to-use-python/":here} 
+for how to set up Python on your system.
+
+{pstd}
+{opt pystacked} can also be used with a single
+base learner and, thus, provides an easy-to-use 
+API for scikit-learn's machine learnings 
+algorithms. 
+
+{marker methodopts}{...}
+{title:Contents}
+
+	{helpb pystacked##syntax_overview:Syntax overview}
+	{helpb pystacked##syntax1:Syntax 1}
+	{helpb pystacked##syntax2:Syntax 2}
+	{helpb pystacked##syntax2:Other options}
+	{helpb pystacked##otheropts:Predictions}
+	{helpb pystacked##section_stacking:Stacking}
+	{helpb pystacked##base_learners:Supported base learners}
+	{helpb pystacked##base_learners:Base learners: Options}
+	{helpb pystacked##pipelines:Pipelines}
+	{helpb pystacked##example_prostate:Example Stacking Regression}
+	{helpb pystacked##example_spam:Example Stacking Classification}
+	{helpb pystacked##installation:Installation}
+	{helpb pystacked##misc:Misc (references, contact, etc.)}
+
+{marker syntax_overview}{...}
+{title:Syntax overview}
 
 {pstd}
 There are two alternative syntaxes. The {ul:first syntax} is:
@@ -75,20 +107,6 @@ computational complexity). Base learners are added before the comma
 using {opt method(string)} together with {opt opt(string)} and separated by
 "||". 
 
-{marker methodopts}{...}
-{title:Contents}
-
-	{helpb pystacked##syntax1:Syntax 1}
-	{helpb pystacked##syntax2:Syntax 2}
-	{helpb pystacked##syntax2:Other options}
-	{helpb pystacked##otheropts:Predictions}
-	{helpb pystacked##section_stacking:Stacking}
-	{helpb pystacked##base_learner:Base learners}
-	{helpb pystacked##pipelines:Pipelines}
-	{helpb pystacked##example_prostate:Example Stacking Regression}
-	{helpb pystacked##example_spam:Example Stacking Classification}
-	{helpb pystacked##misc:Misc (references, contact, etc.)}
-
 {marker syntax1}{...}
 {title:Syntax 1}
 
@@ -99,10 +117,10 @@ using {opt method(string)} together with {opt opt(string)} and separated by
 a list of base learners; defaults to "{it:lassoic rf gradboost}".
 {p_end}
 {synopt:{opt cmdopt*(string)}}
-options passed on the base learners.
+options passed to the base learners, see {helpb pystacked##base_learners:Base learners}.
 {p_end}
 {synopt:{opt pipe*(string)}}
-pipelines passed on the base learners.
+pipelines passed to the base learners, see {helpb pystacked##pipelines:Pipelines}.
 {p_end}
 {synoptline}
 {pstd}
@@ -117,13 +135,13 @@ in {opt methods(string)}.
 {synopthdr:Option}
 {synoptline}
 {synopt:{opt m:ethod(string)}}
-a base learner
+a base learner, see {helpb pystacked##base_learners:Base learners}.
 {p_end}
 {synopt:{opt opt(string)}}
-options
+options, see {helpb pystacked##base_learners:Base learners}.
 {p_end}
 {synopt:{opt pipe:line(string)}}
-pipelines applied to the predictors
+pipelines applied to the predictors, see {helpb pystacked##pipelines:Pipelines}.
 {p_end}
 {synoptline}
 
@@ -268,14 +286,36 @@ form the final prediction.
 {marker base_learners}{...}
 {title:Supported base learners}
 
+The following base learners are supported:
+
+{synoptset 10 tabbed}{...}
+{p2col 7 29 23 2:{it:ols}}Linear Regression {it:(regression only)}{p_end}
+{p2col 7 29 23 2:{it:logit}}Logistic Regression {it:(classification only)}{p_end}
+{p2col 7 29 23 2:{it:lassoic}}Lasso with IC penalty {it:(regression only)}{p_end}
+{p2col 7 29 23 2:{it:lassocv}}Lasso with CV penalty{p_end}
+{p2col 7 29 23 2:{it:ridgecv}}Ridge with CV penalty{p_end}
+{p2col 7 29 23 2:{it:elasticcv}}Elastic Net with CV penalty{p_end}
+{p2col 7 29 23 2:{it:svm}}Support Vector Machines{p_end}
+{p2col 7 29 23 2:{it:gradboost}}Gradient boosting{p_end}
+{p2col 7 29 23 2:{it:rf}}Random forest{p_end}
+{p2col 7 29 23 2:{it:linsvm}}Linear SVM{p_end}
+{p2col 7 29 23 2:{it:nnet}}Neural net{p_end}
+
+{marker base_learners_options}{...}
+{title:Base learners: Options}
+
 {pstd}
-This section lists the base learners supported by {cmd:pystacked}.
+This section lists the options of each base learners supported by {cmd:pystacked}.
 Options can be passed to the base learners via {opt cmdopt*(string)} 
 (Syntax 1) or {opt opt(string)} (Syntax 2).
 The defaults are adopted from scikit-learn, with some 
 modifications highlighted below.
+
+{pstd}
 For a full documentation of the 
 options, please see the scikit-learn documentations linked below.
+We strongly recommend that you read the scikit-learn 
+documentation carefully.
 
 {pstd}
 {ul:Penalized regression with information criteria} {break}
@@ -500,13 +540,13 @@ Python.
 The following pipelines are currently supported: 
 
 {synoptset 10 tabbed}{...}
-{p2col 5 19 23 2: Predictors}{p_end}
-{synopt:stdscaler}{browse "https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html":StandardScaler()}{p_end}
-{synopt:minmaxscaler}{browse "https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.MinMaxScaler.html":MinMaxScaler()}{p_end}
-{synopt:medianimputer}{browse "https://scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html":SimpleImputer(strategy='median')}{p_end}
-{synopt:knnimputer}{browse "https://scikit-learn.org/stable/modules/generated/sklearn.impute.KNNImputer.html":KNNImputer()}{p_end}
-{synopt:poly2}{browse "https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.PolynomialFeatures.html":PolynomialFeatures(degree=2)}{p_end}
-{synopt:poly3}{browse "https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.PolynomialFeatures.html":PolynomialFeatures(degree=3)}{p_end}
+{p2col 5 29 23 2:Pipelines}{p_end}
+{p2col 7 29 23 2:{it:stdscaler}}{browse "https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html":StandardScaler()}{p_end}
+{p2col 7 29 23 2:{it:minmaxscaler}}{browse "https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.MinMaxScaler.html":MinMaxScaler()}{p_end}
+{p2col 7 29 23 2:{it:medianimputer}}{browse "https://scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html":SimpleImputer(strategy='median')}{p_end}
+{p2col 7 29 23 2:{it:knnimputer}}{browse "https://scikit-learn.org/stable/modules/generated/sklearn.impute.KNNImputer.html":KNNImputer()}{p_end}
+{p2col 7 29 23 2:{it:poly2}}{browse "https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.PolynomialFeatures.html":PolynomialFeatures(degree=2)}{p_end}
+{p2col 7 29 23 2:{it:poly3}}{browse "https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.PolynomialFeatures.html":PolynomialFeatures(degree=3)}{p_end}
 
 {pstd}
 Options can be passed to the base learners via {opt pipe*(string)} 
@@ -627,6 +667,15 @@ imposes no limit on the number of base learners.
 {p_end}
 {phang2}. {stata "pystacked $xvars || m(ols) pipe(poly2) || m(lassoic) pipe(poly2) || m(rf) opt(max_depth(3)) , type(regress) pyseed(123)"}{p_end}
 
+{pstd}
+{ul:Single base learners}
+
+{pstd}
+If you are facing computational constraints, you can use {cmd:pystacked} with a single base learner. 
+In this example, we are using a convential random forest:
+{p_end}
+{phang2}. {stata "pystacked $xvars, type(regress) pyseed(123) methods(rf)"}{p_end}
+
 {marker example_spam}{...}
 {title:Classification Example using Spam data}
 
@@ -668,9 +717,31 @@ see {browse "https://archive.ics.uci.edu/ml/datasets/spambase"}.
 {pstd}Load spam data.{p_end}
 {phang2}. {stata "insheet using https://archive.ics.uci.edu/ml/machine-learning-databases/spambase/spambase.data, clear comma"}{p_end}
 
-{marker misc}{title:References}
+{marker installation}{title:Installation}
 
+{pstd}
+{opt pystacked} requires at least Stata 16 (or higher),  
+a Python installation and scikit-learn (0.24 or higher).
+See {helpb python:help python} and {browse "https://blog.stata.com/2020/08/18/stata-python-integration-part-1-setting-up-stata-to-use-python/":the Stata blog} 
+for how to set up Python on your system.
+
+{pstd}
+To install or update scikit-learn, see 
+{browse "https://scikit-learn.org/stable/install.html"}.
+For example, assuming your Python installation is located in 
+/usr/local/bin/python3.9 as display by {stata "python query"},
+you could update scikit-learn by
+typing "/usr/local/bin/python3.9 -m pip install -U scikit-learn"
+into the terminal.
+
+{pstd}
+You can check your scikit-learn version using:{p_end}
+{phang2}. {stata "python: import sklearn"}{p_end}
+{phang2}. {stata "python: sklearn.__version__"}{p_end}
+
+{marker misc}{title:References}
 {marker Harrison1978}{...}
+
 {pstd}
 Harrison, D. and Rubinfeld, D.L (1978). Hedonic prices and the 
 demand for clean air. {it:J. Environ. Economics & Management},
@@ -687,23 +758,16 @@ and prediction. Springer Science & Business Media.
 Wolpert, David H. Stacked generalization. {it:Neural networks} 5.2 (1992): 241-259.
 {browse "https://doi.org/10.1016/S0893-6080(05)80023-1"}
 
-{title:Installation}
-
-{pstd}
-{opt pystacked} requires at least Stata 16 (or higher),  
-a Python installation and scikit-learn (0.24 or higher).
-See {helpb python:here} for how to set up Python on your system.
-
 {title:Contact}
 
 {pstd}
 If you encounter an error, contact us via email. If you have a question, you 
-can also post on Statalist (feel free to tag us). 
+can also post on Statalist (please tag @Achim Ahrens). 
 
 {title:Acknowledgements}
 
 {pstd}
-{cmd:pystacked} was inspired by Michael Droste's 
+{cmd:pystacked} took some inspiration from Michael Droste's 
 {browse "https://github.com/mdroste/stata-pylearn":pylearn}, 
 which implements other Sklearn programs for Stata.
 
@@ -717,5 +781,6 @@ Please also cite scikit-learn; see {browse "https://scikit-learn.org/stable/abou
 	Achim Ahrens, Public Policy Group, ETH Zurich, Switzerland
 	achim.ahrens@gess.ethz.ch
 
+	Christian B. Hansen, University of Chicago, USA
+
 	Mark E. Schaffer, Heriot-Watt University, UK
-	m.e.schaffer@hw.ac.uk

@@ -271,11 +271,7 @@ end
 version 16.0
 python:
 
-#-------------------------------------------------------------------------------
-# Import required packages and attempt to install w/ Pip if that fails
-#-------------------------------------------------------------------------------
-
-# Import required Python modules
+### Import required Python modules
 import sfi
 from sklearn.pipeline import make_pipeline,Pipeline
 from sklearn.neural_network import MLPRegressor,MLPClassifier
@@ -292,28 +288,12 @@ import numpy as np
 import scipy 
 import sys
 import sklearn
-
-# To pass objects to Stata
 import __main__
 
-#if version.parse(sklearn.__version__)<version.parse("0.24.0"):
-#	sfi.SFIToolkit.stata("di as err pystacked requires sklearn 0.24.0 or higher")
-#	sfi.SFIToolkit.error()	
-
-print('The scikit-learn version is {}.'.format(sklearn.__version__))
-print('The numpy version is {}.'.format(np.__version__))
-print('The scipy version is {}.'.format(scipy.__version__))
-print('The Python version is {}.'.format(sys.version))
-
-
-
-#-------------------------------------------------------------------------------
-# Define Python function: run_stacked
-#-------------------------------------------------------------------------------
+### Define required Python functions/classes
 
 class LinearRegressionClassifier(LinearRegression):
     _estimator_type="classifier"
-
     def predict_proba(self, X):
     	return self._decision_function(X)
 
@@ -338,6 +318,11 @@ def build_pipeline(pipes):
 def run_stacked(type,finalest,methods,yvar,xvars,training,allopt,allpipe,
 	touse,seed,nosavepred,nosavetransform,
 	voting,votetype,voteweights,njobs,nfolds,nostandardscaler,showpywarnings):
+
+	if int(format(sklearn.__version__).split(".")[1])<25:
+		sfi.SFIToolkit.stata('di as err "pystacked requires sklearn 0.24.0 or higher. Please update sklearn."')
+		sfi.SFIToolkit.stata('di as err "See instructions on https://scikit-learn.org/stable/install.html, and in the help file."')
+		sfi.SFIToolkit.error(198)
 
 	# Set random seed
 	if seed>0:
@@ -449,7 +434,8 @@ def run_stacked(type,finalest,methods,yvar,xvars,training,allopt,allpipe,
 				newmethod = build_pipeline(allpipe[m])
 				newmethod.append(('mlp',MLPClassifier(**opt)))
 		else: 
-			sfi.SFIToolkit.stata("di as err method not known")
+			sfi.SFIToolkit.stata('di as err "method not known"') 
+			#"
 			sfi.SFIToolkit.error()
 		est_list.append((methods[m]+str(m),Pipeline(newmethod)))
 
@@ -462,10 +448,9 @@ def run_stacked(type,finalest,methods,yvar,xvars,training,allopt,allpipe,
 	elif finalest == "ridge" and type == "reg": 
 		fin_est = RidgeCV()
 	else:
-		sfi.SFIToolkit.stata("di as err "+finalest+" not supported with type("+type+")")
-		sfi.SFIToolkit.error()
-
-	print(est_list)
+		sfi.SFIToolkit.stata('di as err "final estimator not supported with type()"')
+		#"
+		sfi.SFIToolkit.error(198)
 
 	if voting=="" and type=="reg":
 		model = StackingRegressor(
@@ -492,7 +477,6 @@ def run_stacked(type,finalest,methods,yvar,xvars,training,allopt,allpipe,
 					   n_jobs=njobs, 
 					   voting=votetype
 				)
-
 
 	##############################################################
 	### fitting; save predictions in __main__				   ###
@@ -549,4 +533,11 @@ def run_stacked(type,finalest,methods,yvar,xvars,training,allopt,allpipe,
 		# Set any predictions that should be missing to missing (NaN)
 		transf[x0_hasnan] = np.nan
 		__main__.transform = transf
+
+	# save versions of Python and packages
+	sfi.Macro.setGlobal("e(sklearn_ver)",format(sklearn.__version__))
+	sfi.Macro.setGlobal("e(numpy_ver)",format(np.__version__))
+	sfi.Macro.setGlobal("e(scipy_ver)",format(scipy.__version__))
+	sfi.Macro.setGlobal("e(python_ver)",format(sys.version))
+
 end
