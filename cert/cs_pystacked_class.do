@@ -1,9 +1,30 @@
 clear all
  
-if ("`c(username)'"=="kahrens") {
-	adopath + "/Users/kahrens/MyProjects/ddml"
-	adopath + "/Users/kahrens/MyProjects/pylearn2"
-	cd "/Users/kahrens/Dropbox (PP)/ddml"
+/*
+net install pystacked, ///
+		from(https://raw.githubusercontent.com/aahrens1/pystacked/main) replace
+*/
+adopath + "/Users/kahrens/MyProjects/pystacked"
+which pystacked 
+
+*******************************************************************************
+*** try other estimators											 		***
+*******************************************************************************
+
+insheet using https://archive.ics.uci.edu/ml/machine-learning-databases/spambase/spambase.data, clear comma
+
+local m1 lassocv gradboost nnet
+local m2 lassocv rf nnet
+local m3 ridgecv gradboost nnet
+local m4 elasticcv gradboost nnet
+local m5 elasticcv gradboost svm
+local m6 elasticcv gradboost linsvm
+
+foreach m in "`m1'" "`m2'" "`m3'" "`m4'" "`m5'" "`m6'" {
+	di "`m'"
+	pystacked v58 v1-v57, type(class) pyseed(123) ///
+							methods(`m') /// 
+							njobs(4)
 }
 
 *******************************************************************************
@@ -30,10 +51,3 @@ assert reldif(yhat,myhat)<0.0001
 	
 predict ybin , xb
 
-*******************************************************************************
-*** try other estimators											 		***
-*******************************************************************************
-
-pystacked v58 v1-v57, type(class) pyseed(123) ///
-						 methods(lassocv rf gradboost svm)
-						 

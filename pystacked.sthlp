@@ -10,6 +10,8 @@
 {p2col:{hi: pystacked} {hline 2}}Stata program for Stacking Regression{p_end}
 {p2colreset}{...}
 
+{title:Overview}
+
 {pstd}
 {opt pystacked} implements stacking regression ({helpb pystacked##Wolpert1992:Wolpert, 1992}) via 
 {browse "https://scikit-learn.org/stable/index.html":scikit-learn}'s 
@@ -20,62 +22,52 @@ a Python installation and scikit-learn (0.24 or higher).
 See {helpb python:here} for how to set up Python on your system.
 
 {pstd}
-There are two alternative syntax options. The first syntax is:
+There are two alternative syntaxes. The {ul:first syntax} is:
 
 {p 8 14 2}
 {cmd:pystacked}
 {it:depvar} {it:regressors} 
 [{cmd:if} {it:exp}] [{cmd:in} {it:range}]
 {bind:[{cmd:,}}
-{opt type(string)}
 {opt methods(string)}
 {opt cmdopt1(string)} 
 {opt cmdopt2(string)} 
 {opt ...}
-{opt cmdopt10(string)}
-{opt final:est(string)}
-{opt nosavep:red}
-{opt nosavet:ansform}
-{opt njobs(int)}
-{opt folds(int)}
-{opt pyseed(int)}
-{opt voting}
-{opt votet:ype(string)}
-{opt votew:eights(numlist)}
+{opt pipe1(string)} 
+{opt pipe2(string)} 
+{opt ...}
+{helpb pystacked##otheropts:{it:otheropts}}
 ]
 
 {pstd}
-The second syntax is:
+The {ul:second syntax} is:
 
 {p 8 14 2}
 {cmd:pystacked}
 {it:depvar} {it:regressors} 
 [{cmd:if} {it:exp}] [{cmd:in} {it:range}]
-|| {opt method(string)}
+|| {opt m:ethod(string)}
 {opt opt(string)} 
-|| {opt method(string)}
+{opt pipe:line(string)} 
+|| {opt m:ethod(string)}
 {opt opt(string)} 
+{opt pipe:line(string)} 
 ||
 {opt ...}
 {bind:[{cmd:,}}
-{opt type(string)}
-{opt final:est(string)}
-{opt nosavep:red}
-{opt nosavet:ansform}
-{opt njobs(int)}
-{opt folds(int)}
-{opt pyseed(int)}
-{opt voting}
-{opt votet:ype(string)}
-{opt votew:eights(numlist)}
+{helpb pystacked##otheropts:{it:otheropts}}
 ]
 
 {pstd}
 The first syntax uses {opt methods(string)} to select base learners, where
 {it:string} is a list of base learners.
-Options are passed on to base learners via {opt cmdopt1(string)} to {opt cmdopt10(string)}. That is, up to 
+Options are passed on to base learners via {opt cmdopt1(string)}, 
+{opt cmdopt2(string)} to {opt cmdopt10(string)}. 
+That is, up to 
 10 base learners can be specified and options are passed on in the order in which
 they appear in {opt methods(string)}.
+The same holds for the {opt pipe*(string)} option which can be used 
+for pre-processing predictors within Python on the fly.
 
 {pstd}
 The second syntax imposes no limit on the number of base learners (aside from the increasing
@@ -83,8 +75,60 @@ computational complexity). Base learners are added before the comma
 using {opt method(string)} together with {opt opt(string)} and separated by
 "||". 
 
-{marker syntax}{...}
-{title:Options}
+{marker methodopts}{...}
+{title:Contents}
+
+	{helpb pystacked##syntax1:Syntax 1}
+	{helpb pystacked##syntax2:Syntax 2}
+	{helpb pystacked##syntax2:Other options}
+	{helpb pystacked##otheropts:Predictions}
+	{helpb pystacked##section_stacking:Stacking}
+	{helpb pystacked##base_learner:Base learners}
+	{helpb pystacked##pipelines:Pipelines}
+	{helpb pystacked##example_prostate:Example Stacking Regression}
+	{helpb pystacked##example_spam:Example Stacking Classification}
+	{helpb pystacked##misc:Misc (references, contact, etc.)}
+
+{marker syntax1}{...}
+{title:Syntax 1}
+
+{synoptset 20}{...}
+{synopthdr:Option}
+{synoptline}
+{synopt:{opt methods(string)}}
+a list of base learners; defaults to "{it:lassoic rf gradboost}".
+{p_end}
+{synopt:{opt cmdopt*(string)}}
+options passed on the base learners.
+{p_end}
+{synopt:{opt pipe*(string)}}
+pipelines passed on the base learners.
+{p_end}
+{synoptline}
+{pstd}
+{it:Note:} {opt *} is replaced
+with 1 to 10. The number refers to the order given 
+in {opt methods(string)}.
+
+{marker syntax2}{...}
+{title:Syntax 2}
+
+{synoptset 20}{...}
+{synopthdr:Option}
+{synoptline}
+{synopt:{opt m:ethod(string)}}
+a base learner
+{p_end}
+{synopt:{opt opt(string)}}
+options
+{p_end}
+{synopt:{opt pipe:line(string)}}
+pipelines applied to the predictors
+{p_end}
+{synoptline}
+
+{marker otheropts}{...}
+{title:Other options}
 
 {synoptset 20}{...}
 {synopthdr:Option}
@@ -93,27 +137,13 @@ using {opt method(string)} together with {opt opt(string)} and separated by
 {it:reg(ress)} for regression problems 
 or {it:class(ify)} for classification problems. 
 {p_end}
-{synopt:{opt methods(string)}}
-Syntax 1: list of ML algorithms in any order separated by spaces;
-allowed are {it:lassoic} (lasso with penalization selected by 
-information criteria), 
-{it:lassocv} (linear lasso or logistic lasso with CV),
-{it:elasticcv} (elastic net with CV),  
-{it:rf} (random forest), {it:gradboost} (gradient boosting),
-{it:linsvm} (linear support vector machine)
-and {it:svm} (support vector machines). {it:lassoic} is
-only available for regression.
-{it:_all} is a short-hand for all available base learners.
-{p_end}
-{synopt:{opt method(string)}}
-Syntax 2: single base learner
-{p_end}
 {synopt:{opt final:est(string)}}
 final estimator used to combine base learners. 
 This can be
 {it:nnls} (non-negative least squares; the default) or
-(logistic)
-{it:ridge} (the sklearn default).
+{it:ridge} and {it:logit} for regression and
+classification, respecitively; these
+are the sklearn defaults.
 {p_end}
 {synopt:{opt nosavep:red}} do not save predicted values
 (do not use if {cmd:predict} is used after estimation)
@@ -133,13 +163,7 @@ default is 5
 set the Python seed. Note that, since {cmd:pystacked} uses
 Python, it's not enough to set the Stata seed. 
 {p_end}
-{synopt:{opt cmdopt*(string)}}
-Syntax 1: options passed on the base learners. {*} is replaced
-with 1 to 10.
-{p_end}
-{synopt:{opt opt(string)}}
-Syntax 2: options passed on the base learners. 
-{p_end}
+{synoptline}
 
 {synoptset 20}{...}
 {synopthdr:Voting}
@@ -157,10 +181,13 @@ for voting regression/classification. Each weight corresponds
 to one base learner; thus, length of {it:numlist}
 should be equal to number of base learners in {opt methods(string)}.
 {p_end}
+{synoptline}
 
-
-{marker syntax}{...}
+{marker prediction}{...}
 {title:Prediction}
+
+{pstd}
+To get predicted values:
 
 {p 8 14 2}
 {cmd:predict}
@@ -170,6 +197,9 @@ should be equal to number of base learners in {opt methods(string)}.
 {opt pr}
 {opt xb}
 ]
+
+{pstd}
+To get fitted values for each base learner:
 
 {p 8 14 2}
 {cmd:predict}
@@ -191,6 +221,7 @@ the default; predicted value (regression) or predicted class (classification)
 {synopt:{opt transf:orm}}
 predicted values for each base learner
 {p_end}
+{synoptline}
 
 {pstd}
 {it:Note:} Predicted values (in and out-sample)
@@ -198,7 +229,7 @@ are calculated when {cmd:pystacked}
 is run and stored in Python memory. {cmd:predict} pulls the
 predicted values from Python memory and saves them in 
 Stata memory. This means that no changed on the data
-in Stata memory should be made {it:between} {cmd:pystacked} fit
+in Stata memory should be made {it:between}cmd:pystacked} fit
 and {cmd:predict} call. If changes to the data set are made, 
 {cmd:predict} will return an error. 
 
@@ -217,7 +248,8 @@ least squares (NNLS) without an intercept.
 The NNLS coefficients are standardized to sum to one.
 Note that in this respect we deviate from 
 the scikit-learn default and follow the 
-recommendation in {helpb pystacked##Hastie2009:2009}, p. 290).
+recommendation in Hastie et al. 
+({helpb pystacked##Hastie2009:2009}, p. 290).
 The scikit-lerarn defaults are ridge regression 
 for stacking regression and logistic ridge for 
 classification tasks. 
@@ -237,14 +269,9 @@ form the final prediction.
 {title:Supported base learners}
 
 {pstd}
-This section lists the base learners that can be chosen via {opt methods(string)}
-in combination with {opt type(string)}.
-For example, to use lasso with CV and random forest regression, use 
-{opt methods(lassocv rf)} with {opt type(reg)}.
-
-{pstd}
-Options can be passed to the base learners via {opt ***opt(string)}, 
-where {opt ***} is one of the methods, e.g. {opt lassocvopt(string)}.
+This section lists the base learners supported by {cmd:pystacked}.
+Options can be passed to the base learners via {opt cmdopt*(string)} 
+(Syntax 1) or {opt opt(string)} (Syntax 2).
 The defaults are adopted from scikit-learn, with some 
 modifications highlighted below.
 For a full documentation of the 
@@ -458,45 +485,88 @@ other options are the same.
 {opt break_ties}
 {opt random_state(integer -1)}
 
+{marker pipelines}{...}
+{title:Pipelines}
+
+{pstd}
+Scikit-learn uses pipelines to pre-preprocess input data on the fly. 
+Pipelines can be used to impute missing observations or 
+create transformation of predictors such as interactions and polynomials.
+For example, when using linear machine learners such as the lasso, 
+it is recommended to create interactions. This can be done on the fly in 
+Python. 
+
+{pstd}
+The following pipelines are currently supported: 
+
+{synoptset 10 tabbed}{...}
+{p2col 5 19 23 2: Predictors}{p_end}
+{synopt:stdscaler}{browse "https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html":StandardScaler()}{p_end}
+{synopt:minmaxscaler}{browse "https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.MinMaxScaler.html":MinMaxScaler()}{p_end}
+{synopt:medianimputer}{browse "https://scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html":SimpleImputer(strategy='median')}{p_end}
+{synopt:knnimputer}{browse "https://scikit-learn.org/stable/modules/generated/sklearn.impute.KNNImputer.html":KNNImputer()}{p_end}
+{synopt:poly2}{browse "https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.PolynomialFeatures.html":PolynomialFeatures(degree=2)}{p_end}
+{synopt:poly3}{browse "https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.PolynomialFeatures.html":PolynomialFeatures(degree=3)}{p_end}
+
+{pstd}
+Options can be passed to the base learners via {opt pipe*(string)} 
+(Syntax 1) or {opt pipe:line(string)} (Syntax 2).
+
 {marker example_prostate}{...}
-{title:Example using prostate cancer data (Stamey et al., {helpb pystacked##Stamey1989:1989})}
+{title:Example using Boston Housing data (Harrison et al., {helpb pystacked##Harrison1978:1978})}
 
 {marker examples_data}{...}
 {pstd}
 {ul:Data set}
 
 {pstd}
-The data set is available through Hastie et al. ({helpb pystacked##Hastie2009:2009}) on the {browse "https://web.stanford.edu/~hastie/ElemStatLearn/":authors' website}. 
-The following variables are included in the data set of 97 men:
+The data set is available from the {browse "https://archive.ics.uci.edu/ml/machine-learning-databases/housing/":UCI Machine Learning Repository}. 
+The following variables are included in the data set of 506
+observations:
 
 {synoptset 10 tabbed}{...}
 {p2col 5 19 23 2: Predictors}{p_end}
-{synopt:lcavol}log(cancer volume){p_end}
-{synopt:lweight}log(prostate weight){p_end}
-{synopt:age}patient age{p_end}
-{synopt:lbph}log(benign prostatic hyperplasia amount){p_end}
-{synopt:svi}seminal vesicle invasion{p_end}
-{synopt:lcp}log(capsular penetration){p_end}
-{synopt:gleason}Gleason score{p_end}
-{synopt:pgg45}percentage Gleason scores 4 or 5{p_end}
+{synopt:CRIM}per capita crime rate by town{p_end}
+{synopt:ZN}proportion of residential land zoned for lots over 
+25,000 sq.ft.{p_end}
+{synopt:INDUS}proportion of non-retail business acres per town{p_end}
+{synopt:CHAS}Charles River dummy variable (= 1 if tract bounds 
+river; 0 otherwise){p_end}
+{synopt:NOX}nitric oxides concentration (parts per 10 million){p_end}
+{synopt:RM}average number of rooms per dwelling{p_end}
+{synopt:AGE}proportion of owner-occupied units built prior to 1940{p_end}
+{synopt:DIS}weighted distances to five Boston employment centres{p_end}
+{synopt:RAD}index of accessibility to radial highways{p_end}
+{synopt:TAX}full-value property-tax rate per $10,000{p_end}
+{synopt:PTRATIO}pupil-teacher ratio by town{p_end}
+{synopt:B}1000(Bk - 0.63)^2 where Bk is the proportion of blacks 
+by town{p_end}
+{synopt:LSTAT}% lower status of the population{p_end}
 
 {synoptset 10 tabbed}{...}
 {p2col 5 19 23 2: Outcome}{p_end}
-{synopt:lpsa}log(prostate specific antigen){p_end}
-
-{pstd}Load prostate cancer data.{p_end}
-{phang2}. {stata "insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data, clear tab"}{p_end}
+{synopt:MEDV}Median value of owner-occupied homes in $1000's{p_end}
 
 {pstd}
-Stacking regression with default base learners.
+{ul:Getting started}
+
+{pstd}Load housing data.{p_end}
+{phang2}. {stata "insheet using https://statalasso.github.io/dta/housing.csv, clear"}
+
+{pstd}
+Define a global for the predictors:
 {p_end}
-{phang2}. {stata "pystacked lpsa lcavol lweight age lbph svi lcp gleason pgg45, type(regress) pyseed(123)"}{p_end}
+{phang2}. {stata "global xvars medv crim-lstat"}{p_end}
 
 {pstd}
-The weights indicate that lasso with CV received a weight of 1, while
-random forest and gradient boosting get zero weights. 
-Hence, in this example, stacking regression chooses
-to exclusively use the lasso with cross-validated penalisation.{p_end}
+Stacking regression with lasso, random forest and gradient boosting.
+{p_end}
+{phang2}. {stata "pystacked $xvars, type(regress) pyseed(123) methods(lassoic rf gradboost)"}{p_end}
+
+{pstd}
+The weights determine how much each base learner contributes
+to the final stacking predictin. In this example, 
+random forest receives a weight of zero.{p_end}
 
 {pstd}
 Getting the predicted values:{p_end}
@@ -506,16 +576,66 @@ Getting the predicted values:{p_end}
 We can also save the predicted values of each base learner:{p_end}
 {phang2}. {stata "predict double l, transform"}{p_end}
 
-{marker example}{...}
+{pstd}
+{ul:Using pipelines (Syntax 1)}
+
+{pstd}
+Pipelines allow to pre-process predictors on the fly. For example, 
+linear estimator might perform better if interactions are 
+provided as inputs. Here, we use interactions and 2nd-order polynomials
+for ols and lasso, but not for the random forest. Note that the base inputs
+in Stata are only provided in levels. 
+{p_end}
+{phang2}. {stata "pystacked $xvars, type(regress) pyseed(123) methods(ols lassoic rf) pipe1(poly2) pipe2(poly2)"}{p_end}
+{phang2}. {stata "predict a, transf"}{p_end}
+
+{pstd}
+You can verify that you get the same ols and lasso predicted values when 
+creating the polynomials in Stata:
+{p_end}
+{phang2}. {stata "pystacked c.($xvars)##c.(#xvals), type(regress) pyseed(123) methods(ols lassoic rf)"}{p_end}
+{phang2}. {stata "predict b, transf"}{p_end}
+{phang2}. {stata "list a0 b0 a1 b1"}{p_end}
+
+{pstd}
+You can also use the same base learner more than once with different pipelines and/or
+different options.
+{p_end}
+{phang2}. {stata "pystacked $xvars, type(regress) pyseed(123) methods(lassoic lassoic lassoic) pipe2(poly2) pipe3(poly3)"}{p_end}
+
+{pstd}
+{ul:Options of base learners (Syntax 1)}
+
+{pstd}
+We can pass options to the base learners using {cmdopt*(string)}. In this example, 
+we change the maximum tree depth for the random forest. Since random forest is
+the third base learner, we use {cmdopt3(max_depth(3))}.
+{p_end}
+{phang2}. {stata "pystacked $xvars, type(regress) pyseed(123) methods(ols lassoic rf) pipe1(poly2) pipe2(poly2) cmdopt3(max_depth(3))"}{p_end}
+
+{pstd}
+You can verify that the option has been passed to Python correctly:
+{p_end}
+{phang2}. {stata "di e(pyopt3)"}{p_end}
+
+{pstd}
+{ul:Using the alternative syntax (Syntax 2)}
+
+{pstd}
+The same results as above can be achieved using the alternative syntax, which 
+imposes no limit on the number of base learners.
+{p_end}
+{phang2}. {stata "pystacked $xvars || m(ols) pipe(poly2) || m(lassoic) pipe(poly2) || m(rf) opt(max_depth(3)) , type(regress) pyseed(123)"}{p_end}
+
+{marker example_spam}{...}
 {title:Classification Example using Spam data}
 
-{marker example_data}{...}
 {pstd}
 {ul:Data set}
 
 {pstd}
 For demonstration we consider the Spambase Data Set 
-from the Machine Learning Repository. 
+from the {browse "https://archive.ics.uci.edu/ml/datasets/spambase":UCI Machine Learning Repository}. 
 The data includes 4,601 observations and 57 variables.
 The aim is to predict whether an email is spam 
 (i.e., unsolicited commercial e-mail) or not.
@@ -548,7 +668,13 @@ see {browse "https://archive.ics.uci.edu/ml/datasets/spambase"}.
 {pstd}Load spam data.{p_end}
 {phang2}. {stata "insheet using https://archive.ics.uci.edu/ml/machine-learning-databases/spambase/spambase.data, clear comma"}{p_end}
 
-{marker references}{title:References}
+{marker misc}{title:References}
+
+{marker Harrison1978}{...}
+{pstd}
+Harrison, D. and Rubinfeld, D.L (1978). Hedonic prices and the 
+demand for clean air. {it:J. Environ. Economics & Management},
+vol.5, 81-102, 1978.
 
 {marker Hastie2009}{...}
 {pstd}
@@ -556,22 +682,35 @@ Hastie, T., Tibshirani, R., & Friedman, J. (2009).
 The elements of statistical learning: data mining, inference,
 and prediction. Springer Science & Business Media.
 
-{marker Stamey1989}{...}
-{pstd}
-Stamey, T. A., Kabalin, J. N., Mcneal, J. E., Johnstone,
-I. M., Freiha, F., Redwine, E. A., & Yang, N. (1989). 
-Prostate Specific Antigen in the Diagnosis and Treatment
- of Adenocarcinoma of the Prostate. II. Radical Prostatectomy Treated Patients.
-{it:The Journal of Urology} 141(5), 1076–1083. 
-{browse "https://doi.org/10.1016/S0022-5347(17)41175-X"}
-{p_end}
-
 {marker Wolpert1992}{...}
 {pstd}
 Wolpert, David H. Stacked generalization. {it:Neural networks} 5.2 (1992): 241-259.
 {browse "https://doi.org/10.1016/S0893-6080(05)80023-1"}
 
-{marker installation}{title:Installation}
+{title:Installation}
+
+{pstd}
+{opt pystacked} requires at least Stata 16 (or higher),  
+a Python installation and scikit-learn (0.24 or higher).
+See {helpb python:here} for how to set up Python on your system.
+
+{title:Contact}
+
+{pstd}
+If you encounter an error, contact us via email. If you have a question, you 
+can also post on Statalist (feel free to tag us). 
+
+{title:Acknowledgements}
+
+{pstd}
+{cmd:pystacked} was inspired by Michael Droste's 
+{browse "https://github.com/mdroste/stata-pylearn":pylearn}, 
+which implements other Sklearn programs for Stata.
+
+{title:Citation}
+
+{pstd}
+Please also cite scikit-learn; see {browse "https://scikit-learn.org/stable/about.html"}.
 
 {title:Authors}
 

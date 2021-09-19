@@ -1,3 +1,7 @@
+*! pystacked v0.1 (first release)
+*! last edited: 18sep2021
+*! authors: aa/ms
+
 program define pystacked, eclass
 version 16.0
 
@@ -71,10 +75,6 @@ version 16.0
 	* defaults
 	if "`finalest'"=="" {
 		local finalest nnls
-	}
-	if "`finalest'"!="nnls"&"`finalest'"!="ridge" {
-		di as err "finalest(`finalest') not allowed"
-		error 198
 	}
 
 	if "`votetype'"!=""&"`type'"=="reg" {
@@ -330,9 +330,9 @@ def build_pipeline(pipes):
 		elif pipes[p]=="knnimputer":
 			ll.append(('knnimputer',KNNImputer()))
 		elif pipes[p]=="poly2":
-			ll.append(('poly2',PolynomialFeatures(degree=2)))
+			ll.append(('poly2',PolynomialFeatures(degree=2,include_bias=False)))
 		elif pipes[p]=="poly3":
-			ll.append(('poly3',PolynomialFeatures(degree=3)))
+			ll.append(('poly3',PolynomialFeatures(degree=3,include_bias=False)))
 	return ll
 
 def run_stacked(type,finalest,methods,yvar,xvars,training,allopt,allpipe,
@@ -372,6 +372,10 @@ def run_stacked(type,finalest,methods,yvar,xvars,training,allopt,allpipe,
 	est_list = []
 	for m in range(len(methods)):
 		if type=="reg":
+			if methods[m]=="ols":
+				opt =allopt[m]
+				newmethod = build_pipeline(allpipe[m])
+				newmethod.append(('ols',LinearRegression(**opt)))
 			if methods[m]=="lassoic":
 				opt =allopt[m]
 				newmethod = build_pipeline(allpipe[m])
@@ -447,16 +451,21 @@ def run_stacked(type,finalest,methods,yvar,xvars,training,allopt,allpipe,
 		else: 
 			sfi.SFIToolkit.stata("di as err method not known")
 			sfi.SFIToolkit.error()
-		est_list.append((methods[m],Pipeline(newmethod)))
+		est_list.append((methods[m]+str(m),Pipeline(newmethod)))
 
-	if finalest == "logit": 
-		fin_est=LogisticRegression()
-	else: 
+	if finalest == "nnls" and type == "class": 
 		fin_est = LinearRegressionClassifier(fit_intercept=False,positive=True)
-	if finalest=="ridge":
+	elif finalest == "logit" and type == "class": 
+		fin_est = LogisticRegression()
+	elif finalest == "nnls" and type == "reg": 
+		fin_est = LinearRegression(fit_intercept=False,positive=True)
+	elif finalest == "ridge" and type == "reg": 
 		fin_est = RidgeCV()
 	else:
-		fin_est = LinearRegression(fit_intercept=False,positive=True)
+		sfi.SFIToolkit.stata("di as err "+finalest+" not supported with type("+type+")")
+		sfi.SFIToolkit.error()
+
+	print(est_list)
 
 	if voting=="" and type=="reg":
 		model = StackingRegressor(

@@ -1,14 +1,44 @@
 clear all
  
-if ("`c(username)'"=="kahrens") {
-	adopath + "/Users/kahrens/MyProjects/pystacked"
-}
+ /*
+net install pystacked, ///
+		from(https://raw.githubusercontent.com/aahrens1/pystacked/main) replace
+which pystacked 
+*/
+adopath + "/Users/kahrens/MyProjects/pystacked"
+which pystacked
 
 *******************************************************************************
-*** try other estimators											 		***
+*** check pipeline													 		***
 *******************************************************************************
 
-insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab
+clear
+insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
+
+set seed 124345
+
+global xvars lcavol lweight age lbph svi lcp gleason pgg45
+
+pystacked lpsa $xvars, ///
+						 type(regress) pyseed(243) ///
+						 methods(ols lassoic rf) ///
+						 pipe1(poly2) pipe2(poly2) 
+predict a, transf
+			 
+pystacked lpsa c.($xvars)##c.($xvars), ///
+						 type(regress) pyseed(243) ///
+						 methods(ols lassoic )  					 
+predict b, transf
+list lpsa a* b*
+
+assert a0==b0
+assert a1==b1
+
+*******************************************************************************
+*** try various combinations of estimators							 		***
+*******************************************************************************
+
+insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
 
 local m1 lassocv gradboost nnet
 local m2 lassocv rf nnet
@@ -22,7 +52,9 @@ foreach m in "`m1'" "`m2'" "`m3'" "`m4'" "`m5'" "`m6'" "`m7'" {
 	di "`m'"
 	pystacked lpsa lcavol lweight age lbph svi lcp gleason pgg45, ///
 						 type(regress) pyseed(243) ///
-						 methods(`m')	
+						 methods(`m') /// 
+						 njobs(4) ///
+						 pipe1(poly2)
 }
 
 *******************************************************************************
@@ -63,4 +95,3 @@ replace lcavol = 2 * lcavol
 
 cap predict double yhat, xb
 assert _rc != 0
-

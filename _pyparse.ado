@@ -1,5 +1,6 @@
-** pyparse v0.1
-** for scikit-learn 0.24.0
+*! pystacked v0.1 (first release)
+*! last edited: 18sep2021
+*! authors: aa/ms
 
 program _pyparse 
 	syntax [anything] , type(string) method(string) [ debug *]
@@ -14,7 +15,10 @@ program _pyparse
 		}
 
 		if "`type'"=="reg" {
-			if "`method'"=="lassoic" {
+			if "`method'"=="ols" {
+				parse_LinearRegression , `options'
+			}
+			else if "`method'"=="lassoic" {
 				parse_LassoIC , `options'
 			}
 			else if "`method'"=="lassocv" {
@@ -48,7 +52,10 @@ program _pyparse
 			local optstr `r(optstr)'
 		}
 		else if "`type'"=="class" {
-			if "`method'"=="lassocv" {
+			if "`method'"=="logit" {
+				parse_Logit , `options'  
+			}
+			else if "`method'"=="lassocv" {
 				parse_LassoLogitCV , `options' penalty(l1) solver(saga)
 			}
 			else if "`method'"=="lassoic" {
@@ -56,10 +63,10 @@ program _pyparse
 				exit 198
 			}
 			else if "`method'"=="elasticcv" {
-				parse_LassoLogitCV , `options' penalty(elasticnet) solver(saga)
+				parse_LassoLogitCV , `options' penalty(elasticnet) solver(saga) l1_ratios(0 .5 1)
 			}
 			else if "`method'"=="ridgecv" {
-				parse_LassoLogitCV , `options'
+				parse_LassoLogitCV , `options' penalty(l2)
 			}
 			else if "`method'"=="svm" {
 				parse_SVC , `options'
@@ -89,9 +96,76 @@ program _pyparse
 	if "`debug'"!="" di "`optstr'"
 end
 
-//program return_nothing, rclass 
-//	return local optstr {}
-//end
+program define parse_LinearRegression, rclass
+	syntax [anything], [ ///
+					NOCONStant ///
+					NONormalize ///
+					POSitive ///
+					]
+	local optstr 
+
+	** intercept
+	if "`noconstant'"!="" {
+		local optstr `optstr' 'fit_intercept':False,
+	}
+	else {
+		local optstr `optstr' 'fit_intercept':True,
+	}
+	** normalize
+	if ("`nonormalize'"!="") {
+		local optstr `optstr' 'normalize':False,
+	}
+	else {
+		local optstr `optstr' 'normalize':True,
+	}
+	** positive
+	if "`positive'"!="" {
+		local optstr `optstr' 'positive':True,
+	}
+	else {
+		local optstr `optstr' 'positive':False,
+	}
+	local optstr {`optstr'}
+	local optstr = subinstr("`optstr'",",}","}",.)
+	local optstr = subinstr("`optstr'"," ","",.)
+	return local optstr `optstr'
+end 
+
+/* class sklearn.linear_model.LogisticRegression(penalty='l2', *, dual=False, 
+tol=0.0001, C=1.0, fit_intercept=True, intercept_scaling=1, class_weight=None, 
+random_state=None, solver='lbfgs', max_iter=100, multi_class='auto', verbose=0,
+ warm_start=False, n_jobs=None, l1_ratio=None)[source]¶ */
+program define parse_Logit, rclass
+	syntax [anything], [ ///
+					l1_ratios(numlist) ///
+					Cs(integer 10) ///
+					NOCONStant /// 
+					cv(integer 5) ///
+					penalty(string) ///
+					solver(string) ///
+					tol(real 1e-4) ///
+					max_iter(integer 100) ///
+					n_jobs(integer 1) ///
+					norefit ///
+					intercept_scaling(real 1) ///
+					random_state(integer -1) ///
+					]
+	local optstr 
+	
+	** intercept
+	if "`noconstant'"!="" {
+		local optstr `optstr' 'fit_intercept':False,
+	}
+	else {
+		local optstr `optstr' 'fit_intercept':True,
+	}
+	** penalty
+	local optstr `optstr' 'penalty':None,
+	local optstr {`optstr'}
+	local optstr = subinstr("`optstr'",",}","}",.)
+	local optstr = subinstr("`optstr'"," ","",.)
+	return local optstr `optstr'
+end 
 
 /*
  class sklearn.linear_model.LogisticRegressionCV(*, Cs=10, 
@@ -103,7 +177,7 @@ end
   */
 program define parse_LassoLogitCV, rclass
 	syntax [anything], [ ///
-					l1_ratio(real -1) ///
+					l1_ratios(numlist) ///
 					Cs(integer 10) ///
 					NOCONStant /// 
 					cv(integer 5) ///
@@ -181,11 +255,12 @@ program define parse_LassoLogitCV, rclass
 		local optstr `optstr' 'random_state':None,
 	}
 	** l1 ratios
-	if `l1_ratio'>=0 & `l1_ratio'<= 1 {
-		local optstr `optstr' 'l1_ratios':`l1_ratio',
-	}
-	else {
-		local optstr `optstr' 'l1_ratios':None,
+	if "`penalty'"=="elasticnet" {
+		local l1_ratios_list
+		foreach i of numlist `l1_ratios' {
+			local l1_ratios_list `l1_ratios_list'`i',
+		}
+		local optstr `optstr' 'l1_ratios':(`l1_ratios_list'),
 	}
 	local optstr {`optstr'}
 	local optstr = subinstr("`optstr'",",}","}",.)
@@ -1311,13 +1386,13 @@ program define parse_MLPReg, rclass
 	if "`hidden_layer_sizes'"!="" {
 		local hidden_layer_sizes 
 		foreach i of numlist `hidden_layer_sizes' {
-			local hidden_layer_sizes `hidden_layer_sizes',`i'
+			local hidden_layer_sizes `hidden_layer_sizes'`i',
 		}
 	} 
 	else {
-		local hidden_layer_sizes 100
+		local hidden_layer_sizes 100,
 	}
-	local optstr `optstr' 'hidden_layer_sizes':(`hidden_layer_sizes',),
+	local optstr `optstr' 'hidden_layer_sizes':(`hidden_layer_sizes'),
 	*** activation
 	if "`activation'"=="identity"|"`activation'"=="logistic"|"`activation'"=="tanh"|"`activation'"=="relu" {
 		local optstr `optstr' 'activation':'`activation'',
@@ -1495,7 +1570,7 @@ program define parse_MLPClass, rclass
 						batch_size(integer -1) ///
 						learning_rate(string) ///
 						learning_rate_init(real -1) ///
-						double_t(real -1) ///
+						power_t(real -1) ///
 						max_iter(integer -1) ///
 						NOSHuffle ///
 						random_state(integer -1) ///
@@ -1518,13 +1593,13 @@ program define parse_MLPClass, rclass
 	if "`hidden_layer_sizes'"!="" {
 		local hidden_layer_sizes 
 		foreach i of numlist `hidden_layer_sizes' {
-			local hidden_layer_sizes `hidden_layer_sizes',`i'
+			local hidden_layer_sizes `hidden_layer_sizes'`i',
 		}
 	} 
 	else {
-		local hidden_layer_sizes 100
+		local hidden_layer_sizes 100,
 	}
-	local optstr `optstr' 'hidden_layer_sizes':(`hidden_layer_sizesm',),
+	local optstr `optstr' 'hidden_layer_sizes':(`hidden_layer_sizes'),
 	*** activation
 	if "`activation'"=="identity"|"`activation'"=="logistic"|"`activation'"=="tanh"|"`activation'"=="relu" {
 		local optstr `optstr' 'activation':'`activation'',
@@ -1568,11 +1643,11 @@ program define parse_MLPClass, rclass
 		local optstr `optstr' 'learning_rate_init':0.001,
 	}
 	*** power t
-	if `double_t'>0 {
-		local optstr `optstr' 'double_t':`double_t',
+	if `power_t'>0 {
+		local optstr `optstr' 'power':`power_t',
 	}
 	else {
-		local optstr `optstr' 'double_t':0.5,
+		local optstr `optstr' 'power_t':0.5,
 	}
 	*** max iter
 	if `max_iter'>0 {
@@ -1677,7 +1752,7 @@ program define parse_MLPClass, rclass
 		local optstr `optstr' 'max_fun':`max_fun',						
 	}
 	else {
-		local optstr `optstr' 'nmax_fun':15000,						
+		local optstr `optstr' 'max_fun':15000,						
 	}	
 	** return
 	local optstr {`optstr'}

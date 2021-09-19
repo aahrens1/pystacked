@@ -1,3 +1,7 @@
+*! pystacked v0.1 (first release)
+*! last edited: 18sep2021
+*! authors: aa/ms
+
 program define pystacked_p, rclass
 	version 16.0
 	syntax namelist(min=1 max=2) [if] [in], [ ///
@@ -9,7 +13,7 @@ program define pystacked_p, rclass
 															]
 	
 	if ("`force'"=="") {
-		datasignature report
+		qui datasignature report
 		//return list
 		if (`r(changed)'!=0) {
 			di as err "error: data in memory has changed since last -pystacked- call"
