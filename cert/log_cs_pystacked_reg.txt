@@ -2,19 +2,30 @@
       name:  <unnamed>
        log:  /Users/kahrens/MyProjects/pystacked/cert/log_cs_pystacked_reg.txt
   log type:  text
- opened on:   3 Oct 2021, 15:10:03
+ opened on:   3 Oct 2021, 16:04:56
 
 . 
 . clear all
 
 .  
-. net install pystacked, ///
+. if "`c(username)'"=="kahrens" {
+.         adopath + "/Users/kahrens/MyProjects/pystacked"
+  [1]  (BASE)      "/Applications/Stata 16/ado/base/"
+  [2]  (SITE)      "/Applications/Stata 16/ado/site/"
+  [3]              "."
+  [4]  (PERSONAL)  "/Users/kahrens/Documents/Stata/ado/personal/"
+  [5]  (PLUS)      "/Users/kahrens/Library/Application Support/Stata/ado/plus/"
+  [6]  (OLDPLACE)  "~/ado/"
+  [7]              "/Users/kahrens/MyProjects/pystacked"
+. }
+
+. else {
+.         net install pystacked, ///
 >                 from(https://raw.githubusercontent.com/aahrens1/pystacked/main) replace
-checking pystacked consistency and verifying not already installed...
-all files already exist and are up to date.
+. }
 
 . which pystacked 
-/Users/kahrens/Library/Application Support/Stata/ado/plus/p/pystacked.ado
+/Users/kahrens/MyProjects/pystacked/pystacked.ado
 *! pystacked v0.1 (first release)
 *! last edited: 3oct2021
 *! authors: aa/ms
@@ -269,58 +280,58 @@ ols lassocv gradboost nnet
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  ols            |      0.0296918
-  lassocv        |      0.7185511
-  gradboost      |      0.0000000
-  nnet           |      0.2517571
+  ols            |      0.0739973
+  lassocv        |      0.8526543
+  gradboost      |      0.0733484
+  nnet           |      0.0000000
 ols lassocv rf nnet
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  ols            |      0.0000000
-  lassocv        |      0.6998726
+  ols            |      0.0487359
+  lassocv        |      0.4849343
   rf             |      0.0000000
-  nnet           |      0.3001274
+  nnet           |      0.4663298
 ols lassoic gradboost nnet
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  ols            |      0.0885353
-  lassoic        |      0.5101457
-  gradboost      |      0.4013189
-  nnet           |      0.0000000
+  ols            |      0.1300092
+  lassoic        |      0.3002312
+  gradboost      |      0.4292376
+  nnet           |      0.1405220
 ols ridgecv gradboost nnet
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  ols            |      0.1150930
+  ols            |      0.1204444
   ridgecv        |      0.0000000
-  gradboost      |      0.8849070
-  nnet           |      0.0000000
+  gradboost      |      0.6408219
+  nnet           |      0.2387337
 ols elasticcv gradboost nnet
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  ols            |      0.0387953
-  elasticcv      |      0.9029295
-  gradboost      |      0.0230956
-  nnet           |      0.0351796
+  ols            |      0.0339593
+  elasticcv      |      0.5617974
+  gradboost      |      0.0632229
+  nnet           |      0.3410204
 ols elasticcv gradboost svm
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  ols            |      0.0509531
-  elasticcv      |      0.9279825
-  gradboost      |      0.0210643
+  ols            |      0.0528410
+  elasticcv      |      0.9471590
+  gradboost      |      0.0000000
   svm            |      0.0000000
 ols elasticcv gradboost linsvm
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  ols            |      0.0230766
-  elasticcv      |      0.4840536
-  gradboost      |      0.0987316
-  linsvm         |      0.3941381
+  ols            |      0.0227584
+  elasticcv      |      0.6836371
+  gradboost      |      0.0849556
+  linsvm         |      0.2086489
 
 . 
 . *******************************************************************************
@@ -413,5 +424,5 @@ ols elasticcv gradboost linsvm
       name:  <unnamed>
        log:  /Users/kahrens/MyProjects/pystacked/cert/log_cs_pystacked_reg.txt
   log type:  text
- closed on:   3 Oct 2021, 15:10:12
+ closed on:   3 Oct 2021, 16:05:05
 -----------------------------------------------------------------------------------------------------

@@ -2,19 +2,30 @@
       name:  <unnamed>
        log:  /Users/kahrens/MyProjects/pystacked/cert/log_cs_pystacked_class.txt
   log type:  text
- opened on:   3 Oct 2021, 15:10:15
+ opened on:   3 Oct 2021, 15:37:49
 
 . 
 . clear all
 
 .  
-. net install pystacked, ///
+. if "`c(username)'"=="kahrens" {
+.         adopath + "/Users/kahrens/MyProjects/pystacked"
+  [1]  (BASE)      "/Applications/Stata 16/ado/base/"
+  [2]  (SITE)      "/Applications/Stata 16/ado/site/"
+  [3]              "."
+  [4]  (PERSONAL)  "/Users/kahrens/Documents/Stata/ado/personal/"
+  [5]  (PLUS)      "/Users/kahrens/Library/Application Support/Stata/ado/plus/"
+  [6]  (OLDPLACE)  "~/ado/"
+  [7]              "/Users/kahrens/MyProjects/pystacked"
+. }
+
+. else {
+.         net install pystacked, ///
 >                 from(https://raw.githubusercontent.com/aahrens1/pystacked/main) replace
-checking pystacked consistency and verifying not already installed...
-all files already exist and are up to date.
+. }
 
 . which pystacked 
-/Users/kahrens/Library/Application Support/Stata/ado/plus/p/pystacked.ado
+/Users/kahrens/MyProjects/pystacked/pystacked.ado
 *! pystacked v0.1 (first release)
 *! last edited: 3oct2021
 *! authors: aa/ms
@@ -41,93 +52,146 @@ all files already exist and are up to date.
 >                                                         njobs(4) pipe1(poly2) ///
 >                                                         voting voteweights(0.1 .4) ///
 >                                                         votetype(soft)
-joblib.externals.loky.process_executor._RemoteTraceback: 
-"""
-Traceback (most recent call last):
-  File "/usr/local/lib/python3.9/site-packages/joblib/externals/loky/process_executor.py", line 431, 
-> in _process_worker
-    r = call_item()
-  File "/usr/local/lib/python3.9/site-packages/joblib/externals/loky/process_executor.py", line 285, 
-> in __call__
-    return self.fn(*self.args, **self.kwargs)
-  File "/usr/local/lib/python3.9/site-packages/joblib/_parallel_backends.py", line 595, in __call__
-    return self.func(*args, **kwargs)
-  File "/usr/local/lib/python3.9/site-packages/joblib/parallel.py", line 262, in __call__
-    return [func(*args, **kwargs)
-  File "/usr/local/lib/python3.9/site-packages/joblib/parallel.py", line 262, in <listcomp>
-    return [func(*args, **kwargs)
-  File "/usr/local/opt/python@3.9/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-package
-> s/sklearn/utils/fixes.py", line 209, in __call__
-    return self.function(*args, **kwargs)
-  File "/usr/local/opt/python@3.9/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-package
-> s/sklearn/ensemble/_base.py", line 42, in _fit_single_estimator
-    estimator.fit(X, y)
-  File "/usr/local/opt/python@3.9/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-package
-> s/sklearn/pipeline.py", line 394, in fit
-    self._final_estimator.fit(Xt, y, **fit_params_last_step)
-  File "/usr/local/opt/python@3.9/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-package
-> s/sklearn/ensemble/_forest.py", line 441, in fit
-    trees = Parallel(
-  File "/usr/local/lib/python3.9/site-packages/joblib/parallel.py", line 1041, in __call__
-    if self.dispatch_one_batch(iterator):
-  File "/usr/local/lib/python3.9/site-packages/joblib/parallel.py", line 859, in dispatch_one_batch
-    self._dispatch(tasks)
-  File "/usr/local/lib/python3.9/site-packages/joblib/parallel.py", line 777, in _dispatch
-    job = self._backend.apply_async(batch, callback=cb)
-  File "/usr/local/lib/python3.9/site-packages/joblib/_parallel_backends.py", line 208, in apply_asyn
-> c
-    result = ImmediateResult(func)
-  File "/usr/local/lib/python3.9/site-packages/joblib/_parallel_backends.py", line 572, in __init__
-    self.results = batch()
-  File "/usr/local/lib/python3.9/site-packages/joblib/parallel.py", line 262, in __call__
-    return [func(*args, **kwargs)
-  File "/usr/local/lib/python3.9/site-packages/joblib/parallel.py", line 262, in <listcomp>
-    return [func(*args, **kwargs)
-  File "/usr/local/opt/python@3.9/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-package
-> s/sklearn/utils/fixes.py", line 209, in __call__
-    return self.function(*args, **kwargs)
-  File "/usr/local/opt/python@3.9/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-package
-> s/sklearn/ensemble/_forest.py", line 184, in _parallel_build_trees
-    tree.fit(X, y, sample_weight=curr_sample_weight, check_input=False)
-  File "/usr/local/opt/python@3.9/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-package
-> s/sklearn/tree/_classes.py", line 937, in fit
-    super().fit(
-  File "/usr/local/opt/python@3.9/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-package
-> s/sklearn/tree/_classes.py", line 352, in fit
-    criterion = CRITERIA_CLF[self.criterion](
-KeyError: 'friedman_mse'
-"""
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  lassocv        |      0.1000000
+  rf             |      0.4000000
+  nnet           |      0.5000000
 
-The above exception was the direct cause of the following exception:
+.                         
+. 
+. *******************************************************************************
+. *** try other estimators                                                                           
+>                              ***
+. *******************************************************************************
+. 
+. insheet using https://archive.ics.uci.edu/ml/machine-learning-databases/spambase/spambase.data, cle
+> ar comma
+(58 vars, 4,601 obs)
 
-Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-  File "<stdin>", line 180, in run_stacked
-  File "/usr/local/opt/python@3.9/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-package
-> s/sklearn/ensemble/_voting.py", line 324, in fit
-    return super().fit(X, transformed_y, sample_weight)
-  File "/usr/local/opt/python@3.9/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-package
-> s/sklearn/ensemble/_voting.py", line 74, in fit
-    self.estimators_ = Parallel(n_jobs=self.n_jobs)(
-  File "/usr/local/opt/python@3.9/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-package
-> s/joblib/parallel.py", line 1054, in __call__
-    self.retrieve()
-  File "/usr/local/opt/python@3.9/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-package
-> s/joblib/parallel.py", line 933, in retrieve
-    self._output.extend(job.get(timeout=self.timeout))
-  File "/usr/local/opt/python@3.9/Frameworks/Python.framework/Versions/3.9/lib/python3.9/site-package
-> s/joblib/_parallel_backends.py", line 542, in wrap_future_result
-    return future.result(timeout=timeout)
-  File "/usr/local/opt/python@3.9/Frameworks/Python.framework/Versions/3.9/lib/python3.9/concurrent/f
-> utures/_base.py", line 438, in result
-    return self.__get_result()
-  File "/usr/local/opt/python@3.9/Frameworks/Python.framework/Versions/3.9/lib/python3.9/concurrent/f
-> utures/_base.py", line 390, in __get_result
-    raise self._exception
-KeyError: 'friedman_mse'
-r(7102);
+. 
+. local m1 logit lassocv gradboost nnet
 
-end of do-file
+. local m2 logit lassocv rf nnet
 
-r(7102);
+. local m3 logit ridgecv gradboost nnet
 
+. local m4 logit elasticcv gradboost nnet
+
+. local m5 logit elasticcv gradboost svm
+
+. local m6 logit elasticcv gradboost linsvm
+
+. 
+. foreach m in "`m1'" "`m2'" "`m3'" "`m4'" "`m5'" "`m6'" {
+  2.         di "`m'"
+  3.         pystacked v58 v1-v57, type(class) pyseed(123) ///
+>                                                         methods(`m') /// 
+>                                                         njobs(4)
+  4. }
+logit lassocv gradboost nnet
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  logit          |      0.0376713
+  lassocv        |      0.0000000
+  gradboost      |      0.8304882
+  nnet           |      0.1318405
+logit lassocv rf nnet
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  logit          |      0.1266155
+  lassocv        |      0.0000000
+  rf             |      0.7258337
+  nnet           |      0.1475508
+logit ridgecv gradboost nnet
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  logit          |      0.0000000
+  ridgecv        |      0.0612995
+  gradboost      |      0.7370860
+  nnet           |      0.2016145
+logit elasticcv gradboost nnet
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  logit          |      0.0000000
+  elasticcv      |      0.0000000
+  gradboost      |      0.7984115
+  nnet           |      0.2015885
+logit elasticcv gradboost svm
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  logit          |      0.1024413
+  elasticcv      |      0.0000000
+  gradboost      |      0.8887822
+  svm            |      0.0087765
+logit elasticcv gradboost linsvm
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  logit          |      0.0978207
+  elasticcv      |      0.0000000
+  gradboost      |      0.9015952
+  linsvm         |      0.0005841
+
+. 
+. *******************************************************************************
+. *** check that predicted value = weighted avg of transform variables            ***
+. *******************************************************************************
+.                                                  
+. insheet using https://archive.ics.uci.edu/ml/machine-learning-databases/spambase/spambase.data, cle
+> ar comma
+(58 vars, 4,601 obs)
+
+. 
+. pystacked v58 v1-v57, type(class) pyseed(123)
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  logit          |      0.0966593
+  lassocv        |      0.0000000
+  gradboost      |      0.9033407
+
+. 
+. predict double yhat, pr
+
+. list yhat if _n < 10
+
+      +-----------+
+      |      yhat |
+      |-----------|
+   1. | .94596963 |
+   2. | .97638563 |
+   3. | .99292243 |
+   4. | .95213176 |
+   5. | .95211578 |
+      |-----------|
+   6. | .66053313 |
+   7. | .88218763 |
+   8. | .66044895 |
+   9. | .98867417 |
+      +-----------+
+
+. 
+. predict double t, transform  
+
+. 
+. mat W = e(weights)
+
+. gen myhat = t0*el(W,1,1)+t1*el(W,2,1)+t2*el(W,3,1)
+
+. 
+. assert reldif(yhat,myhat)<0.0001
+
+. 
+. log close
+      name:  <unnamed>
+       log:  /Users/kahrens/MyProjects/pystacked/cert/log_cs_pystacked_class.txt
+  log type:  text
+ closed on:   3 Oct 2021, 16:02:52
+-----------------------------------------------------------------------------------------------------

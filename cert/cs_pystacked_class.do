@@ -5,8 +5,13 @@ log using "log_cs_pystacked_class.txt", text replace
 
 clear all
  
-net install pystacked, ///
+if "`c(username)'"=="kahrens" {
+	adopath + "/Users/kahrens/MyProjects/pystacked"
+}
+else {
+	net install pystacked, ///
 		from(https://raw.githubusercontent.com/aahrens1/pystacked/main) replace
+}
 which pystacked 
 python: import sklearn
 python: sklearn.__version__
