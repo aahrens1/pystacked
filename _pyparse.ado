@@ -615,18 +615,6 @@ program define parse_rfClass, rclass
 	else {
 		local optstr `optstr' 'max_depth':None,
 	}
-	** criterion
-	if "`criterion'"=="friedman_mse"|"`criterion'"=="squared_error"|"`criterion'"=="mse"|"`criterion'"=="mae" {
-		local optstr `optstr' 'criterion':'`criterion'',		
-	}
-	else if "`criterion'"=="" {
-		// use default
-		local optstr `optstr' 'criterion':'friedman_mse',	
-	}
-	else {
-		di as err "criterion(`criterion') not allowed"
-		error 197
-	}
 	** min sample split
 	if `min_samples_split'>0 {
 		local optstr `optstr' 'min_samples_split':`min_samples_split',

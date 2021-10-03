@@ -87,7 +87,7 @@ foreach m in "`m1'" "`m2'" "`m3'" "`m4'" "`m5'" "`m6'" "`m7'" {
 *** check that predicted value = weighted avg of transform variables 		***
 *******************************************************************************
 
-insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab
+insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
 
 set seed 124345
 
@@ -110,7 +110,7 @@ assert reldif(yhat,myhat)<0.0001
 *******************************************************************************
 
 clear
-insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab
+insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
 
 set seed 124345
 
