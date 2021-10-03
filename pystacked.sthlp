@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 18sep2020}{...}
+{* *! version 3oct2020}{...}
 {hline}
 {cmd:help pystacked}{right: v0.1}
 {hline}

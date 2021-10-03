@@ -1,5 +1,5 @@
 *! pystacked v0.1 (first release)
-*! last edited: 18sep2021
+*! last edited: 3oct2021
 *! authors: aa/ms
 
 program define pystacked_p, rclass
