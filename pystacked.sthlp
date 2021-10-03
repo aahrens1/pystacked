@@ -35,7 +35,7 @@ algorithms.
 {opt pystacked} requires at least Stata 16 (or higher),  
 a Python installation and scikit-learn (0.24 or higher).
 See {helpb python:here} and {browse "https://blog.stata.com/2020/08/18/stata-python-integration-part-1-setting-up-stata-to-use-python/":here} 
-for how to set up Python on your system.
+for how to set up Python for Stata on your system.
 
 {marker methodopts}{...}
 {title:Contents}
@@ -118,7 +118,9 @@ using {opt method(string)} together with {opt opt(string)} and separated by
 {synopthdr:Option}
 {synoptline}
 {synopt:{opt methods(string)}}
-a list of base learners, defaults to "{it:lassoic rf gradboost}"; see {helpb pystacked##base_learners:Base learners}.
+a list of base learners, defaults to "{it:ols lassoic gradboost}" for regression
+and "{it:logit lassocv gradboost}" for classification;
+see {helpb pystacked##base_learners:Base learners}.
 {p_end}
 {synopt:{opt cmdopt*(string)}}
 options passed to the base learners, see {helpb pystacked##base_learners_opt:Command options}.
@@ -182,7 +184,8 @@ default is 5
 {p_end}
 {synopt:{opt pyseed(int)}} 
 set the Python seed. Note that, since {cmd:pystacked} uses
-Python, using {helpb "set seed"} won't be sufficient. 
+Python, using {helpb "set seed"} won't be sufficient
+for replication. 
 {p_end}
 {synoptline}
 
@@ -876,7 +879,7 @@ for how to set up Python on your system.
 
 {pstd}
 Once you have linked Python with Stata,
-check the Python installation path Stata using
+check the Python installation path using
 {stata "python query"}.  
 Assuming your Python installation is located in 
 /usr/local/bin/python3.9,
