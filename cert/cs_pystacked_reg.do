@@ -1,12 +1,15 @@
+cap cd "/Users/kahrens/MyProjects/pystacked/cert"
+
+cap log close
+log using "log_cs_pystacked_reg.txt", text replace
+
 clear all
  
- /*
 net install pystacked, ///
 		from(https://raw.githubusercontent.com/aahrens1/pystacked/main) replace
 which pystacked 
-*/
-adopath + "/Users/kahrens/MyProjects/pystacked"
-which pystacked
+python: import sklearn
+python: sklearn.__version__
 
 global xvars lcavol lweight age lbph svi lcp gleason pgg45
 
@@ -63,13 +66,13 @@ assert a1==b1
 
 insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
 
-local m1 lassocv gradboost nnet
-local m2 lassocv rf nnet
-local m3 lassoic gradboost nnet
-local m4 ridgecv gradboost nnet
-local m5 elasticcv gradboost nnet
-local m6 elasticcv gradboost svm
-local m7 elasticcv gradboost linsvm
+local m1 ols lassocv gradboost nnet
+local m2 ols lassocv rf nnet
+local m3 ols lassoic gradboost nnet
+local m4 ols ridgecv gradboost nnet
+local m5 ols elasticcv gradboost nnet
+local m6 ols elasticcv gradboost svm
+local m7 ols elasticcv gradboost linsvm
 
 foreach m in "`m1'" "`m2'" "`m3'" "`m4'" "`m5'" "`m6'" "`m7'" {
 	di "`m'"
@@ -77,7 +80,7 @@ foreach m in "`m1'" "`m2'" "`m3'" "`m4'" "`m5'" "`m6'" "`m7'" {
 						 type(regress) pyseed(243) ///
 						 methods(`m') /// 
 						 njobs(4) ///
-						 pipe1(poly2)
+						 pipe2(poly2) pipe1(poly2)
 }
 
 *******************************************************************************
@@ -118,3 +121,6 @@ replace lcavol = 2 * lcavol
 
 cap predict double yhat, xb
 assert _rc != 0
+
+
+log close

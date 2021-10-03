@@ -137,18 +137,7 @@ random_state=None, solver='lbfgs', max_iter=100, multi_class='auto', verbose=0,
  warm_start=False, n_jobs=None, l1_ratio=None)[source]¶ */
 program define parse_Logit, rclass
 	syntax [anything], [ ///
-					l1_ratios(numlist) ///
-					Cs(integer 10) ///
 					NOCONStant /// 
-					cv(integer 5) ///
-					penalty(string) ///
-					solver(string) ///
-					tol(real 1e-4) ///
-					max_iter(integer 100) ///
-					n_jobs(integer 1) ///
-					norefit ///
-					intercept_scaling(real 1) ///
-					random_state(integer -1) ///
 					]
 	local optstr 
 	
@@ -160,7 +149,7 @@ program define parse_Logit, rclass
 		local optstr `optstr' 'fit_intercept':True,
 	}
 	** penalty
-	local optstr `optstr' 'penalty':None,
+	local optstr `optstr' 'penalty':'none',
 	local optstr {`optstr'}
 	local optstr = subinstr("`optstr'",",}","}",.)
 	local optstr = subinstr("`optstr'"," ","",.)
@@ -210,7 +199,7 @@ program define parse_LassoLogitCV, rclass
 		local optstr `optstr' 'cv':`cv',
 	}
 	** penalty
-	if "`penalty'"=="l1"|"`penalty'"=="elasticnet" {
+	if "`penalty'"=="l1"|"`penalty'"=="elasticnet"|"`penalty'"=="l2" {
 		local optstr `optstr' 'penalty':'`penalty'',
 	}
 	else {
@@ -391,7 +380,6 @@ end
 program define parse_LassoIC, rclass
 	syntax [anything], [criterion(string) ///
 					NOCONStant ///
-					NONormalize ///
 					max_iter(integer 500) ///
 					eps(real -1) ///
 					positive ]
@@ -410,13 +398,6 @@ program define parse_LassoIC, rclass
 	}
 	else {
 		local optstr `optstr' 'fit_intercept':True,
-	}
-	** normalize
-	if ("`nonormalize'"!="") {
-		local optstr `optstr' 'normalize':False,
-	}
-	else {
-		local optstr `optstr' 'normalize':True,
 	}
 	** max iterations
 	if (`max_iter'>0) {
@@ -475,7 +456,7 @@ program define parse_rfReg, rclass
 		local optstr `optstr' 'n_estimators':`n_estimators',
 	}
 	** criterion
-	if "`criterion'"=="mae"|"`criterion'"=="mse" {
+	if "`criterion'"=="mae"|"`criterion'"=="mse"|"`criterion'"=="squared_error"|"`criterion'"=="absolute_error" {
 		local optstr `optstr' 'criterion':'`criterion'',		
 	}
 	else if "`criterion'"=="" {
@@ -634,6 +615,18 @@ program define parse_rfClass, rclass
 	else {
 		local optstr `optstr' 'max_depth':None,
 	}
+	** criterion
+	if "`criterion'"=="friedman_mse"|"`criterion'"=="squared_error"|"`criterion'"=="mse"|"`criterion'"=="mae" {
+		local optstr `optstr' 'criterion':'`criterion'',		
+	}
+	else if "`criterion'"=="" {
+		// use default
+		local optstr `optstr' 'criterion':'friedman_mse',	
+	}
+	else {
+		di as err "criterion(`criterion') not allowed"
+		error 197
+	}
 	** min sample split
 	if `min_samples_split'>0 {
 		local optstr `optstr' 'min_samples_split':`min_samples_split',
@@ -739,6 +732,7 @@ end
 program define parse_gradboostReg, rclass
 	syntax [anything] , [ ///
 					loss(string) ///
+					criterion(string) ///
 					learning_rate(real 0.1) ///
 					n_estimators(integer 100) ///
 					subsample(real 1) ///
@@ -749,7 +743,7 @@ program define parse_gradboostReg, rclass
 					min_impurity_decrease(real 0) ///
 					init(string) ///
 					random_state(integer -1) ///
-					///max_features(string) ///
+					max_features(string) ///
 					alpha(real 0.9) ///
 					max_leaf_nodes(integer -1) ///
 					warm_start ///
@@ -762,7 +756,7 @@ program define parse_gradboostReg, rclass
 	local optstr 
 
 	** loss
-	if "`loss'"=="ls"|"`loss'"=="lad"|"`loss'"=="huber"|"`loss'"=="huber" {
+	if "`loss'"=="absolute_error"|"`loss'"=="squared_error"|"`loss'"=="ls"|"`loss'"=="lad"|"`loss'"=="huber"|"`loss'"=="quantile" {
 		local optstr `optstr' 'loss':'`loss'',
 	} 
 	else if "`loss'"=="" {
@@ -783,6 +777,18 @@ program define parse_gradboostReg, rclass
 	** subsample
 	if `subsample'>=0 {
 		local optstr `optstr' 'subsample':`subsample',
+	}
+	** criterion
+	if "`criterion'"=="friedman_mse"|"`criterion'"=="squared_error"|"`criterion'"=="mse"|"`criterion'"=="mae" {
+		local optstr `optstr' 'criterion':'`criterion'',		
+	}
+	else if "`criterion'"=="" {
+		// use default
+		local optstr `optstr' 'criterion':'friedman_mse',	
+	}
+	else {
+		di as err "criterion(`criterion') not allowed"
+		error 197
 	}
 	** min sample split
 	if `min_samples_split'>0 {
@@ -890,6 +896,7 @@ program define parse_gradboostClass, rclass
 					learning_rate(real 0.1) ///
 					n_estimators(integer 100) ///
 					subsample(real 1) ///
+					criterion(string) ///
 					min_samples_split(integer 2) /// only int supported
 					min_samples_leaf(integer 1) /// only int supported
 					min_weight_fraction_leaf(real 0) ///

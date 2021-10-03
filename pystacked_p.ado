@@ -8,6 +8,7 @@ program define pystacked_p, rclass
 															pr /// 
 															xb /// default
 															///Resid /// not implemented yet
+															class /// 
 															TRANSForm ///
 															force ///
 															]
@@ -48,7 +49,7 @@ program define pystacked_p, rclass
 	}
 	
 	* Get predictions
-	python: post_prediction("`predictvar'","`transform'","`vtype'","`touse'","`pr'")
+	python: post_prediction("`predictvar'","`transform'","`vtype'","`touse'","`pr'`xb'`class'")
 	
 	if "`resid'"!="" {
 		replace `predictvar' = `depvar' - `predictvar' if `touse'
@@ -62,7 +63,7 @@ python:
 from sfi import Data,Matrix,Scalar,Macro
 import numpy as np
 
-def post_prediction(pred_var,transform,var_type,touse,pr):
+def post_prediction(pred_var,transform,var_type,touse,pred_type):
 
 	# Start with a working flag
 	Scalar.setValue("r(import_success)", 1, vtype='visible')
@@ -81,7 +82,7 @@ def post_prediction(pred_var,transform,var_type,touse,pr):
 	touse = np.array(Data.get(touse))
 
 	if transform=="":
-		if type=="class" and pr == "pr":
+		if type=="class" and pred_type == "pr":
 			from __main__ import predict_proba as pred
 		else: 
 			from __main__ import predict as pred

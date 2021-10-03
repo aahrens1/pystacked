@@ -1,5 +1,5 @@
 *! pystacked v0.1 (first release)
-*! last edited: 18sep2021
+*! last edited: 3oct2021
 *! authors: aa/ms
 
 program define pystacked, eclass
@@ -327,8 +327,8 @@ def build_pipeline(pipes):
 def run_stacked(type,finalest,methods,yvar,xvars,training,allopt,allpipe,
 	touse,seed,nosavepred,nosavetransform,
 	voting,votetype,voteweights,njobs,nfolds,nostandardscaler,showpywarnings):
-
-	if int(format(sklearn.__version__).split(".")[1])<24:
+	
+	if int(format(sklearn.__version__).split(".")[1])<24 and int(format(sklearn.__version__).split(".")[0])<1:
 		sfi.SFIToolkit.stata('di as err "pystacked requires sklearn 0.24.0 or higher. Please update sklearn."')
 		sfi.SFIToolkit.stata('di as err "See instructions on https://scikit-learn.org/stable/install.html, and in the help file."')
 		sfi.SFIToolkit.error(198)
@@ -407,6 +407,10 @@ def run_stacked(type,finalest,methods,yvar,xvars,training,allopt,allpipe,
 				newmethod = build_pipeline(allpipe[m])
 				newmethod.append(('mlp',MLPRegressor(**opt)))
 		elif type=="class":
+			if methods[m]=="logit":
+				opt =allopt[m]
+				newmethod = build_pipeline(allpipe[m])
+				newmethod.append(('lassocv',LogisticRegression(**opt)))
 			if methods[m]=="lassoic":
 				sfi.SFIToolkit.stata("di as err lassoic not supported with type(class)")
 				sfi.SFIToolkit.error()

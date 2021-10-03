@@ -17,21 +17,25 @@
 {browse "https://scikit-learn.org/stable/index.html":scikit-learn}'s 
 {browse "https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.StackingRegressor.html":sklearn.ensemble.StackingRegressor} and 
 {browse "https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.StackingClassifier.html":sklearn.ensemble.StackingClassifier}. 
-Stacking is a way of combining predictions from multiple base learners
-(e.g. lasso, random forest, neural nets) into
+Stacking is a way of combining predictions from multiple supervised
+machine learners (the "base learners") into
 a final prediction to improve performance.
-
-{pstd}
-{opt pystacked} requires at least Stata 16 (or higher),  
-a Python installation and scikit-learn (0.24 or higher).
-See {helpb python:here} and {browse "https://blog.stata.com/2020/08/18/stata-python-integration-part-1-setting-up-stata-to-use-python/":here} 
-for how to set up Python on your system.
+The supported base learners are linear regression, 
+logit, lasso, ridge, elastic net, (linear) support
+vector machines, gradient 
+boosting, neural nets (MLP).
 
 {pstd}
 {opt pystacked} can also be used with a single
 base learner and, thus, provides an easy-to-use 
 API for scikit-learn's machine learnings 
 algorithms. 
+
+{pstd}
+{opt pystacked} requires at least Stata 16 (or higher),  
+a Python installation and scikit-learn (0.24 or higher).
+See {helpb python:here} and {browse "https://blog.stata.com/2020/08/18/stata-python-integration-part-1-setting-up-stata-to-use-python/":here} 
+for how to set up Python on your system.
 
 {marker methodopts}{...}
 {title:Contents}
@@ -43,7 +47,7 @@ algorithms.
 	{helpb pystacked##otheropts:Predictions}
 	{helpb pystacked##section_stacking:Stacking}
 	{helpb pystacked##base_learners:Supported base learners}
-	{helpb pystacked##base_learners:Base learners: Options}
+	{helpb pystacked##base_learners_opt:Base learners: Options}
 	{helpb pystacked##pipelines:Pipelines}
 	{helpb pystacked##example_prostate:Example Stacking Regression}
 	{helpb pystacked##example_spam:Example Stacking Classification}
@@ -97,9 +101,9 @@ Options are passed on to base learners via {opt cmdopt1(string)},
 {opt cmdopt2(string)} to {opt cmdopt10(string)}. 
 That is, up to 
 10 base learners can be specified and options are passed on in the order in which
-they appear in {opt methods(string)}.
-The same holds for the {opt pipe*(string)} option which can be used 
-for pre-processing predictors within Python on the fly.
+they appear in {opt methods(string)} (see {helpb pystacked##base_learners_opt:Command options}).
+Likewise, the {opt pipe*(string)} option which can be used 
+for pre-processing predictors within Python on the fly (see {helpb pystacked##pipelines:Pipelines}).
 
 {pstd}
 The second syntax imposes no limit on the number of base learners (aside from the increasing
@@ -114,10 +118,10 @@ using {opt method(string)} together with {opt opt(string)} and separated by
 {synopthdr:Option}
 {synoptline}
 {synopt:{opt methods(string)}}
-a list of base learners; defaults to "{it:lassoic rf gradboost}".
+a list of base learners, defaults to "{it:lassoic rf gradboost}"; see {helpb pystacked##base_learners:Base learners}.
 {p_end}
 {synopt:{opt cmdopt*(string)}}
-options passed to the base learners, see {helpb pystacked##base_learners:Base learners}.
+options passed to the base learners, see {helpb pystacked##base_learners_opt:Command options}.
 {p_end}
 {synopt:{opt pipe*(string)}}
 pipelines passed to the base learners, see {helpb pystacked##pipelines:Pipelines}.
@@ -138,7 +142,7 @@ in {opt methods(string)}.
 a base learner, see {helpb pystacked##base_learners:Base learners}.
 {p_end}
 {synopt:{opt opt(string)}}
-options, see {helpb pystacked##base_learners:Base learners}.
+options, see {helpb pystacked##base_learners_opt:Command options}.
 {p_end}
 {synopt:{opt pipe:line(string)}}
 pipelines applied to the predictors, see {helpb pystacked##pipelines:Pipelines}.
@@ -289,6 +293,7 @@ form the final prediction.
 The following base learners are supported:
 
 {synoptset 10 tabbed}{...}
+{p2col 5 29 23 2:Base learners}{p_end}
 {p2col 7 29 23 2:{it:ols}}Linear Regression {it:(regression only)}{p_end}
 {p2col 7 29 23 2:{it:logit}}Logistic Regression {it:(classification only)}{p_end}
 {p2col 7 29 23 2:{it:lassoic}}Lasso with IC penalty {it:(regression only)}{p_end}
@@ -301,7 +306,13 @@ The following base learners are supported:
 {p2col 7 29 23 2:{it:linsvm}}Linear SVM{p_end}
 {p2col 7 29 23 2:{it:nnet}}Neural net{p_end}
 
-{marker base_learners_options}{...}
+{pstd}
+The base learners can be chosen using the  
+{opt methods(lassoic gradboost nnet)}  
+(Syntax 1) or {opt m:ethod(string)}
+options (Syntax 2).
+
+{marker base_learners_opt}{...}
 {title:Base learners: Options}
 
 {pstd}
@@ -312,21 +323,41 @@ The defaults are adopted from scikit-learn, with some
 modifications highlighted below.
 
 {pstd}
-For a full documentation of the 
-options, please see the scikit-learn documentations linked below.
-We strongly recommend that you read the scikit-learn 
+For the sake of brevity, the base learners options are
+not discussed here in detail.
+Please see the scikit-learn documentations linked below.
+We {it:strongly recommend} that you read the scikit-learn 
 documentation carefully.
+
+{pstd}
+{ul:Linear regression} {break}
+Methods {it:ols} {break}
+{it:Type:} {it:reg} {break}
+{it:Doc:} {browse "https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html":linear_model.LinearRegression}
+
+{p 8 8 2}
+{opt nocons:tant}
+{opt non:ormalize}
+{opt pos:itive}
+
+{pstd}
+{ul:Logistic regression} {break}
+Methods: {it:logit} {break}
+Type: {it:class} {break}
+Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html":linear_model.LogisticRegression}
+
+{p 8 8 2}
+{opt nocons:tant}
 
 {pstd}
 {ul:Penalized regression with information criteria} {break}
 Methods {it:lassoic} {break}
-{it:Type:} {it:reg} {break}
-{it:Doc:} {browse "https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LassoLarsIC.html":linear_model.LassoLarsIC}
+Type: {it:reg} {break}
+Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LassoLarsIC.html":linear_model.LassoLarsIC}
 
 {p 8 8 2}
-{opt criterion(string)}
+{opt criterion(aic|bic)}
 {opt nocons:tant}
-{opt normalize}
 {opt max_iter(int 500)}
 {opt eps(real)}
 {opt positive}
@@ -343,29 +374,34 @@ Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklear
 {opt l1_ratio(real 0.5)}
 {opt eps(real 1e-3)}
 {opt n_alphas(integer 100)}
+{opt alphas(numlist)}
 {opt nocons:tant}
-{opt normalize}
+{opt non:ormalize}
 {opt max_iter(integer 1000)}
 {opt tol(real 1e-4)}
 {opt cv(integer 5)}
 {opt n_jobs(integer 1)}
 {opt positive}
 {opt random_state(integer)}
-{opt selection(string)}
+{opt selection(cyclic|random)}
 
-{p 6 6 2}
-Note: {it:lassocv} uses {l1_ratio(1)}, {it:ridgecv} uses {l1_ratio(0)}; 
+{pstd}
+Note: {it:lassocv} uses {opt l1_ratio(1)}, {it:ridgecv} uses {opt l1_ratio(0)},
+{it:elasticcv} uses {opt l1_ratio(.5)};  
 other options are the same.
 
 {pstd}
-{ul:Logistic regression} Method: {it:elasticcv}, {ul:Type:} {it:class}, {ul:Doc:} {browse "https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html":linear_model.LogisticRegression}
+{ul:Penalized logistic regression with cross-validation} {break}
+Methods: {it:lassocv}, {it:ridgecv} and {it:elasticv} {break} 
+Type: {it:class} {break}
+Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegressionCV.html":linear_model.LogisticRegressionCV}
 
 {p 8 8 2}
-{opt l1_ratio(real)}
+{opt l1_ratios(numlist)}
 {opt c:s(integer 10)}
 {opt nocons:tant}
-{opt integer(integer 5)}
-{opt penalty(string)}
+{opt cv(integer 5)}
+{opt penalty(l1|l2|elasticnet)}
 {opt solver(string)}
 {opt tol(real 1e-4)}
 {opt max_iter(integer 100)}
@@ -375,7 +411,15 @@ other options are the same.
 {opt random_state(integer)}
 
 {pstd}
-{ul:Method:} {it:rf}, {ul:Type:} {it:class}, {ul:Doc:} {browse "https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html":ensemble.RandomForestClassifier}
+Note: {it:lassocv} uses {opt penalty(l1)}, {it:ridgecv} uses {opt penalty(l2)},
+{it:elasticcv} uses {opt penalty(elasticnet) l1_ratios(0 .5 1)};
+other options are the same.
+
+{pstd}
+{ul:Random forest} {break}
+Method: {it:rf} {break}
+Type: {it:class} {break}
+Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html":ensemble.RandomForestClassifier}
 
 {p 8 8 2}
 {opt n_estimators(int 100)}
@@ -396,7 +440,8 @@ other options are the same.
 {opt max_samples(integer)}
 
 {pstd}
-{ul:Method:} {it:rf}, {ul:Type:} {it:reg}, {ul:Doc:} {browse "https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestRegressor.html":ensemble.RandomForestRegressor}
+Type: {it:class} {break}
+Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestRegressor.html":ensemble.RandomForestRegressor}
 
 {p 8 8 2}
 {opt n_estimators(int 100)}
@@ -406,65 +451,74 @@ other options are the same.
 {opt min_samples_leaf(integer)}
 {opt min_weight_fraction_leaf(real 0)}
 {opt max_features(string)}
-{opt max_leaf_nodes(int -1)}
+{opt max_leaf_nodes(integer)}
 {opt min_impurity_decrease(real 0)}
 {opt noboots:trap}
 {opt oob_score}
-{opt n_jobs(int 1)}
+{opt n_jobs(integer 1)}
 {opt random_state(integer)}
 {opt warm_start}
 {opt ccp_alpha(real 0)}
 {opt max_samples(integer)} 
 
 {pstd}
-{ul:Method:} {it:gradboost}, {ul:Type:} {it:class}, {ul:Doc:} {browse "https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingClassifier.html":ensemble.GradientBoostingClassifier}
+{ul:Gradient boosting} {break}
+Method: {it:gradboost} {break}
+Type: {it:class} {break}
+Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingClassifier.html":ensemble.GradientBoostingClassifier}
 
 {p 8 8 2}
-{opt loss(string)}
+{opt loss(deviance|exponential)}
 {opt learning_rate(real 0.1)}
 {opt n_estimators(integer 100)}
 {opt subsample(real 1)}
+{opt criterion(string)}
 {opt min_samples_split(integer 2)}
 {opt min_samples_leaf(integer 1)}
 {opt min_weight_fraction_leaf(real 0)}
 {opt max_depth(integer 3)}
 {opt min_impurity_decrease(real 0)}
 {opt init(string)}
-{opt random_state(integer -1)}
-{opt max_features(string)}
-{opt max_leaf_nodes(integer -1)}
+{opt random_state(integer)}
+{opt max_features(auto|sqrt|log2)}
+{opt max_leaf_nodes(integer)}
 {opt warm_start}
 {opt validation_fraction(real 0.1)}
-{opt n_iter_no_change(integer -1)}
+{opt n_iter_no_change(integer)}
 {opt tol(real 1e-4)}
 {opt ccp_alpha(real 0)}
 
 {pstd}
-{ul:Method:} {it:gradboost}, {ul:Type:} {it:reg}, {ul:Doc:} {browse "https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingRegressor.html":ensemble.GradientBoostingRegressor}
+Type: {it:reg} {break}
+Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingRegressor.html":ensemble.GradientBoostingRegressor}
 
 {p 8 8 2}
 {opt loss(string)}
 {opt learning_rate(real 0.1)}
 {opt n_estimators(integer 100)}
 {opt subsample(real 1)}
+{opt criterion(string)}
 {opt min_samples_split(integer 2)}
 {opt min_samples_leaf(integer 1)}
 {opt min_weight_fraction_leaf(real 0)}
 {opt max_depth(integer 3)}  
 {opt min_impurity_decrease(real 0)}
 {opt init(string)}
-{opt random_state(integer -1)}
+{opt random_state(integer)}
 {opt max_features(string)}
 {opt alpha(real 0.9)}
-{opt max_leaf_nodes(integer -1)}
+{opt max_leaf_nodes(integer)}
 {opt warm_start}
 {opt validation_fraction(real 0.1)}
-{opt n_iter_no_change(integer -1)}
+{opt n_iter_no_change(integer)}
 {opt tol(real 1e-4)}
 {opt ccp_alpha(real 0)}
 
 {pstd}
-{ul:Method:} {it:linsvm}, {ul:Type:} {it:class}, {ul:Doc:} {browse "https://scikit-learn.org/stable/modules/generated/sklearn.svm.LinearSVC.html":svm.LinearSVC}
+{ul:Linear SVM} {break}
+Method: {it:linsvm} {break}
+Type: {it:class} {break} 
+Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.svm.LinearSVC.html":svm.LinearSVC}
 
 {p 8 8 2}
 {opt penalty(string)}
@@ -478,7 +532,8 @@ other options are the same.
 {opt max_iter(integer 1000)}
 
 {pstd}
-{ul:Method:} {it:linsvm}, {ul:Type:} {it:reg}, {ul:Doc:} {browse "https://scikit-learn.org/stable/modules/generated/sklearn.svm.LinearSVR.html":svm.LinearSVR}
+Type: {it:reg} {break} 
+Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.svm.LinearSVR.html":svm.LinearSVR}
 
 {p 8 8 2}
 {opt epsilon(real 0)}
@@ -492,12 +547,15 @@ other options are the same.
 {opt max_iter(integer 1000)}
 
 {pstd}
-{ul:Method:} {it:svm}, {ul:Type:} {it:class}, {ul:Doc:} {browse "https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVR.html":svm.SVR}
+{ul:SVM} {break}
+Method: {it:linsvm} {break}
+Type: {it:class} {break}
+Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVR.html":svm.SVR}
 
 {p 8 8 2}
-{opt ker:nel(string)}
+{opt ker:nel(linear|poly|rbf|sigmoid)}
 {opt degree(integer 3)}
-{opt gam:ma(string)}
+{opt gam:ma(scale|auto)}
 {opt coef0(real 0)}
 {opt tol(real 1e-3)}
 {opt c(real 1)}
@@ -507,13 +565,14 @@ other options are the same.
 {opt max_iter(integer -1)}
 
 {pstd}
-{ul:Method:} {it:svm}, {ul:Type:} {it:reg}, {ul:Doc:} {browse "https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html":svm.SVC}
+Type: {it:reg} {break}
+Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html":svm.SVC}
 
 {p 8 8 2}
 {opt c(real 1)}
-{opt ker:nel(string)}
+{opt ker:nel(linear|poly|rbf|sigmoid)}
 {opt degree(integer 3)}
-{opt gam:ma(string)}
+{opt gam:ma(scale|auto)}
 {opt coef0(real 0)}
 {opt probability}
 {opt tol(real 1e-3)}
@@ -521,9 +580,69 @@ other options are the same.
 {opt noshr:inking}
 {opt cache_size(real 200)}
 {opt max_iter(integer -1)}
-{opt decision_function_shape(string)}
+{opt decision_function_shape(ovr|ovo)}
 {opt break_ties}
 {opt random_state(integer -1)}
+
+{pstd}
+{ul:Neural net (Multi-layer Perceptron)} {break}
+Method: {it:nnet} {break}
+Type: {it:class} {break}
+Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.neural_network.MLPClassifier.html":sklearn.neural_network.MLPClassifier}
+
+{p 8 8 2}
+{opt hidden_layer_sizes(numlist >0 integer)}
+{opt activation(identity|logistic|tanh|relu)}
+{opt solver(lbfgs|sgd|adam)}
+{opt alpha(real 0.0001)}
+{opt batch_size(integer)}
+{opt learning_rate(constant|invscaling|adaptive)}
+{opt learning_rate_init(real -1)}
+{opt power_t(real .5)}
+{opt max_iter(integer 200)}
+{opt nosh:uffle}
+{opt random_state(integer)}
+{opt tol(real 1e-4)}
+{opt verbose}
+{opt warm_start}
+{opt momentum(real .9)}
+{opt nonest:erovs_momentum}
+{opt early_stopping}
+{opt validation_fraction(real .1)}
+{opt beta_1(real .9)}
+{opt beta_2(real .999)}
+{opt epsilon(real 1e-8)}
+{opt n_iter_no_change(integer 10)}
+{opt max_fun(integer 15000)}
+
+{pstd}
+Type: {it:reg} {break}
+Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.neural_network.MLPRegressor.html":sklearn.neural_network.MLPRegressor}
+
+{p 8 8 2}
+{opt hidden_layer_sizes(numlist >0 integer)}
+{opt activation(identity|logistic|tanh|relu)}
+{opt solver(lbfgs|sgd|adam)}
+{opt alpha(real 0.0001)}
+{opt batch_size(integer)}
+{opt learning_rate(constant|invscaling|adaptive)}
+{opt learning_rate_init(real 0.001)}
+{opt power_t(real .5)}
+{opt max_iter(integer 200)}
+{opt nosh:uffle}
+{opt random_state(integer)}
+{opt tol(real 1e-4)}
+{opt verbose}
+{opt warm_start}
+{opt momentum(real .9)}
+{opt NONESTerovs_momentum}
+{opt early_stopping}
+{opt validation_fraction(real .1)}
+{opt beta_1(real .9)}
+{opt beta_2(real .999)}
+{opt epsilon(real 1e-8)}
+{opt n_iter_no_change(integer 10)}
+{opt max_fun(integer 15000)}
 
 {marker pipelines}{...}
 {title:Pipelines}
@@ -549,7 +668,7 @@ The following pipelines are currently supported:
 {p2col 7 29 23 2:{it:poly3}}{browse "https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.PolynomialFeatures.html":PolynomialFeatures(degree=3)}{p_end}
 
 {pstd}
-Options can be passed to the base learners via {opt pipe*(string)} 
+Pipelines can be passed to the base learners via {opt pipe*(string)} 
 (Syntax 1) or {opt pipe:line(string)} (Syntax 2).
 
 {marker example_prostate}{...}
@@ -605,7 +724,7 @@ Stacking regression with lasso, random forest and gradient boosting.
 
 {pstd}
 The weights determine how much each base learner contributes
-to the final stacking predictin. In this example, 
+to the final stacking prediction. In this example, 
 random forest receives a weight of zero.{p_end}
 
 {pstd}
@@ -671,7 +790,7 @@ imposes no limit on the number of base learners.
 {ul:Single base learners}
 
 {pstd}
-If you are facing computational constraints, you can use {cmd:pystacked} with a single base learner. 
+You can use {cmd:pystacked} with a single base learner. 
 In this example, we are using a convential random forest:
 {p_end}
 {phang2}. {stata "pystacked $model, type(regress) pyseed(123) methods(rf)"}{p_end}
@@ -717,7 +836,7 @@ To see which character each predictor corresponds to, see link below.{p_end}
 {p2col 5 19 23 2: Outcome}{p_end}
 {synopt:v58}denotes whether the e-mail was considered spam (1)
  or not (0). {p_end}
- 
+
 {pstd}
 For more information
 about the data 
@@ -725,6 +844,27 @@ see {browse "https://archive.ics.uci.edu/ml/datasets/spambase"}.
 
 {pstd}Load spam data.{p_end}
 {phang2}. {stata "insheet using https://archive.ics.uci.edu/ml/machine-learning-databases/spambase/spambase.data, clear comma"}{p_end}
+
+{pstd}We consider three base learners: logit, random forest and gradient boosting:{p_end}
+{phang2}. {stata "pystacked v58 v1-v57, type(class) pyseed(123) methods(logit rf gradboost) njobs(4) pipe1(poly2)"}{p_end}
+
+{pstd}{ul:Out-of-sample classification.} 
+
+{pstd}As the data is ordered by outcome, we first shuffle the data randomly.{p_end}
+{phang2}. {stata "set seed 42"}{p_end}
+{phang2}. {stata "gen u = runiform()"}{p_end}
+{phang2}. {stata "sort u"}{p_end}
+
+{pstd}Estimation on the first 2000 observations.{p_end}
+{phang2}. {stata "pystacked v58 v1-v57 if _n<=2000, type(class) pyseed(123) methods(logit rf gradboost) njobs(4) pipe1(poly2)"}{p_end}
+
+{pstd}We can get both the predicted probabilities or the predicted class:{p_end}
+{phang2}. {stata "predict spam, class"}{p_end}
+{phang2}. {stata "predict spam_p, pr"}{p_end}
+
+{pstd}Confusion matrix.{p_end}
+{phang2}. {stata "tab spam v58 if _n<=2000, cell"}{p_end}
+{phang2}. {stata "tab spam v58 if _n>2000, cell"}{p_end}
 
 {marker installation}{title:Installation}
 
@@ -735,18 +875,28 @@ See {helpb python:help python} and {browse "https://blog.stata.com/2020/08/18/st
 for how to set up Python on your system.
 
 {pstd}
-To install or update scikit-learn, see 
-{browse "https://scikit-learn.org/stable/install.html"}.
-For example, assuming your Python installation is located in 
-/usr/local/bin/python3.9 as display by {stata "python query"},
+Once you have linked Python with Stata,
+check the Python installation path Stata using
+{stata "python query"}.  
+Assuming your Python installation is located in 
+/usr/local/bin/python3.9,
 you could update scikit-learn by
 typing "/usr/local/bin/python3.9 -m pip install -U scikit-learn"
-into the terminal.
+into the terminal, or directly in Stata (restart required):{p_end}
+{phang2}. {stata "shell /usr/local/bin/python3.9 -m pip install -U scikit-learn"}{p_end}
 
 {pstd}
 You can check your scikit-learn version using:{p_end}
 {phang2}. {stata "python: import sklearn"}{p_end}
 {phang2}. {stata "python: sklearn.__version__"}{p_end}
+
+{pstd}
+For further information, see
+{browse "https://scikit-learn.org/stable/install.html"}.
+
+{pstd}
+To install/update {cmd:pystacked}, type {p_end}
+{phang2}. {stata "net install pystacked, from(https://raw.githubusercontent.com/aahrens1/pystacked/main) replace"}{p_end}
 
 {marker misc}{title:References}
 {marker Harrison1978}{...}

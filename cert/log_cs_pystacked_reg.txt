@@ -1,0 +1,526 @@
+-----------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/kahrens/MyProjects/pystacked/cert/log_cs_pystacked_reg.txt
+  log type:  text
+ opened on:   3 Oct 2021, 14:55:46
+
+. 
+. clear all
+
+.  
+. net install pystacked, ///
+>                 from(https://raw.githubusercontent.com/aahrens1/pystacked/main) replace
+checking pystacked consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. which pystacked 
+/Users/kahrens/Library/Application Support/Stata/ado/plus/p/pystacked.ado
+*! pystacked v0.1 (first release)
+*! last edited: 18sep2021
+*! authors: aa/ms
+
+. python: import sklearn
+
+. python: sklearn.__version__
+'1.0'
+
+. 
+. global xvars lcavol lweight age lbph svi lcp gleason pgg45
+
+. 
+. *******************************************************************************
+. *** voting                                                                                         
+>                                              ***
+. *******************************************************************************
+. 
+. clear
+
+. insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
+(11 vars, 97 obs)
+
+. 
+. set seed 124345
+
+. 
+. pystacked lpsa $xvars, ///
+>                                                  type(regress) pyseed(243) ///
+>                                                  methods(ols lassoic rf) ///
+>                                                  pipe1(poly2) pipe2(poly2) /// 
+>                                                  voting voteweights(.5 .1)
+pystacked requires sklearn 0.24.0 or higher. Please update sklearn.
+See instructions on https://scikit-learn.org/stable/install.html, and in the help file.
+invalid syntax
+r(198);
+
+end of do-file
+
+r(198);
+
+. which pystacked
+/Users/kahrens/Library/Application Support/Stata/ado/plus/p/pystacked.ado
+*! pystacked v0.1 (first release)
+*! last edited: 18sep2021
+*! authors: aa/ms
+
+. ado dir
+
+[1] package lassopack from http://fmwww.bc.edu/repec/bocode/l
+      'LASSOPACK': module for lasso, square-root lasso, elastic net, ridge, adaptive lasso estimation
+>  and cross-validation
+
+[2] package pdslasso from http://fmwww.bc.edu/repec/bocode/p
+      'PDSLASSO': module for post-selection and post-regularization OLS or IV estimation and inferenc
+> e
+
+[3] package ivreg2 from http://fmwww.bc.edu/repec/bocode/i
+      'IVREG2': module for extended instrumental variables/2SLS and GMM estimation
+
+[4] package ftools from http://fmwww.bc.edu/repec/bocode/f
+      'FTOOLS': module to provide alternatives to common Stata commands optimized for large datasets
+
+[5] package reghdfe from http://fmwww.bc.edu/repec/bocode/r
+      'REGHDFE': module to perform linear or instrumental-variable regression absorbing any number of
+>  high-dimensional fixed effects
+
+[6] package estout from http://fmwww.bc.edu/repec/bocode/e
+      'ESTOUT': module to make regression tables
+
+[7] package distinct from http://fmwww.bc.edu/repec/bocode/d
+      'DISTINCT': module to display distinct values of variables
+
+[8] package xtivreg2 from http://fmwww.bc.edu/repec/bocode/x
+      'XTIVREG2': module to perform extended IV/2SLS, GMM and AC/HAC, LIML and k-class regression for
+>  panel data models
+
+[9] package colorscatter from http://fmwww.bc.edu/repec/bocode/c
+      'COLORSCATTER': module to draw scatter plots with marker colors varying by a third variable.
+
+[10] package colorscatter from https://raw.githubusercontent.com/simonheb/colorscatter/master
+      colorscatter - Draw scatterplots where the color varies with a third variable
+
+[11] package randomforest from http://fmwww.bc.edu/repec/bocode/r
+      'RANDOMFOREST': module to implement Random Forest algorithm
+
+[12] package svmachines from http://fmwww.bc.edu/repec/bocode/s
+      'SVMACHINES': module providing Support Vector Machines for both Classification and Regression
+
+[13] package github from https://haghish.github.io/github
+      'GITHUB': github package manager
+
+[14] package rcall from /Users/kahrens/Dropbox (PP)/StataLasso/Presentations/FlorenceSUG/rcall-2.5.0
+      'RCALL': seamless interactive {bf: {browse "https://cran.r-project.org/":R}} in Stata.
+
+[15] package boost from http://fmwww.bc.edu/repec/bocode/b
+      'BOOST': module to perform boosted regression
+
+[16] package gtools from http://fmwww.bc.edu/repec/bocode/g
+      'GTOOLS': module to provide a fast implementation of common group commands
+
+[17] package moremata from http://fmwww.bc.edu/repec/bocode/m
+      'MOREMATA': module (Mata) to provide various functions
+
+[18] package bcuse from http://fmwww.bc.edu/repec/bocode/b
+      'BCUSE': module to access instructional datasets on Boston College server
+
+[19] package vam from http://fmwww.bc.edu/repec/bocode/v
+      'VAM': module to compute teacher value-added measures
+
+[20] package ssccount from http://fmwww.bc.edu/repec/bocode/s
+      'SSCCOUNT': module to download ssc hits over time for user-written packages
+
+[21] package lassopack from https://raw.githubusercontent.com/statalasso/lassopack/master/lassopack_v
+> 13
+      LASSOPACK: Stata module for lasso, square-root lasso, elastic net, ridge, adaptive lasso estima
+> tion and cross-validation
+
+[22] package elasticregress from http://fmwww.bc.edu/repec/bocode/e
+      'ELASTICREGRESS': module to perform elastic net regression, lasso regression, ridge regression
+
+[23] package lassopack from https://raw.githubusercontent.com/statalasso/lassopack/master/lassopack_v
+> 14beta
+      LASSOPACK: Stata module for lasso, square-root lasso, elastic net, ridge, adaptive lasso estima
+> tion and cross-validation
+
+[24] package hdfe from http://fmwww.bc.edu/RePEc/bocode/h
+      'HDFE': module to partial out variables with respect to a set of fixed effects
+
+[25] package ivreghdfe from http://fmwww.bc.edu/repec/bocode/i
+      'IVREGHDFE': module for extended instrumental variable regressions with multiple levels of fixe
+> d effects
+
+[26] package ranktest from http://fmwww.bc.edu/repec/bocode/r
+      'RANKTEST': module to test the rank of a matrix using the Kleibergen-Paap rk statistic
+
+[27] package lassopack from https://raw.githubusercontent.com/statalasso/lassopack/master/lassopack_v
+> 13
+      LASSOPACK: Stata module for lasso, square-root lasso, elastic net, ridge, adaptive lasso estima
+> tion and cross-validation
+
+[28] package whichpkg from http://fmwww.bc.edu/repec/bocode/w
+      'WHICHPKG': module to display information on components of a Stata package
+
+[29] package lassopack from https://raw.githubusercontent.com/statalasso/lassopack/master/lassopack_v
+> 131
+      LASSOPACK: Stata module for lasso, square-root lasso, elastic net, ridge, adaptive lasso estima
+> tion and cross-validation
+
+[30] package lassopack from http://fmwww.bc.edu/repec/bocode/l
+      'LASSOPACK': module for lasso, square-root lasso, elastic net, ridge, adaptive lasso estimation
+>  and cross-validation
+
+[31] package lassopack from https://raw.githubusercontent.com/statalasso/lassopack/master/lassopack_v
+> 131
+      LASSOPACK: Stata module for lasso, square-root lasso, elastic net, ridge, adaptive lasso estima
+> tion and cross-validation
+
+[32] package coefplot from http://fmwww.bc.edu/repec/bocode/c
+      'COEFPLOT': module to plot regression coefficients and other results
+
+[33] package lookforit from http://fmwww.bc.edu/repec/bocode/l
+      'LOOKFORIT': module to search variable names and labels for some string or strings
+
+[34] package lassopack from http://fmwww.bc.edu/repec/bocode/l
+      'LASSOPACK': module for lasso, square-root lasso, elastic net, ridge, adaptive lasso estimation
+>  and cross-validation
+
+[35] package comtrade from http://fmwww.bc.edu/repec/bocode/c
+      'COMTRADE': module to download trade data from UN Comtrade using jsonio and parse the output in
+>  a user friendly format
+
+[36] package jsonio from https://wbuchanan.github.io/StataJSON
+      'JSONIO': A Stata plugin for I/O operations on JSON data
+
+[37] package ppml from http://fmwww.bc.edu/repec/bocode/p
+      'PPML': module to perform Poisson pseudo-maximum likelihood estimation
+
+[38] package plausexog from http://fmwww.bc.edu/repec/bocode/p
+      'PLAUSEXOG': module to implement Conley et al's plausibly exogenous bounds
+
+[39] package hash from http://jean-claude.arbaut.pagesperso-orange.fr/stata
+      'HASH': module to compute hash functions of strings or files, using the {browse "http://jacksum
+> .net/":Jacksum} Java library.
+
+[40] package sivreg from http://fmwww.bc.edu/RePEc/bocode/s
+      'SIVREG': module to perform adaptive Lasso with some invalid instruments
+
+[41] package simulate2 from http://fmwww.bc.edu/repec/bocode/s
+      'SIMULATE2': module enhancing and parallelising simulate
+
+[42] package ivreg2 from http://fmwww.bc.edu/repec/bocode/i
+      'IVREG2': module for extended instrumental variables/2SLS and GMM estimation
+
+[43] package overid from http://fmwww.bc.edu/repec/bocode/o
+      'OVERID': module to calculate tests of overidentifying restrictions after ivreg2, ivreg29, ivre
+> gress, ivprobit, ivtobit, reg3
+
+[44] package xtoverid from http://fmwww.bc.edu/repec/bocode/x
+      'XTOVERID': module to calculate tests of overidentifying restrictions after xtreg, xtivreg, xti
+> vreg2, xthtaylor
+
+[45] package rddensity from https://sites.google.com/site/rdpackages/rddensity/stata
+      STATA Package: RDDENSITY
+
+[46] package ritest from http://fmwww.bc.edu/repec/bocode/r
+      'RITEST': module to perform randomization inference and permutation tests
+
+[47] package rdrobust from http://fmwww.bc.edu/repec/bocode/r
+      'RDROBUST': module to provide robust data-driven inference in the regression-discontinuity desi
+> gn
+
+[48] package reghdfe from http://fmwww.bc.edu/repec/bocode/r
+      'REGHDFE': module to perform linear or instrumental-variable regression absorbing any number of
+>  high-dimensional fixed effects
+
+[49] package xtdcce2 from http://fmwww.bc.edu/repec/bocode/x
+      'XTDCCE2': module to estimate heterogeneous coefficient models using common correlated effects 
+> in a dynamic panel
+
+[50] package st0043_2 from http://www.stata-journal.com/software/sj10-4
+      SJ10-4 st0043_2.  Update: Confidence intervals and...
+
+[51] package xtmg from http://fmwww.bc.edu/repec/bocode/x
+      'XTMG': module to estimate panel time series models with heterogeneous slopes
+
+[52] package xtcd2 from http://fmwww.bc.edu/repec/bocode/x
+      'XTCD2': module to test for weak cross sectional dependence
+
+[53] package regife from http://fmwww.bc.edu/repec/bocode/r
+      'REGIFE': module to estimate linear models with interactive fixed effects
+
+[54] package xtcse2 from http://fmwww.bc.edu/repec/bocode/x
+      'XTCSE2': module to estimate the exponent of cross-sectional dependence in large panels
+
+[55] package xtdcce221 from https://janditzen.github.io/xtdcce2
+      xtdcce2 estimating heterogeneous coefficient models using common correlated effects in a dynami
+> c panel. Version 2.21 (beta)
+
+[56] package pdslasso from https://raw.githubusercontent.com/statalasso/pdslasso/master
+      PDSLASSO: Stata module for post-selection and post-regularization OLS or IV estimation and infe
+> rence
+
+[57] package pdslasso from https://raw.githubusercontent.com/statalasso/pdslasso/master
+      PDSLASSO: Stata module for post-selection and post-regularization OLS or IV estimation and infe
+> rence
+
+[58] package lassopack from https://raw.githubusercontent.com/statalasso/lassopack/master
+      LASSOPACK: Stata module for lasso, square-root lasso, elastic net, ridge, adaptive lasso estima
+> tion and cross-validation
+
+[59] package pdslasso from https://raw.githubusercontent.com/statalasso/pdslasso/master
+      PDSLASSO: Stata module for post-selection and post-regularization OLS or IV estimation and infe
+> rence
+
+[60] package lassopack from https://raw.githubusercontent.com/statalasso/lassopack/master
+      LASSOPACK: Stata module for lasso, square-root lasso, elastic net, ridge, adaptive lasso estima
+> tion and cross-validation
+
+[61] package lassopack from http://fmwww.bc.edu/repec/bocode/l
+      'LASSOPACK': module for lasso, square-root lasso, elastic net, ridge, adaptive lasso estimation
+>  and cross-validation
+
+[62] package ivdesc from http://fmwww.bc.edu/repec/bocode/i
+      'IVDESC': module to profile compliers and non-compliers for instrumental variable analysis
+
+[63] package st0588 from http://www.stata-journal.com/software/sj20-1
+      SJ20-1 st0588. Seemingly unrelated recentered ...
+
+[64] package st0438 from http://www.stata-journal.com/software/sj16-2
+      SJ16-2 st0438. Fixed effects in unconditional...
+
+[65] package twowayfeweights from http://fmwww.bc.edu/repec/bocode/t
+      'TWOWAYFEWEIGHTS': module to estimate the weights and measure of robustness to treatment effect
+>  heterogeneity attached to two-way fixed effects regressions
+
+[66] package brain from http://fmwww.bc.edu/RePEc/bocode/b
+      'BRAIN': module to provide neural network
+
+[67] package pylearn from https://raw.githubusercontent.com/mdroste/stata-pylearn/master/src
+      ^
+
+[68] package lassopack from https://raw.githubusercontent.com/statalasso/lassopack/master/lassopack_v
+> 141incomplete
+      LASSOPACK: Stata module for lasso, square-root lasso, elastic net, ridge, adaptive lasso estima
+> tion and cross-validation
+
+[69] package lassopack from https://raw.githubusercontent.com/statalasso/lassopack/master/lassopack_v
+> 141incomplete
+      LASSOPACK: Stata module for lasso, square-root lasso, elastic net, ridge, adaptive lasso estima
+> tion and cross-validation
+
+[70] package lassopack from https://raw.githubusercontent.com/statalasso/lassopack/master/lassopack_v
+> 141incomplete
+      LASSOPACK: Stata module for lasso, square-root lasso, elastic net, ridge, adaptive lasso estima
+> tion and cross-validation
+
+[71] package rforest from http://fmwww.bc.edu/repec/bocode/r
+      'RFOREST': module to implement Random Forest algorithm
+
+[72] package weakiv from http://fmwww.bc.edu/repec/bocode/w
+      'WEAKIV': module to perform weak-instrument-robust tests and confidence intervals for instrumen
+> tal-variable (IV) estimation of linear, probit and tobit models
+
+[73] package aaplot from http://fmwww.bc.edu/repec/bocode/a
+      'AAPLOT': module for scatter plot with linear and/or quadratic fit, automatically annotated
+
+[74] package baing from http://fmwww.bc.edu/repec/bocode/b
+      'BAING': module to determine and estimate the number of common factors following Bai and Ng
+
+[75] package ocmt from http://fmwww.bc.edu/repec/bocode/o
+      'OCMT': module to perform multiple testing approach in high-dimensional linear regression
+
+[76] package webdoc from http://fmwww.bc.edu/repec/bocode/w
+      'WEBDOC': module to create a HTML or Markdown document including Stata output
+
+[77] package st0217_1 from http://www.stata-journal.com/software/sj11-4
+      SJ11-4 st0217_1.  Update: Pointwise confidence intervals...
+
+[78] package st0458 from http://www.stata-journal.com/software/sj16-4
+      SJ16-4 st0458. Calculates survival curves...
+
+[79] package plausexog from http://fmwww.bc.edu/repec/bocode/p
+      'PLAUSEXOG': module to implement Conley et al's plausibly exogenous bounds
+
+[80] package st0553 from http://www.stata-journal.com/software/sj19-1
+      SJ19-1 st0553. Calculate bootstrap pointwise...
+
+[81] package stpm2 from http://fmwww.bc.edu/repec/bocode/s
+      'STPM2': module to estimate flexible parametric survival models
+
+[82] package rcsgen from http://fmwww.bc.edu/repec/bocode/r
+      'RCSGEN': module to generate restricted cubic splines and their derivatives
+
+[83] package lassopack from https://raw.githubusercontent.com/statalasso/lassopack/master
+      LASSOPACK: Stata module for lasso, square-root lasso, elastic net, ridge, adaptive lasso estima
+> tion and cross-validation
+
+[84] package lassopack from https://raw.githubusercontent.com/statalasso/lassopack/master
+      LASSOPACK: Stata module for lasso, square-root lasso, elastic net, ridge, adaptive lasso estima
+> tion and cross-validation
+
+[85] package lassopack from https://raw.githubusercontent.com/statalasso/lassopack/master
+      LASSOPACK: Stata module for lasso, square-root lasso, elastic net, ridge, adaptive lasso estima
+> tion and cross-validation
+
+[86] package counterfactual from https://sites.google.com/site/mellyblaise
+      Inference on counterfactual distributions
+
+[87] package multistate from http://fmwww.bc.edu/repec/bocode/m
+      'MULTISTATE': module to perform multi-state survival analysis
+
+[88] package stmixed from http://fmwww.bc.edu/repec/bocode/s
+      'STMIXED': module to fit multilevel mixed effects parametric survival models
+
+[89] package merlin from http://fmwww.bc.edu/repec/bocode/m
+      'MERLIN': module to fit mixed effects regression for linear and non-linear models
+
+[90] package diff from http://fmwww.bc.edu/repec/bocode/d
+      'DIFF': module to perform Differences in Differences estimation
+
+[91] package twowayfeweights from http://fmwww.bc.edu/repec/bocode/t
+      'TWOWAYFEWEIGHTS': module to estimate the weights and measure of robustness to treatment effect
+>  heterogeneity attached to two-way fixed effects regressions
+
+[92] package fuzzydid from http://fmwww.bc.edu/repec/bocode/f
+      'FUZZYDID': module to estimate Fuzzy Difference-in-Difference Designs
+
+[93] package did_multiplegt from http://fmwww.bc.edu/repec/bocode/d
+      'DID_MULTIPLEGT': module to estimate sharp Difference-in-Difference designs with multiple group
+> s and periods
+
+[94] package lassopack from https://raw.githubusercontent.com/statalasso/lassopack/beta2
+      LASSOPACK: Stata module for lasso, square-root lasso, elastic net, ridge, adaptive lasso estima
+> tion and cross-validation
+
+[95] package matnames from http://fmwww.bc.edu/repec/bocode/m
+      'MATNAMES': module to return matrix row and column names
+
+[96] package multishell from http://fmwww.bc.edu/RePEc/bocode/m
+      'MULTISHELL': module to allot do files and variations of loops across parallel instances of Win
+> dows Stata and computers efficiently
+
+[97] package lassopack from https://raw.githubusercontent.com/statalasso/lassopack/master
+      LASSOPACK: Stata module for lasso, square-root lasso, elastic net, ridge, adaptive lasso estima
+> tion and cross-validation
+
+[98] package lassopack from https://raw.githubusercontent.com/statalasso/lassopack/master
+      LASSOPACK: Stata module for lasso, square-root lasso, elastic net, ridge, adaptive lasso estima
+> tion and cross-validation
+
+[99] package eventstudyweights from http://fmwww.bc.edu/repec/bocode/e
+      'EVENTSTUDYWEIGHTS': module to estimate the implied weights on the cohort-specific average trea
+> tment effects on the treated (CATTs) (event study specifications)
+
+[100] package texdoc from http://fmwww.bc.edu/repec/bocode/t
+      'TEXDOC': module to create a LaTeX document including Stata output
+
+[101] package parallel from http://fmwww.bc.edu/repec/bocode/p
+      'PARALLEL': module for Parallel Computing
+
+[102] package did_multiplegt from http://fmwww.bc.edu/repec/bocode/d
+      'DID_MULTIPLEGT': module to estimate sharp Difference-in-Difference designs with multiple group
+> s and periods
+
+[103] package MLRtime from https://raw.githubusercontent.com/NickCH-K/MLRtime/master
+      'MLRtime': Machine Learning in R... in Stata
+
+[104] package xtevent from http://fmwww.bc.edu/repec/bocode/x
+      'XTEVENT': module to estimate and visualize linear panel event-study models
+
+[105] package pystacked from https://raw.githubusercontent.com/aahrens1/pystacked/main
+      pystacked: Stacking regression in Stata
+
+. ado uninstall [105]
+
+package pystacked from https://raw.githubusercontent.com/aahrens1/pystacked/main
+      pystacked: Stacking regression in Stata
+
+(package uninstalled)
+
+. do "/var/folders/hj/47q1qh7d7g12z31w_539my0w0000gs/T//SD59885.000000"
+
+. 
+. global xvars lcavol lweight age lbph svi lcp gleason pgg45
+
+. 
+. *******************************************************************************
+. *** voting                                                                                         
+>                                              ***
+. *******************************************************************************
+. 
+. clear
+
+. insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
+(11 vars, 97 obs)
+
+. 
+. set seed 124345
+
+. 
+. pystacked lpsa $xvars, ///
+>                                                  type(regress) pyseed(243) ///
+>                                                  methods(ols lassoic rf) ///
+>                                                  pipe1(poly2) pipe2(poly2) /// 
+>                                                  voting voteweights(.5 .1)
+command pystacked is unrecognized
+r(199);
+
+end of do-file
+
+r(199);
+
+. do "/var/folders/hj/47q1qh7d7g12z31w_539my0w0000gs/T//SD59885.000000"
+
+. clear all
+
+.  
+. if ("`c(username)'"=="kahrens") {
+.         adopath + "/Users/kahrens/MyProjects/ddml"
+  [1]  (BASE)      "/Applications/Stata 16/ado/base/"
+  [2]  (SITE)      "/Applications/Stata 16/ado/site/"
+  [3]              "."
+  [4]  (PERSONAL)  "/Users/kahrens/Documents/Stata/ado/personal/"
+  [5]  (PLUS)      "/Users/kahrens/Library/Application Support/Stata/ado/plus/"
+  [6]  (OLDPLACE)  "~/ado/"
+  [7]              "/Users/kahrens/MyProjects/ddml"
+.         adopath + "/Users/kahrens/MyProjects/pystacked"
+  [1]  (BASE)      "/Applications/Stata 16/ado/base/"
+  [2]  (SITE)      "/Applications/Stata 16/ado/site/"
+  [3]              "."
+  [4]  (PERSONAL)  "/Users/kahrens/Documents/Stata/ado/personal/"
+  [5]  (PLUS)      "/Users/kahrens/Library/Application Support/Stata/ado/plus/"
+  [6]  (OLDPLACE)  "~/ado/"
+  [7]              "/Users/kahrens/MyProjects/ddml"
+  [8]              "/Users/kahrens/MyProjects/pystacked"
+.         cd "/Users/kahrens/Dropbox (PP)/ddml"
+/Users/kahrens/Dropbox (PP)/ddml
+. }
+
+. 
+. insheet using "/Users/kahrens/Dropbox (PP)/ddml/Data/prostate.data",  tab
+(11 vars, 97 obs)
+
+. 
+. set seed 124345
+
+. 
+. pystacked lpsa lcavol lweight age lbph svi lcp gleason pgg45 ///
+>                                                 || m(lassoic) opt(criterion(bic)) pipeline(poly2) /
+> //
+>                                                 || m(rf) opt(n_estimators(50)) ///
+>                                                 || m(nnet) , ///
+>                                                  type(regress) pyseed(243) // method(lassocv rf gra
+> dboost)
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  lassoic        |      0.3527158
+  rf             |      0.2871008
+  nnet           |      0.3601834
+
+. predict double t, transform 
+
+. 
+end of do-file
+
+. help pystacked
+
