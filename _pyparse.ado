@@ -1,5 +1,5 @@
 *! pystacked v0.1 (first release)
-*! last edited: 4oct2021
+*! last edited: 4oct2021b
 *! authors: aa/ms
 
 program _pyparse 
@@ -174,7 +174,7 @@ program define parse_LassoLogitCV, rclass
 					solver(string) ///
 					tol(real 1e-4) ///
 					max_iter(integer 100) ///
-					n_jobs(integer 1) ///
+					n_jobs(integer -1) ///
 					norefit ///
 					intercept_scaling(real 1) ///
 					random_state(integer -1) ///
@@ -276,7 +276,7 @@ program define parse_ElasticCV, rclass
 					max_iter(integer 1000) ///
 					tol(real 1e-4) ///
 					cv(integer 5) ///
-					n_jobs(integer 1) ///
+					n_jobs(integer -1) ///
 					POSitive ///
 					random_state(integer -1) ///
 					selection(string) ///
@@ -442,7 +442,7 @@ program define parse_rfReg, rclass
 					min_impurity_decrease(real 0) ///
 					NOBOOTStrap  ///
 					oob_score  ///
-					n_jobs(integer 1) ///
+					n_jobs(integer -1) ///
 					random_state(integer -1) ///
 					warm_start ///
 					ccp_alpha(real 0) ///
