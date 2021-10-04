@@ -20,15 +20,15 @@
 Stacking is a way of combining predictions from multiple supervised
 machine learners (the "base learners") into
 a final prediction to improve performance.
-The supported base learners are linear regression, 
+The currently-supported base learners are linear regression, 
 logit, lasso, ridge, elastic net, (linear) support
 vector machines, gradient 
-boosting, neural nets (MLP).
+boosting, and neural nets (MLP).
 
 {pstd}
 {opt pystacked} can also be used with a single
 base learner and, thus, provides an easy-to-use 
-API for scikit-learn's machine learnings 
+API for scikit-learn's machine learning
 algorithms. 
 
 {pstd}
@@ -273,9 +273,8 @@ least squares (NNLS) without an intercept.
 The NNLS coefficients are standardized to sum to one.
 Note that in this respect we deviate from 
 the scikit-learn default and follow the 
-recommendation in Hastie et al. 
-({helpb pystacked##Hastie2009:2009}, p. 290).
-The scikit-lerarn defaults are ridge regression 
+recommendation in Hastie et al. ({helpb pystacked##Hastie2009:2009}, p. 290).
+The scikit-learn defaults are ridge regression 
 for stacking regression and logistic ridge for 
 classification tasks. 
 To use the scikit-learn default, 
@@ -701,7 +700,7 @@ river; 0 otherwise){p_end}
 {synopt:RAD}index of accessibility to radial highways{p_end}
 {synopt:TAX}full-value property-tax rate per $10,000{p_end}
 {synopt:PTRATIO}pupil-teacher ratio by town{p_end}
-{synopt:B}1000(Bk - 0.63)^2 where Bk is the proportion of blacks 
+{synopt:B}1000(Bk - 0.63)^2 where Bk is the proportion Black 
 by town{p_end}
 {synopt:LSTAT}% lower status of the population{p_end}
 
@@ -732,11 +731,11 @@ random forest receives a weight of zero.{p_end}
 
 {pstd}
 Getting the predicted values:{p_end}
-{phang2}. {stata "predict double l, xb"}{p_end}
+{phang2}. {stata "predict double lnr, xb"}{p_end}
 
 {pstd}
 We can also save the predicted values of each base learner:{p_end}
-{phang2}. {stata "predict double l, transform"}{p_end}
+{phang2}. {stata "predict double lnr, transform"}{p_end}
 
 {pstd}
 {ul:Using pipelines (Syntax 1)}
@@ -755,7 +754,7 @@ in Stata are only provided in levels.
 You can verify that you get the same ols and lasso predicted values when 
 creating the polynomials in Stata:
 {p_end}
-{phang2}. {stata "pystacked medv c.(crim-lstat)##c.(crim-lstat), type(regress) pyseed(123) methods(ols lassoic rf)"}{p_end}
+{phang2}. {stata "pystacked medv c.(crim-lstat)# #c.(crim-lstat), type(regress) pyseed(123) methods(ols lassoic rf)"}{p_end}
 {phang2}. {stata "predict b, transf"}{p_end}
 {phang2}. {stata "list a0 b0 a1 b1"}{p_end}
 
@@ -880,8 +879,8 @@ for how to set up Python on your system.
 {pstd}
 Once you have linked Python with Stata,
 check the Python installation path using
-{stata "python query"}.  
-Assuming your Python installation is located in 
+{stata "python query"}.
+For example, if your Python installation is located in 
 /usr/local/bin/python3.9,
 you could update scikit-learn by
 typing "/usr/local/bin/python3.9 -m pip install -U scikit-learn"
