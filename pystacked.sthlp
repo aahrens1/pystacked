@@ -755,7 +755,7 @@ in Stata are only provided in levels.
 You can verify that you get the same ols and lasso predicted values when 
 creating the polynomials in Stata:
 {p_end}
-{phang2}. {stata "pystacked c.($xvars)##c.(#xvals), type(regress) pyseed(123) methods(ols lassoic rf)"}{p_end}
+{phang2}. {stata "pystacked medv c.(crim-lstat)##c.(crim-lstat), type(regress) pyseed(123) methods(ols lassoic rf)"}{p_end}
 {phang2}. {stata "predict b, transf"}{p_end}
 {phang2}. {stata "list a0 b0 a1 b1"}{p_end}
 
@@ -805,7 +805,7 @@ In this example, we are using a convential random forest:
 You can also use pre-defined weights. Here, we assign weights of 0.5 to OLS, 
 .1 to the lasso and, implicitly, .4 to the random foreset.
 {p_end}
-{phang2}. {stata "pystacked lpsa $xvars, type(regress) pyseed(123) methods(ols lassoic rf) pipe1(poly2) pipe2(poly2) voting voteweights(.5 .1)"}{p_end}
+{phang2}. {stata "pystacked $model, type(regress) pyseed(123) methods(ols lassoic rf) pipe1(poly2) pipe2(poly2) voting voteweights(.5 .1)"}{p_end}
 
 {marker example_spam}{...}
 {title:Classification Example using Spam data}
