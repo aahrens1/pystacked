@@ -673,6 +673,14 @@ The following pipelines are currently supported:
 Pipelines can be passed to the base learners via {opt pipe*(string)} 
 (Syntax 1) or {opt pipe:line(string)} (Syntax 2).
 
+{pstd}
+NB: Users should take care when employing pipelines
+that they don't accidentally introduce data leakage.
+For example, a pipeline that transforms the data
+prior to passing the data to a base learner that uses cross-validation
+could do this if the data transformation (e.g., standardizing predictors)
+uses information from the entire dataset.
+
 {marker example_prostate}{...}
 {title:Example using Boston Housing data (Harrison et al., {helpb pystacked##Harrison1978:1978})}
 
@@ -793,7 +801,7 @@ imposes no limit on the number of base learners.
 
 {pstd}
 You can use {cmd:pystacked} with a single base learner. 
-In this example, we are using a convential random forest:
+In this example, we are using a conventional random forest:
 {p_end}
 {phang2}. {stata "pystacked $model, type(regress) pyseed(123) methods(rf)"}{p_end}
 
