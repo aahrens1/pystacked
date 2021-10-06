@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 4oct2020}{...}
+{* *! version 6oct2020}{...}
 {hline}
 {cmd:help pystacked}{right: v0.1}
 {hline}
@@ -177,6 +177,11 @@ of each base learner
 {p_end}
 {synopt:{opt njobs(int)}} 
 number of jobs for parallel computing; default is 1 (no parallel)
+{p_end}
+{synopt:{opt backend(string)}} 
+joblib backend used for parallelization; the default is 'loky' under Linux/MacOS
+under 'threading' for Windows. 
+See {browse "https://scikit-learn.org/stable/modules/generated/sklearn.utils.parallel_backend.html":here} for more information.
 {p_end}
 {synopt:{opt folds(int)}} 
 number of folds used for cross-validation (not relevant for voting); 

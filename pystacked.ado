@@ -1,5 +1,5 @@
 *! pystacked v0.1 (first release)
-*! last edited: 4oct2021
+*! last edited: 6oct2021
 *! authors: aa/ms
 
 program define pystacked, eclass
@@ -87,7 +87,7 @@ version 16.0
 	}
 	
 	if "`backend'"=="" {
-		if "`c(os)'"=="windows" {
+		if "`c(os)'"=="Windows" {
 			local backend threading
 		}
 		else {
