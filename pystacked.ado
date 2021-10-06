@@ -55,6 +55,7 @@ version 16.0
 					pipe10(string asis) ///
 					///
 					showpywarnings ///
+					backend(string) ///
 				]
 
 	** set data signature for pystacked_p;
@@ -85,6 +86,19 @@ version 16.0
 		di as err "votetype not allowed with type(reg). ignored."
 	}
 	
+	if "`backend'"=="" {
+		if "`c(os)'"=="windows" {
+			local backend threading
+		}
+		else {
+			local backend loky
+		}
+	}
+	if "`backend'"!="loky"&"`backend'"!="multiprocessing"&"`backend'"!="threading" {
+		di as err "backend not supported"
+		exit 198
+	}
+
 	if "`votetype'"=="" {
 		local votetype hard
 	}
@@ -194,7 +208,8 @@ version 16.0
 					`njobs' , ///
 					`folds', ///
 					"`nostandardscaler'", ///
-					"`showpywarnings'" ///
+					"`showpywarnings'", ///
+					"`backend'" ///
 					)
 
 	ereturn local cmd				pystacked
@@ -326,7 +341,7 @@ def build_pipeline(pipes):
 
 def run_stacked(type,finalest,methods,yvar,xvars,training,allopt,allpipe,
 	touse,seed,nosavepred,nosavetransform,
-	voting,votetype,voteweights,njobs,nfolds,nostandardscaler,showpywarnings):
+	voting,votetype,voteweights,njobs,nfolds,nostandardscaler,showpywarnings,parbackend):
 	
 	if int(format(sklearn.__version__).split(".")[1])<24 and int(format(sklearn.__version__).split(".")[0])<1:
 		sfi.SFIToolkit.stata('di as err "pystacked requires sklearn 0.24.0 or higher. Please update sklearn."')
@@ -516,7 +531,8 @@ def run_stacked(type,finalest,methods,yvar,xvars,training,allopt,allpipe,
 	# Train model on training data
 	if type=="class":
 		y=y!=0
-	model = model.fit(x,y)
+	with sklearn.utils.parallel_backend(parbackend):
+		model = model.fit(x,y)
 
 	# for NNLS: standardize coefficients to sum to one
 	if voting=="":
