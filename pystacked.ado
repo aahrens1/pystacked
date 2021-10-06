@@ -18,7 +18,7 @@ version 16.0
 				[ ///
 					type(string) /// classification or regression
 					finalest(string) ///
-					njobs(int 1) ///
+					njobs(int 0) ///
 					folds(int 5) ///
 					///
 					///
@@ -360,6 +360,11 @@ def run_stacked(type,finalest,methods,yvar,xvars,training,allopt,allpipe,
 	if showpywarnings=="":
 		import warnings
 		warnings.filterwarnings('ignore') 
+
+	if njobs==0: 
+		nj = None 
+	else: 
+		nj = njobs
 		
 	##############################################################
 	### load data  											   ###
@@ -484,14 +489,14 @@ def run_stacked(type,finalest,methods,yvar,xvars,training,allopt,allpipe,
 		model = StackingRegressor(
 					   estimators=est_list,
 					   final_estimator=fin_est,
-					   n_jobs=njobs,
+					   n_jobs=nj,
 					   cv=nfolds
 				)
 	elif voting=="" and type=="class":
 		model = StackingClassifier(
 					   estimators=est_list,
 					   final_estimator=fin_est,
-					   n_jobs=njobs,
+					   n_jobs=nj,
 					   cv=nfolds
 				)
 	elif voting!="":
@@ -513,13 +518,13 @@ def run_stacked(type,finalest,methods,yvar,xvars,training,allopt,allpipe,
 		if type=="reg":
 			model = VotingRegressor(
 						   estimators=est_list,
-						   n_jobs=njobs,
+						   n_jobs=nj,
 						   weights=vweights
 					)
 		else: 
 			model = VotingClassifier(
 						   estimators=est_list,
-						   n_jobs=njobs, 
+						   n_jobs=nj, 
 						   voting=votetype,
 						   weights=vweights
 					)

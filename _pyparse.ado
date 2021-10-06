@@ -174,7 +174,7 @@ program define parse_LassoLogitCV, rclass
 					solver(string) ///
 					tol(real 1e-4) ///
 					max_iter(integer 100) ///
-					n_jobs(integer -1) ///
+					n_jobs(integer 0) ///
 					norefit ///
 					intercept_scaling(real 1) ///
 					random_state(integer -1) ///
@@ -221,7 +221,7 @@ program define parse_LassoLogitCV, rclass
 		local optstr `optstr' 'max_iter':`max_iter',
 	}
 	** n jobs
-	if `n_jobs'>0 {
+	if `n_jobs'!=0 {
 		local optstr `optstr' 'n_jobs':`n_jobs',
 	}
 	else {
@@ -276,7 +276,7 @@ program define parse_ElasticCV, rclass
 					max_iter(integer 1000) ///
 					tol(real 1e-4) ///
 					cv(integer 5) ///
-					n_jobs(integer -1) ///
+					n_jobs(integer 0) ///
 					POSitive ///
 					random_state(integer -1) ///
 					selection(string) ///
@@ -339,7 +339,7 @@ program define parse_ElasticCV, rclass
 		local optstr `optstr' 'cv':5,
 	}
 	** n jobs
-	if `n_jobs'>0 {
+	if `n_jobs'!=0 {
 		local optstr `optstr' 'n_jobs':`n_jobs',
 	}
 	else {
@@ -442,7 +442,7 @@ program define parse_rfReg, rclass
 					min_impurity_decrease(real 0) ///
 					NOBOOTStrap  ///
 					oob_score  ///
-					n_jobs(integer -1) ///
+					n_jobs(integer 0) ///
 					random_state(integer -1) ///
 					warm_start ///
 					ccp_alpha(real 0) ///
@@ -523,7 +523,7 @@ program define parse_rfReg, rclass
 		local optstr `optstr' 'oob_score':False,
 	}
 	** n jobs
-	if `n_jobs'>0 {
+	if `n_jobs'!=0 {
 		local optstr `optstr' 'n_jobs':`n_jobs',
 	}
 	else {
@@ -584,7 +584,7 @@ program define parse_rfClass, rclass
 					NOBOOTStrap  ///
 					///class_weight(string) ///
 					oob_score  ///
-					n_jobs(integer -1) ///
+					n_jobs(integer 0) ///
 					random_state(integer -1) ///
 					warm_start ///
 					ccp_alpha(real 0) ///
@@ -664,12 +664,12 @@ program define parse_rfClass, rclass
 		local optstr `optstr' 'oob_score':False,
 	}
 	** n jobs
-	if `n_jobs'>0 {
+	if `n_jobs'!=0 {
 		local optstr `optstr' 'n_jobs':`n_jobs',
 	}
 	else {
 		local optstr `optstr' 'n_jobs':None,
-	}	
+	}
 	** random state
 	if `random_state'>0 {
 		local optstr `optstr' 'random_state':`random_state',
