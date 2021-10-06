@@ -1,5 +1,5 @@
 *! pystacked v0.1 (first release)
-*! last edited: 6oct2021
+*! last edited: 6oct2021b
 *! authors: aa/ms
 
 program define pystacked, eclass
@@ -350,8 +350,11 @@ def run_stacked(type,finalest,methods,yvar,xvars,training,allopt,allpipe,
 
 	# Set random seed
 	if seed>0:
-		np.random.seed(seed)
-		
+		#np.random.seed(seed)
+		rng=np.random.RandomState(seed)
+	else: 
+		rng=None
+
 	if nostandardscaler=="":
 		stdscaler = StandardScaler()
 	else: 

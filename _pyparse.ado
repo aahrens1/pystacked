@@ -241,7 +241,7 @@ program define parse_LassoLogitCV, rclass
 		local optstr `optstr' 'random_state':`random_state',
 	}
 	else {
-		local optstr `optstr' 'random_state':None,
+		local optstr `optstr' 'random_state':rng,
 	}
 	** l1 ratios
 	if "`penalty'"=="elasticnet" {
@@ -364,7 +364,7 @@ program define parse_ElasticCV, rclass
 		local optstr `optstr' 'random_state':`random_state',
 	}
 	else {
-		local optstr `optstr' 'random_state':None,
+		local optstr `optstr' 'random_state':rng,
 	}
 	local optstr {`optstr'}
 	local optstr = subinstr("`optstr'",",}","}",.)
@@ -534,7 +534,7 @@ program define parse_rfReg, rclass
 		local optstr `optstr' 'random_state':`random_state',
 	}
 	else {
-		local optstr `optstr' 'random_state':None,
+		local optstr `optstr' 'random_state':rng,
 	}
 	** warm start 
 	if "`warm_start'"!="" {
@@ -675,7 +675,7 @@ program define parse_rfClass, rclass
 		local optstr `optstr' 'random_state':`random_state',
 	}
 	else {
-		local optstr `optstr' 'random_state':None,
+		local optstr `optstr' 'random_state':rng,
 	}
 	** warm start 
 	if "`warm_start'"!="" {
@@ -810,7 +810,7 @@ program define parse_gradboostReg, rclass
 		local optstr `optstr' 'random_state':`random_state',
 	}
 	else {
-		local optstr `optstr' 'random_state':None,
+		local optstr `optstr' 'random_state':rng,
 	}
 	** max features
 	if "`max_features'"=="auto"|"`max_features'"=="sqrt"|"`max_features'"=="log2" {
@@ -956,7 +956,7 @@ program define parse_gradboostClass, rclass
 		local optstr `optstr' 'random_state':`random_state',
 	}
 	else {
-		local optstr `optstr' 'random_state':None,
+		local optstr `optstr' 'random_state':rng,
 	}
 	** max features
 	if "`max_features'"=="auto"|"`max_features'"=="sqrt"|"`max_features'"=="log2" {
@@ -1153,7 +1153,7 @@ program define parse_LinearSVR, rclass
 		local optstr `optstr' 'random_state':`random_state',
 	}
 	else {
-		local optstr `optstr' 'random_state':None,
+		local optstr `optstr' 'random_state':rng,
 	}
 	** max iter
 	if `max_iter'>0 {
@@ -1260,7 +1260,7 @@ program define parse_SVC, rclass
 		local optstr `optstr' 'random_state':`random_state',
 	}
 	else {
-		local optstr `optstr' 'random_state':None,
+		local optstr `optstr' 'random_state':rng,
 	}
 	** return
 	local optstr {`optstr'}
@@ -1329,7 +1329,7 @@ program define parse_LinearSVC, rclass
 		local optstr `optstr' 'random_state':`random_state',
 	}
 	else {
-		local optstr `optstr' 'random_state':None,
+		local optstr `optstr' 'random_state':rng,
 	}
 	** max iter
 	if `max_iter'>0 {
@@ -1456,7 +1456,7 @@ program define parse_MLPReg, rclass
 		local optstr `optstr' 'random_state':`random_state',
 	}
 	else {
-		local optstr `optstr' 'random_state':None,
+		local optstr `optstr' 'random_state':rng,
 	}
 	** tol 
 	if `tol'>=0 {
@@ -1663,7 +1663,7 @@ program define parse_MLPClass, rclass
 		local optstr `optstr' 'random_state':`random_state',
 	}
 	else {
-		local optstr `optstr' 'random_state':None,
+		local optstr `optstr' 'random_state':rng,
 	}
 	** tol 
 	if `tol'>=0 {
