@@ -102,7 +102,7 @@ Options are passed on to base learners via {opt cmdopt1(string)},
 That is, up to 
 10 base learners can be specified and options are passed on in the order in which
 they appear in {opt methods(string)} (see {helpb pystacked##base_learners_opt:Command options}).
-Likewise, the {opt pipe*(string)} option which can be used 
+Likewise, the {opt pipe*(string)} option can be used 
 for pre-processing predictors within Python on the fly (see {helpb pystacked##pipelines:Pipelines}).
 
 {pstd}
@@ -164,9 +164,11 @@ or {it:class(ify)} for classification problems.
 {synopt:{opt final:est(string)}}
 final estimator used to combine base learners. 
 This can be
-{it:nnls} (non-negative least squares, the default) or
+{it:nnls} (non-negative least squares, the default),
+{it:ols} (ordinary least squares) or
 {it:ridge} for (logistic) ridge, which is the
-sklearn default.
+sklearn default. For more information, 
+see {helpb pystacked##section_stacking:here}.
 {p_end}
 {synopt:{opt nosavep:red}} do not save predicted values
 (do not use if {cmd:predict} is used after estimation)
@@ -200,7 +202,9 @@ for replication.
 {synopt:{opt voting}} use voting regressor 
 ({browse "https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.VotingRegressor.html":ensemble.VotingRegressor})
 or voting classifier
-({browse "https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.VotingClassifier.html":ensemble.VotingClassifier}).
+({browse "https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.VotingClassifier.html":ensemble.VotingClassifier}); 
+see {helpb pystacked##section_stacking:here} for a brief 
+explanation.
 {p_end}
 {synopt:{opt votet:ype(string)}} type of voting classifier:
 {it:hard} (default) or {it:soft}
@@ -258,8 +262,8 @@ predicted values for each base learner
 are calculated when {cmd:pystacked}
 is run and stored in Python memory. {cmd:predict} pulls the
 predicted values from Python memory and saves them in 
-Stata memory. This means that no changed on the data
-in Stata memory should be made {it:between}cmd:pystacked} fit
+Stata memory. This means that no changes on the data
+in Stata memory should be made {it:between}cmd:pystacked} call
 and {cmd:predict} call. If changes to the data set are made, 
 {cmd:predict} will return an error. 
 
@@ -267,9 +271,9 @@ and {cmd:predict} call. If changes to the data set are made,
 {title:Stacking}
 
 {pstd}
-Stacking is a way of combining predictions from multiple base learners into
-a final prediction. A final estimator is used to combine the base predictions; 
-see {helpb pystacked##final_estimator:here}. 
+Stacking is a way of combining cross-validated 
+predictions from multiple base learners into
+a final prediction. A final estimator is used to combine the base predictions. 
 
 {pstd}
 The default final predictor for stacking
@@ -279,11 +283,15 @@ The NNLS coefficients are standardized to sum to one.
 Note that in this respect we deviate from 
 the scikit-learn default and follow the 
 recommendation in Hastie et al. ({helpb pystacked##Hastie2009:2009}, p. 290).
-The scikit-learn defaults are ridge regression 
-for stacking regression and logistic ridge for 
-classification tasks. 
+The scikit-learn defaults for the final estimator
+are {browse "https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.RidgeCV.html#sklearn.linear_model.RidgeCV":ridge regression} 
+for stacking regression and 
+{browse:"https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html#sklearn.linear_model.LogisticRegression":logistic ridge}
+for classification tasks. 
 To use the scikit-learn default, 
 use {opt final:est(ridge)}. 
+{cmd:pystacked} also supports ordinary (unconstrained)
+least squares as the final estimator ({opt final:est(ols)}).
 
 {pstd}
 An alternative to stacking is voting. Voting regression uses the weighted 
@@ -301,13 +309,13 @@ The following base learners are supported:
 
 {synoptset 10 tabbed}{...}
 {p2col 5 29 23 2:Base learners}{p_end}
-{p2col 7 29 23 2:{it:ols}}Linear Regression {it:(regression only)}{p_end}
-{p2col 7 29 23 2:{it:logit}}Logistic Regression {it:(classification only)}{p_end}
-{p2col 7 29 23 2:{it:lassoic}}Lasso with IC penalty {it:(regression only)}{p_end}
-{p2col 7 29 23 2:{it:lassocv}}Lasso with CV penalty{p_end}
-{p2col 7 29 23 2:{it:ridgecv}}Ridge with CV penalty{p_end}
-{p2col 7 29 23 2:{it:elasticcv}}Elastic Net with CV penalty{p_end}
-{p2col 7 29 23 2:{it:svm}}Support Vector Machines{p_end}
+{p2col 7 29 23 2:{it:ols}}Linear regression {it:(regression only)}{p_end}
+{p2col 7 29 23 2:{it:logit}}Logistic regression {it:(classification only)}{p_end}
+{p2col 7 29 23 2:{it:lassoic}}Lasso with penalty chosen by AIC/BIC {it:(regression only)}{p_end}
+{p2col 7 29 23 2:{it:lassocv}}Lasso with cross-validated penalty{p_end}
+{p2col 7 29 23 2:{it:ridgecv}}Ridge with cross-validated penalty{p_end}
+{p2col 7 29 23 2:{it:elasticcv}}Elastic net with cross-validated penalty{p_end}
+{p2col 7 29 23 2:{it:svm}}Support vector machines{p_end}
 {p2col 7 29 23 2:{it:gradboost}}Gradient boosting{p_end}
 {p2col 7 29 23 2:{it:rf}}Random forest{p_end}
 {p2col 7 29 23 2:{it:linsvm}}Linear SVM{p_end}
@@ -318,6 +326,9 @@ The base learners can be chosen using the
 {opt methods(lassoic gradboost nnet)}  
 (Syntax 1) or {opt m:ethod(string)}
 options (Syntax 2).
+
+{pstd}
+Please see links in the next section for more information on each method.
 
 {marker base_learners_opt}{...}
 {title:Base learners: Options}
@@ -340,7 +351,7 @@ documentation carefully.
 {ul:Linear regression} {break}
 Methods {it:ols} {break}
 {it:Type:} {it:reg} {break}
-{it:Doc:} {browse "https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html":linear_model.LinearRegression}
+{it:Documentation:} {browse "https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html":linear_model.LinearRegression}
 
 {p 8 8 2}
 {opt nocons:tant}
@@ -754,8 +765,8 @@ We can also save the predicted values of each base learner:{p_end}
 {ul:Using pipelines (Syntax 1)}
 
 {pstd}
-Pipelines allow to pre-process predictors on the fly. For example, 
-linear estimator might perform better if interactions are 
+Pipelines allow pre-processing predictors on the fly. For example, 
+linear estimators might perform better if interactions are 
 provided as inputs. Here, we use interactions and 2nd-order polynomials
 for ols and lasso, but not for the random forest. Note that the base inputs
 in Stata are only provided in levels. 
@@ -770,6 +781,11 @@ creating the polynomials in Stata:
 {phang2}. {stata "pystacked medv c.(crim-lstat)# #c.(crim-lstat), type(regress) pyseed(123) methods(ols lassoic rf)"}{p_end}
 {phang2}. {stata "predict b, transf"}{p_end}
 {phang2}. {stata "list a0 b0 a1 b1"}{p_end}
+
+{pstd}
+Note that the stacking weights are different in the second estimation. 
+This is because we also include 2nd-order polynomials as inputs for the random forest.
+{p_end}
 
 {pstd}
 You can also use the same base learner more than once with different pipelines and/or

@@ -483,6 +483,10 @@ def run_stacked(type,finalest,methods,yvar,xvars,training,allopt,allpipe,
 		fin_est = LinearRegression(fit_intercept=False,positive=True)
 	elif finalest == "ridge" and type == "reg": 
 		fin_est = RidgeCV()
+	elif finalest == "ols" and type == "class": 
+		fin_est = LinearRegressionClassifier()	
+	elif finalest == "ols" and type == "reg": 
+		fin_est = LinearRegression()	
 	else:
 		sfi.SFIToolkit.stata('di as err "final estimator not supported with type()"')
 		#"

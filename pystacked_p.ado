@@ -97,7 +97,7 @@ def post_prediction(pred_var,transform,var_type,touse,pred_type):
 			else: 
 				Data.addVarFloat(pred_var+str(j))
 			transf[touse==0,j]=np.nan
-			Data.setVarLabel(pred_var+str(j),"Prediction"+" "+methods[j])
-			Data.store(var=pred_var+str(j),val=transf[:,j],obs=None)
+			Data.setVarLabel(pred_var+str(j+1),"Prediction"+" "+methods[j])
+			Data.store(var=pred_var+str(j+1),val=transf[:,j],obs=None)
 
 end
