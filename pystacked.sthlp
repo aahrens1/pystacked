@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 6oct2020}{...}
+{* *! version 8oct2020}{...}
 {hline}
 {cmd:help pystacked}{right: v0.1}
 {hline}
@@ -178,7 +178,8 @@ of each base learner
 (do not use if {cmd:predict} with {opt transf:orm} is used after estimation)
 {p_end}
 {synopt:{opt njobs(int)}} 
-number of jobs for parallel computing; default is 1 (no parallel)
+number of jobs for parallel computing. The default is 1 (no parallelization), 
+-1 uses all available CPUs, -2 uses all CPUs minus 1. 
 {p_end}
 {synopt:{opt backend(string)}} 
 joblib backend used for parallelization; the default is 'loky' under Linux/MacOS

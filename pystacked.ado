@@ -1,5 +1,5 @@
 *! pystacked v0.1 (first release)
-*! last edited: 6oct2021b
+*! last edited: 8oct2021
 *! authors: aa/ms
 
 program define pystacked, eclass
@@ -492,6 +492,13 @@ def run_stacked(type,finalest,methods,yvar,xvars,training,allopt,allpipe,
 		#"
 		sfi.SFIToolkit.error(198)
 
+	# if single base learner, use voting with weight = 1
+	if len(methods)==1:
+		voting="voting"
+		voteweights=""
+		sfi.SFIToolkit.stata('di as text "Single base learner: no stacking done."')
+		#"
+
 	if voting=="" and type=="reg":
 		model = StackingRegressor(
 					   estimators=est_list,
@@ -550,14 +557,16 @@ def run_stacked(type,finalest,methods,yvar,xvars,training,allopt,allpipe,
 	if voting=="":
 		if finalest == "nnls":
 			model.final_estimator_.coef_ = model.final_estimator_.coef_ / model.final_estimator_.coef_.sum()
-
 		w = model.final_estimator_.coef_
 		if len(w.shape)==1:
 			sfi.Matrix.store("e(weights)",w)
 		else:
 			sfi.Matrix.store("e(weights)",w[0])
-	else: 
+	elif vweights!=None: 
 		w = np.array(vweights)
+		sfi.Matrix.store("e(weights)",w)
+	else:
+		w = np.array([1/len(methods)]*len(methods))
 		sfi.Matrix.store("e(weights)",w)
 		
 	sfi.Macro.setGlobal("e(base_est)"," ".join(methods))  
