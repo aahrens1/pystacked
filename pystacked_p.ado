@@ -93,9 +93,9 @@ def post_prediction(pred_var,transform,var_type,touse,pred_type):
 		ncol = transf.shape[1]
 		for j in range(ncol):
 			if var_type == "double":
-				Data.addVarDouble(pred_var+str(j))
+				Data.addVarDouble(pred_var+str(j+1))
 			else: 
-				Data.addVarFloat(pred_var+str(j))
+				Data.addVarFloat(pred_var+str(j+1))
 			transf[touse==0,j]=np.nan
 			Data.setVarLabel(pred_var+str(j+1),"Prediction"+" "+methods[j])
 			Data.store(var=pred_var+str(j+1),val=transf[:,j],obs=None)

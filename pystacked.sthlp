@@ -183,7 +183,7 @@ number of jobs for parallel computing. The default is 1 (no parallelization),
 {p_end}
 {synopt:{opt backend(string)}} 
 joblib backend used for parallelization; the default is 'loky' under Linux/MacOS
-under 'threading' for Windows. 
+and 'threading' under Windows. 
 See {browse "https://scikit-learn.org/stable/modules/generated/sklearn.utils.parallel_backend.html":here} for more information.
 {p_end}
 {synopt:{opt folds(int)}} 
@@ -264,7 +264,7 @@ are calculated when {cmd:pystacked}
 is run and stored in Python memory. {cmd:predict} pulls the
 predicted values from Python memory and saves them in 
 Stata memory. This means that no changes on the data
-in Stata memory should be made {it:between}cmd:pystacked} call
+in Stata memory should be made {it:between} {cmd:pystacked} call
 and {cmd:predict} call. If changes to the data set are made, 
 {cmd:predict} will return an error. 
 
@@ -287,7 +287,7 @@ recommendation in Hastie et al. ({helpb pystacked##Hastie2009:2009}, p. 290).
 The scikit-learn defaults for the final estimator
 are {browse "https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.RidgeCV.html#sklearn.linear_model.RidgeCV":ridge regression} 
 for stacking regression and 
-{browse:"https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html#sklearn.linear_model.LogisticRegression":logistic ridge}
+{browse: "https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html#sklearn.linear_model.LogisticRegression":logistic ridge}
 for classification tasks. 
 To use the scikit-learn default, 
 use {opt final:est(ridge)}. 
@@ -306,6 +306,7 @@ form the final prediction.
 {marker base_learners}{...}
 {title:Supported base learners}
 
+{pstd}
 The following base learners are supported:
 
 {synoptset 10 tabbed}{...}
@@ -435,7 +436,7 @@ Note: {it:lassocv} uses {opt penalty(l1)}, {it:ridgecv} uses {opt penalty(l2)},
 other options are the same.
 
 {pstd}
-{ul:Random forest} {break}
+{ul:Random forest classifier} {break}
 Method: {it:rf} {break}
 Type: {it:class} {break}
 Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html":ensemble.RandomForestClassifier}
@@ -459,7 +460,9 @@ Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklear
 {opt max_samples(integer)}
 
 {pstd}
-Type: {it:class} {break}
+{ul:Random forest regressor} {break}
+Method: {it:rf} {break}
+Type: {it:reg} {break}
 Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestRegressor.html":ensemble.RandomForestRegressor}
 
 {p 8 8 2}
@@ -481,7 +484,7 @@ Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklear
 {opt max_samples(integer)} 
 
 {pstd}
-{ul:Gradient boosting} {break}
+{ul:Gradient boosted classification trees} {break}
 Method: {it:gradboost} {break}
 Type: {it:class} {break}
 Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingClassifier.html":ensemble.GradientBoostingClassifier}
@@ -508,6 +511,8 @@ Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklear
 {opt ccp_alpha(real 0)}
 
 {pstd}
+{ul:Gradient boosted regression trees} {break}
+Method: {it:gradboost} {break}
 Type: {it:reg} {break}
 Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingRegressor.html":ensemble.GradientBoostingRegressor}
 
@@ -534,7 +539,7 @@ Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklear
 {opt ccp_alpha(real 0)}
 
 {pstd}
-{ul:Linear SVM} {break}
+{ul:Linear SVM (SVC)} {break}
 Method: {it:linsvm} {break}
 Type: {it:class} {break} 
 Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.svm.LinearSVC.html":svm.LinearSVC}
@@ -551,6 +556,8 @@ Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklear
 {opt max_iter(integer 1000)}
 
 {pstd}
+{ul:Linear SVM (SVR)} {break}
+Method: {it:linsvm} {break}
 Type: {it:reg} {break} 
 Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.svm.LinearSVR.html":svm.LinearSVR}
 
@@ -566,8 +573,8 @@ Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklear
 {opt max_iter(integer 1000)}
 
 {pstd}
-{ul:SVM} {break}
-Method: {it:linsvm} {break}
+{ul:SVM (SVR)} {break}
+Method: {it:svm} {break}
 Type: {it:class} {break}
 Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVR.html":svm.SVR}
 
@@ -584,6 +591,8 @@ Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklear
 {opt max_iter(integer -1)}
 
 {pstd}
+{ul:SVM (SVC)} {break}
+Method: {it:svm} {break}
 Type: {it:reg} {break}
 Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html":svm.SVC}
 
@@ -604,7 +613,7 @@ Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklear
 {opt random_state(integer -1)}
 
 {pstd}
-{ul:Neural net (Multi-layer Perceptron)} {break}
+{ul:Neural net classifier (Multi-layer Perceptron)} {break}
 Method: {it:nnet} {break}
 Type: {it:class} {break}
 Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.neural_network.MLPClassifier.html":sklearn.neural_network.MLPClassifier}
@@ -635,6 +644,8 @@ Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklear
 {opt max_fun(integer 15000)}
 
 {pstd}
+{ul:Neural net regressor (Multi-layer Perceptron)} {break}
+Method: {it:nnet} {break}
 Type: {it:reg} {break}
 Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.neural_network.MLPRegressor.html":sklearn.neural_network.MLPRegressor}
 
@@ -756,11 +767,11 @@ random forest receives a weight of zero.{p_end}
 
 {pstd}
 Getting the predicted values:{p_end}
-{phang2}. {stata "predict double lnr, xb"}{p_end}
+{phang2}. {stata "predict double yhat, xb"}{p_end}
 
 {pstd}
 We can also save the predicted values of each base learner:{p_end}
-{phang2}. {stata "predict double lnr, transform"}{p_end}
+{phang2}. {stata "predict double yhat, transform"}{p_end}
 
 {pstd}
 {ul:Using pipelines (Syntax 1)}
@@ -781,7 +792,7 @@ creating the polynomials in Stata:
 {p_end}
 {phang2}. {stata "pystacked medv c.(crim-lstat)# #c.(crim-lstat), type(regress) pyseed(123) methods(ols lassoic rf)"}{p_end}
 {phang2}. {stata "predict b, transf"}{p_end}
-{phang2}. {stata "list a0 b0 a1 b1"}{p_end}
+{phang2}. {stata "list a1 b1 a2 b2"}{p_end}
 
 {pstd}
 Note that the stacking weights are different in the second estimation. 
@@ -905,22 +916,31 @@ see {browse "https://archive.ics.uci.edu/ml/datasets/spambase"}.
 a Python installation and scikit-learn (0.24 or higher).
 See {helpb python:help python} and {browse "https://blog.stata.com/2020/08/18/stata-python-integration-part-1-setting-up-stata-to-use-python/":the Stata blog} 
 for how to set up Python on your system.
-
-{pstd}
-Once you have linked Python with Stata,
-check the Python installation path using
-{stata "python query"}.
-For example, if your Python installation is located in 
-/usr/local/bin/python3.9,
-you could update scikit-learn by
-typing "/usr/local/bin/python3.9 -m pip install -U scikit-learn"
-into the terminal, or directly in Stata (restart required):{p_end}
-{phang2}. {stata "shell /usr/local/bin/python3.9 -m pip install -U scikit-learn"}{p_end}
+Installing {browse "https://www.anaconda.com/":Anaconda} is 
+in most cases the easiest way of installing Python including
+all required packages.
 
 {pstd}
 You can check your scikit-learn version using:{p_end}
 {phang2}. {stata "python: import sklearn"}{p_end}
 {phang2}. {stata "python: sklearn.__version__"}{p_end}
+
+{pstd}
+{it:Updating scikit-learn:}
+If you use Anaconda, update scikit-learn through your
+Anaconda Python distribution. Make sure that you have 
+linked Stata with the correct Python installation using 
+{stata "python query"}.
+
+{pstd}
+If you use pip, you can update scikit-learn by
+typing "<Python path> -m pip install -U scikit-learn"
+into the {it:terminal}, or directly in Stata:{p_end}
+{phang2}. {stata "shell <Python path> -m pip install -U scikit-learn"}{p_end}
+
+{pstd}
+Note that you might need to restart Stata for
+changes to your Python installation to take effect.
 
 {pstd}
 For further information, see
@@ -961,6 +981,8 @@ can also post on Statalist (please tag @Achim Ahrens).
 {cmd:pystacked} took some inspiration from Michael Droste's 
 {browse "https://github.com/mdroste/stata-pylearn":pylearn}, 
 which implements other Sklearn programs for Stata.
+Thanks to Jan Ditzen for testing an early version 
+of the program. All remaining errors are our own. 
 
 {title:Citation}
 

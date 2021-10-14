@@ -337,6 +337,8 @@ def build_pipeline(pipes):
 			ll.append(('poly2',PolynomialFeatures(degree=2,include_bias=False)))
 		elif pipes[p]=="poly3":
 			ll.append(('poly3',PolynomialFeatures(degree=3,include_bias=False)))
+		elif pipes[p]=="interact":
+			ll.append(('interact',PolynomialFeatures(include_bias=False,interaction_only=True)))
 	return ll
 
 def run_stacked(type,finalest,methods,yvar,xvars,training,allopt,allpipe,
