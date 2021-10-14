@@ -1379,7 +1379,8 @@ program define parse_MLPReg, rclass
 	local optstr
 	*** hidden layer sizes
 	if "`hidden_layer_sizes'"!="" {
-		local hidden_layer_sizes 
+		// commented out - seems to clear the macro unnecessarily
+		// local hidden_layer_sizes 
 		foreach i of numlist `hidden_layer_sizes' {
 			local hidden_layer_sizes `hidden_layer_sizes'`i',
 		}

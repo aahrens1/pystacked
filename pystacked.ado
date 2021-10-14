@@ -243,7 +243,7 @@ end
 
 program define syntax_parse, rclass
 
-	syntax [anything] , type(string)
+	syntax [anything(everything)] , type(string)
 
 	// save y x and if/in	
 	tokenize `anything', parse("|")
