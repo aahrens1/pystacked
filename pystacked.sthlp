@@ -762,8 +762,7 @@ Stacking regression with lasso, random forest and gradient boosting.
 
 {pstd}
 The weights determine how much each base learner contributes
-to the final stacking prediction. In this example, 
-random forest receives a weight of zero.{p_end}
+to the final stacking prediction.{p_end}
 
 {pstd}
 Getting the predicted values:{p_end}
