@@ -3,7 +3,7 @@
 *! authors: aa/ms
 
 // parent program
-program define pystacked, eclass sortpreserve
+program define pystacked, eclass
 	version 16.0
 
 	// no replay - must estimate
