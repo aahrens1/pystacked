@@ -1,8 +1,139 @@
 *! pystacked v0.1 (first release)
-*! last edited: 8oct2021
+*! last edited: 25oct2021
 *! authors: aa/ms
 
-program define pystacked, eclass
+// parent program
+program define pystacked, eclass sortpreserve
+	version 16.0
+
+	// no replay
+	if ~replay() {
+		_pystacked `0'
+	}
+	
+	// display results
+	tempname weights_mat
+	mat `weights_mat'=e(weights)
+	di as text "{hline 17}{c TT}{hline 21}"
+	di as text "  Method" _c
+	di as text _col(18) "{c |}      Weight"
+	di as text "{hline 17}{c +}{hline 21}"
+	local j = 1
+	local base_est `e(base_est)'
+	foreach b of local base_est {
+		di as text "  `b'" _c
+		di as text _col(18) "{c |}" _c
+		di as res %15.7f el(`weights_mat',`j',1)
+		local j = `j'+1
+	}
+
+	// parse and check for graph options
+	syntax [anything]  [if] [in] [aweight fweight] , 	///
+				[										///
+					GRAPH1								/// vanilla option, abbreviates to "graph"
+					graph(string)						/// for passing options to graph combine
+					lgraph(string)						/// for passing options to the graphs of the learners
+					HOLDOUT1							/// vanilla option, abbreviates to "holdout"
+					holdout(varname)					///
+					*									///
+				]
+	
+	// graph block
+	if "`graph'`graph1'" ~= "" {
+		pystacked_graph_table, `holdout1' holdout(`holdout') goptions(`graph') lgoptions(`lgraph')
+	}
+	
+		
+end
+
+// graph and/or table
+program define pystacked_graph_table
+	version 16.0
+	syntax ,							///
+				[						///
+					HOLDOUT1			/// vanilla option, abbreviates to "holdout"
+					holdout(varname)	///
+					goptions(string)	///
+					lgoptions(string)	///
+				]
+		
+	if "`holdout'`holdout1'"=="" {
+		local title In-sample Predictions
+		tempvar touse
+		qui gen `touse' = e(sample)
+	}
+	else {
+		local title Out-of-sample Predictions
+		// holdout variable provided, or default of not-in-sample?
+		if "`holdout'"=="" {
+			// default
+			tempvar touse
+			qui gen `touse' = 1-e(sample)
+		}
+		else {
+			// check that holdout variable doesn't overlap with e(sample)
+			qui count if e(sample) & `holdout' > 0
+			if r(N) > 0 {
+				di as err "error - holdout and estimation samples overlap"
+				exit 198
+			}
+			local touse `holdout'
+		}
+	}
+
+	local nlearners	= e(mcount)
+	local learners = e(base_est)
+	local y = e(depvar)
+	// weights
+	tempname weights
+	mat `weights' = e(weights)
+
+	tempvar stacking_p stacking_r
+	predict double `stacking_p'
+	label var `stacking_p' "Prediction: Stacking Regressor"
+	qui gen double `stacking_r' = `y' - `stacking_p'
+	// not ideal, will need to drop by hand later
+	qui predict double `stacking_p', transform
+	forvalues i=1/`nlearners' {
+		local lname : word `i' of `learners'
+		label var `stacking_p'`i' "Prediction: `lname'"
+		tempvar stacking_r`i'
+		qui gen double `stacking_r`i'' = `y' - `stacking_p'`i'
+	}
+
+	tempname g0
+	twoway (scatter `stacking_p' `y') (line `y' `y') if `touse'		///
+		,															///
+		legend(off)													///
+		title("STACKING")											///
+		`lgoptions'													///
+		nodraw														///
+		name(`g0', replace)
+	local glist `g0'
+	forvalues i=1/`nlearners' {
+		tempname g`i'
+		local lname : word `i' of `learners'
+		local w : di %5.3f el(`weights',`i',1)
+		twoway (scatter `stacking_p'`i' `y') (line `y' `y') if `touse'	///
+			,															///
+			legend(off)													///
+			title("Learner: `lname'")									///
+			`lgoptions'													///
+			subtitle("weight = `w'")									///
+			nodraw														///
+			name(`g`i'', replace)
+		local glist `glist' `g`i''
+	}
+
+	graph combine `glist'										///
+					,											///
+					title("`title'")							///
+					`goptions'
+
+end
+
+// main program
+program define _pystacked, eclass
 version 16.0
 
 	tokenize "`0'", parse(",")
@@ -185,7 +316,12 @@ version 16.0
 	gettoken yvar xvars : varlist
 	gettoken yvar_t xvars_t : varlist_t
 
-	ereturn clear
+	// no longer needed
+	// ereturn clear
+	// create esample variable for posting (disappears from memory after posting)
+	tempvar esample
+	qui gen byte `esample' = `touse'
+	ereturn post, depname(`yvar') esample(`esample') obs(`N')
 
 	python: run_stacked(	///
 					"`type'",	///
@@ -223,21 +359,6 @@ version 16.0
 		ereturn local pipe`i' `pipe`i''		
 	}
 	ereturn scalar mcount = `mcount'
-
-	tempname weights_mat
-	mat `weights_mat'=e(weights)
-	di as text "{hline 17}{c TT}{hline 21}"
-	di as text "  Method" _c
-	di as text _col(18) "{c |}      Weight"
-	di as text "{hline 17}{c +}{hline 21}"
-	local j = 1
-	local base_est `e(base_est)'
-	foreach b of local base_est {
-		di as text "  `b'" _c
-		di as text _col(18) "{c |}" _c
-		di as res %15.7f el(`weights_mat',`j',1)
-		local j = `j'+1
-	}
 
 end
 
@@ -378,7 +499,8 @@ def run_stacked(type,finalest,methods,yvar,xvars,training,allopt,allpipe,
 	# Load into Pandas data frame
 	y = np.array(sfi.Data.get(yvar,selectvar=touse))
 	x = np.array(sfi.Data.get(xvars,selectvar=touse))
-	x_0 = np.array(sfi.Data.get(xvars))
+	# If missings are present, need to specify they are NaNs.
+	x_0 = np.array(sfi.Data.get(xvars,missingval=np.nan))
 
 	##############################################################
 	### prepare fit											   ###
