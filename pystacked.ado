@@ -187,6 +187,13 @@ version 16.0
 					///
 					showpywarnings ///
 					backend(string) ///
+					///
+					/// options for graphing; ignore here
+					GRAPH1								/// vanilla option, abbreviates to "graph"
+					graph(string)						/// for passing options to graph combine
+					lgraph(string)						/// for passing options to the graphs of the learners
+					HOLDOUT1							/// vanilla option, abbreviates to "holdout"
+					holdout(varname)					///
 				]
 
 	** set data signature for pystacked_p;
