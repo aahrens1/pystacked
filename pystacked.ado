@@ -6,7 +6,7 @@
 program define pystacked, eclass sortpreserve
 	version 16.0
 
-	// no replay
+	// no replay - must estimate
 	if ~replay() {
 		_pystacked `0'
 	}
@@ -14,47 +14,85 @@ program define pystacked, eclass sortpreserve
 	// display results
 	tempname weights_mat
 	mat `weights_mat'=e(weights)
+	local base_est `e(base_est)'
+	local nlearners	= e(mcount)
+
 	di as text "{hline 17}{c TT}{hline 21}"
 	di as text "  Method" _c
 	di as text _col(18) "{c |}      Weight"
 	di as text "{hline 17}{c +}{hline 21}"
-	local j = 1
-	local base_est `e(base_est)'
-	foreach b of local base_est {
+
+	forvalues j=1/`nlearners' {
+		local b : word `j' of `base_est'
 		di as text "  `b'" _c
 		di as text _col(18) "{c |}" _c
 		di as res %15.7f el(`weights_mat',`j',1)
-		local j = `j'+1
 	}
 
-	// parse and check for graph options
+	// parse and check for graph/table options
 	syntax [anything]  [if] [in] [aweight fweight] , 	///
 				[										///
 					GRAPH1								/// vanilla option, abbreviates to "graph"
 					graph(string)						/// for passing options to graph combine
 					lgraph(string)						/// for passing options to the graphs of the learners
+					table								/// 
 					HOLDOUT1							/// vanilla option, abbreviates to "holdout"
 					holdout(varname)					///
 					*									///
 				]
 	
-	// graph block
-	if "`graph'`graph1'" ~= "" {
-		pystacked_graph_table, `holdout1' holdout(`holdout') goptions(`graph') lgoptions(`lgraph')
+	// graph/table block
+	if "`graph'`graph1'`table'" ~= "" {
+		pystacked_graph_table,							///
+			`holdout1' holdout(`holdout')				///
+			`graph1'									///
+			goptions(`graph') lgoptions(`lgraph')		///
+			`table'
+	}
+	
+	// print table
+	if "`table'" ~= "" {
+		tempname m w
+		mat `m' = r(m)
+		
+		di
+		di as text "MSPE: In-Sample and Out-of-Sample"
+		di as text "{hline 17}{c TT}{hline 35}"
+		di as text "  Method" _c
+		di as text _col(18) "{c |} Weight   In-Sample   Out-of-Sample"
+		di as text "{hline 17}{c +}{hline 35}"
+		
+		di as text "  STACKING" _c
+		di as text _col(18) "{c |}" _c
+		di as text "    .  " _c
+		di as res  _col(30) %7.3f el(`m',1,1) _col(44) %7.3f el(`m',1,2)
+		
+		forvalues j=1/`nlearners' {
+			local b : word `j' of `base_est'
+			di as text "  `b'" _c
+			di as text _col(18) "{c |}" _c
+			di as res _col(20) %5.3f el(`weights_mat',`j',1) _c
+			di as res _col(30) %7.3f el(`m',`j',1) _col(44) %7.3f el(`m',`j',2)
+		}
+
+		// add to estimation macros
+		ereturn mat mspe = `m'
 	}
 	
 		
 end
 
 // graph and/or table
-program define pystacked_graph_table
+program define pystacked_graph_table, rclass
 	version 16.0
 	syntax ,							///
 				[						///
 					HOLDOUT1			/// vanilla option, abbreviates to "holdout"
 					holdout(varname)	///
+					graph				///
 					goptions(string)	///
 					lgoptions(string)	///
+					table				/// 
 				]
 		
 	if "`holdout'`holdout1'"=="" {
@@ -64,11 +102,19 @@ program define pystacked_graph_table
 	}
 	else {
 		local title Out-of-sample Predictions
-		// holdout variable provided, or default of not-in-sample?
+		// holdout variable provided, or default = not-in-sample?
 		if "`holdout'"=="" {
 			// default
 			tempvar touse
 			qui gen `touse' = 1-e(sample)
+			// check number of OOS obs
+			qui count if `touse'
+			if r(N)==0 {
+				di as err "error - no observations in holdout sample"
+				exit 198
+			}
+			di
+			di as text "Number of holdout observations:" as res %5.0f r(N)
 		}
 		else {
 			// check that holdout variable doesn't overlap with e(sample)
@@ -82,11 +128,11 @@ program define pystacked_graph_table
 	}
 
 	local nlearners	= e(mcount)
-	local learners = e(base_est)
-	local y = e(depvar)
+	local learners	`e(base_est)'
+	local y			`e(depvar)'
 	// weights
 	tempname weights
-	mat `weights' = e(weights)
+	mat `weights'	= e(weights)
 
 	tempvar stacking_p stacking_r
 	predict double `stacking_p'
@@ -101,35 +147,71 @@ program define pystacked_graph_table
 		qui gen double `stacking_r`i'' = `y' - `stacking_p'`i'
 	}
 
-	tempname g0
-	twoway (scatter `stacking_p' `y') (line `y' `y') if `touse'		///
-		,															///
-		legend(off)													///
-		title("STACKING")											///
-		`lgoptions'													///
-		nodraw														///
-		name(`g0', replace)
-	local glist `g0'
-	forvalues i=1/`nlearners' {
-		tempname g`i'
-		local lname : word `i' of `learners'
-		local w : di %5.3f el(`weights',`i',1)
-		twoway (scatter `stacking_p'`i' `y') (line `y' `y') if `touse'	///
+	if "`graph'"~="" {
+		twoway (scatter `stacking_p' `y') (line `y' `y') if `touse'		///
 			,															///
 			legend(off)													///
-			title("Learner: `lname'")									///
+			title("STACKING")											///
 			`lgoptions'													///
-			subtitle("weight = `w'")									///
 			nodraw														///
-			name(`g`i'', replace)
-		local glist `glist' `g`i''
+			name(`g0', replace)
+		local glist `g0'
+		forvalues i=1/`nlearners' {
+			tempname g`i'
+			local lname : word `i' of `learners'
+			local w : di %5.3f el(`weights',`i',1)
+			twoway (scatter `stacking_p'`i' `y') (line `y' `y') if `touse'	///
+				,															///
+				legend(off)													///
+				title("Learner: `lname'")									///
+				`lgoptions'													///
+				subtitle("weight = `w'")									///
+				nodraw														///
+				name(`g`i'', replace)
+			local glist `glist' `g`i''
+		}
+	
+		graph combine `glist'										///
+						,											///
+						title("`title'")							///
+						`goptions'
 	}
+	
+	if "`table'"~="" {
+		
+		// save in matrix
+		tempname m m_in m_out
+		
+		// column for in-sample MSPE
+		qui sum `stacking_r' if e(sample)
+		mat `m_in' = r(sd) * sqrt( (r(N)-1)/r(N) )
+		forvalues i=1/`nlearners' {
+			qui sum `stacking_r`i'' if e(sample)
+			mat `m_in' = `m_in' \ (r(sd) * sqrt( (r(N)-1)/r(N) ))
+		}
+		
+		// column for OOS MSPE
+		if "`holdout'`holdout1'"~="" {
+			// touse is the holdout indicator
+			qui sum `stacking_r' if `touse'
+			mat `m_out' = r(sd) * sqrt( (r(N)-1)/r(N) )
+			forvalues i=1/`nlearners' {
+				qui sum `stacking_r`i'' if `touse'
+				mat `m_out' = `m_out' \ (r(sd) * sqrt( (r(N)-1)/r(N) ))
+			}
+		}
+		else {
+			mat `m_out' = J(`nlearners'+1,1,.)
+		}
+		
+		mat `m' = `m_in' , `m_out'
+		mat colnames `m' = MSPE_in MSPE_out
+		mat rownames `m' = STACKING `learners'
+		
+		return matrix m = `m'
 
-	graph combine `glist'										///
-					,											///
-					title("`title'")							///
-					`goptions'
-
+	}
+	
 end
 
 // main program
@@ -192,6 +274,7 @@ version 16.0
 					GRAPH1								/// vanilla option, abbreviates to "graph"
 					graph(string)						/// for passing options to graph combine
 					lgraph(string)						/// for passing options to the graphs of the learners
+					table								/// 
 					HOLDOUT1							/// vanilla option, abbreviates to "holdout"
 					holdout(varname)					///
 				]
