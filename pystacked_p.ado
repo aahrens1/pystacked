@@ -1,5 +1,5 @@
 *! pystacked v0.1 (first release)
-*! last edited: 8oct2021
+*! last edited: 26oct2021
 *! authors: aa/ms
 
 program define pystacked_p, rclass
@@ -81,6 +81,13 @@ def post_prediction(pred_var,transform,var_type,touse,pred_type):
 
 	touse = np.array(Data.get(touse))
 
+	if type=="class" and pred_type=="":
+		pred_type="pr"
+	elif type=="class" and pred_type=="xb":
+		sfi.SFIToolkit.stata('di as err "pr not supported with classification"')
+		#"
+		sfi.SFIToolkit.error(198)
+
 	if transform=="":
 		if type=="class" and pred_type == "pr":
 			from __main__ import predict_proba as pred
@@ -97,6 +104,8 @@ def post_prediction(pred_var,transform,var_type,touse,pred_type):
 			else: 
 				Data.addVarFloat(pred_var+str(j+1))
 			transf[touse==0,j]=np.nan
+			if pred_type=="class":
+				transf[:,j]=transf[:,j]>0.5
 			Data.setVarLabel(pred_var+str(j+1),"Prediction"+" "+methods[j])
 			Data.store(var=pred_var+str(j+1),val=transf[:,j],obs=None)
 
