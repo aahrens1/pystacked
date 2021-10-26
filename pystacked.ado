@@ -44,8 +44,8 @@ program define pystacked, eclass
 				[										///
 					GRAPH1								/// vanilla option, abbreviates to "graph"
 					HISTogram							/// report histogram instead of default ROC
-					graph(string)						/// for passing options to graph combine
-					lgraph(string)						/// for passing options to the graphs of the learners
+					graph(string asis)					/// for passing options to graph combine
+					lgraph(string asis)					/// for passing options to the graphs of the learners
 					TABle								/// 
 					HOLDOUT1							/// vanilla option, abbreviates to "holdout"
 					holdout(varname)					///
@@ -53,7 +53,7 @@ program define pystacked, eclass
 				]
 	
 	// graph/table block
-	if "`graph'`graph1'`lgraph'`histogram'`table'" ~= "" {
+	if `"`graph'`graph1'`lgraph'`histogram'`table'"' ~= "" {
 		pystacked_graph_table,							///
 			`holdout1' holdout(`holdout')				///
 			`graph1'									///
@@ -140,19 +140,19 @@ end
 // graph and/or table
 program define pystacked_graph_table, rclass
 	version 16.0
-	syntax ,							///
-				[						///
-					HOLDOUT1			/// vanilla option, abbreviates to "holdout"
-					holdout(varname)	///
-					GRAPH1				/// vanilla option, abbreviates to "graph"
-					HISTogram			/// report histogram instead of default ROC
-					goptions(string)	///
-					lgoptions(string)	///
-					table				/// 
+	syntax ,								///
+				[							///
+					HOLDOUT1				/// vanilla option, abbreviates to "holdout"
+					holdout(varname)		///
+					GRAPH1					/// vanilla option, abbreviates to "graph"
+					HISTogram				/// report histogram instead of default ROC
+					goptions(string asis)	///
+					lgoptions(string asis)	///
+					table					/// 
 				]
 
 	// any graph options implies graph
-	local graphflag = "`graph1'`histogram'`goptions'`lgoptions'"~=""
+	local graphflag = `"`graph1'`histogram'`goptions'`lgoptions'"'~=""
 	
 	if "`holdout'`holdout1'"=="" {
 		local title In-sample
@@ -492,8 +492,8 @@ version 16.0
 					/// options for graphing; ignore here
 					GRAPH1								/// vanilla option, abbreviates to "graph"
 					HISTogram							/// report histogram instead of default ROC
-					graph(string)						/// for passing options to graph combine
-					lgraph(string)						/// for passing options to the graphs of the learners
+					graph(string asis)					/// for passing options to graph combine
+					lgraph(string asis)					/// for passing options to the graphs of the learners
 					table								/// 
 					HOLDOUT1							/// vanilla option, abbreviates to "holdout"
 					holdout(varname)					///

@@ -1,4 +1,5 @@
 cap cd "/Users/kahrens/MyProjects/pystacked/cert"
+cap cd "/Users/ecomes/Documents/GitHub/pystacked/cert"
 
 cap log close
 log using "log_cs_pystacked_reg.txt", text replace
@@ -7,6 +8,9 @@ clear all
  
 if "`c(username)'"=="kahrens" {
 	adopath + "/Users/kahrens/MyProjects/pystacked"
+}
+else if "`c(username)'"=="ecomes" {
+	adopath + "/Users/ecomes/Documents/GitHub/pystacked/cert"
 }
 else {
 	net install pystacked, ///
@@ -62,8 +66,8 @@ pystacked lpsa c.($xvars)##c.($xvars), ///
 predict b, transf
 list lpsa a* b*
 
-assert a0==b0
 assert a1==b1
+assert a2==b2
 
 *******************************************************************************
 *** try various combinations of estimators							 		***
@@ -105,7 +109,7 @@ list yhat if _n < 10
 predict double t, transform  
 
 mat W = e(weights)
-gen myhat = t0*el(W,1,1)+t1*el(W,2,1)+t2*el(W,3,1)
+gen myhat = t1*el(W,1,1)+t2*el(W,2,1)+t3*el(W,3,1)
 
 assert reldif(yhat,myhat)<0.0001
 
@@ -126,6 +130,114 @@ replace lcavol = 2 * lcavol
 
 cap predict double yhat, xb
 assert _rc != 0
+
+*******************************************************************************
+*** check table option												 		***
+*******************************************************************************
+
+clear
+insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
+
+set seed 124345
+
+// holdout sample 1
+cap drop h1
+gen h1 = _n>60
+// holdout sample 2
+cap drop h2
+gen h2 = _n>40
+
+// postestimation syntax
+
+// full sample
+pystacked lpsa $xvars, ///
+						 type(regress) pyseed(243) ///
+						 methods(ols lassoic rf) ///
+						 pipe1(poly2) pipe2(poly2)
+pystacked, table
+
+// with holdout sample
+pystacked lpsa $xvars if _n<50, ///
+						 type(regress) pyseed(243) ///
+						 methods(ols lassoic rf) ///
+						 pipe1(poly2) pipe2(poly2)
+// default holdout - all available obs
+pystacked, table holdout
+// specified holdout sample
+pystacked, table holdout(h1)
+// holdout sample overlaps with estimation sample
+cap noi pystacked, table holdout(h2)
+assert _rc != 0
+
+// as pystacked option
+pystacked lpsa $xvars if _n<50, ///
+						 type(regress) pyseed(243) ///
+						 methods(ols lassoic rf) ///
+						 pipe1(poly2) pipe2(poly2) ///
+						 table holdout
+
+// syntax 2
+pystacked lpsa $xvars if _n<50 ///
+						|| method(ols) || method(lassoic) || method(rf), ///
+						 type(regress) pyseed(243) ///
+						 methods(ols lassoic rf)
+pystacked, table holdout(h1)
+
+*******************************************************************************
+*** check graph option												 		***
+*******************************************************************************
+
+clear
+insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
+
+set seed 124345
+
+// holdout sample 1
+cap drop h1
+gen h1 = _n>60
+// holdout sample 2
+cap drop h2
+gen h2 = _n>40
+
+// postestimation syntax
+
+// full sample
+pystacked lpsa $xvars, ///
+						 type(regress) pyseed(243) ///
+						 methods(ols lassoic rf) ///
+						 pipe1(poly2) pipe2(poly2)
+// in-sample predictions
+pystacked, graph
+
+// with holdout sample
+pystacked lpsa $xvars if _n<50, ///
+						 type(regress) pyseed(243) ///
+						 methods(ols lassoic rf) ///
+						 pipe1(poly2) pipe2(poly2)
+// in-sample predictions
+pystacked, graph
+// default holdout - all available obs
+pystacked, graph holdout
+// specified holdout sample
+pystacked, graph holdout(h1)
+// graphing options - combined graph
+pystacked, graph(subtitle("subtitle goes here")) holdout
+// graphing options - learner graphs
+pystacked, lgraph(ytitle("ytitle goes here")) holdout
+
+// as pystacked option
+pystacked lpsa $xvars if _n<50, ///
+						 type(regress) pyseed(243) ///
+						 methods(ols lassoic rf) ///
+						 pipe1(poly2) pipe2(poly2) ///
+						 graph holdout
+
+// syntax 2
+pystacked lpsa $xvars if _n<50 ///
+						|| method(ols) || method(lassoic) || method(rf), ///
+						 type(regress) pyseed(243) ///
+						 methods(ols lassoic rf)
+pystacked, graph holdout
 
 
 log close

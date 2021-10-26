@@ -1,12 +1,16 @@
 cap cd "/Users/kahrens/MyProjects/pystacked/cert"
+cap cd "/Users/ecomes/Documents/GitHub/pystacked/cert"
 
 cap log close
 log using "log_cs_pystacked_class.txt", text replace
 
 clear all
- 
+
 if "`c(username)'"=="kahrens" {
 	adopath + "/Users/kahrens/MyProjects/pystacked"
+}
+else if "`c(username)'"=="ecomes" {
+	adopath + "/Users/ecomes/Documents/GitHub/pystacked/cert"
 }
 else {
 	net install pystacked, ///
@@ -64,8 +68,77 @@ list yhat if _n < 10
 predict double t, transform  
 
 mat W = e(weights)
-gen myhat = t0*el(W,1,1)+t1*el(W,2,1)+t2*el(W,3,1)
+gen myhat = t1*el(W,1,1)+t2*el(W,2,1)+t3*el(W,3,1)
 
 assert reldif(yhat,myhat)<0.0001
+
+
+*******************************************************************************
+*** check table option 														***
+*******************************************************************************
+
+insheet using https://archive.ics.uci.edu/ml/machine-learning-databases/spambase/spambase.data, clear comma
+
+// holdout sample 1
+cap drop h1
+gen h1 = _n>3000
+
+// full sample
+pystacked v58 v1-v57, type(class) pyseed(123) methods(logit rf gradboost)
+pystacked, table
+
+// with holdout sample
+pystacked v58 v1-v57 if _n<2000, type(class) pyseed(123) methods(logit rf gradboost)
+// default holdout - all available obs
+pystacked, table holdout
+// specified holdout sample
+pystacked, table holdout(h1)
+
+// as pystacked option
+pystacked v58 v1-v57 if _n<2000, type(class) pyseed(123) ///
+	methods(logit rf gradboost) table holdout
+
+// syntax 2
+pystacked v58 v1-v57 if _n<2000 || method(logit) || method(rf) || method(gradboost), ///
+	type(class) pyseed(123)
+pystacked, table holdout
+
+
+*******************************************************************************
+*** check graph option 														***
+*******************************************************************************
+
+insheet using https://archive.ics.uci.edu/ml/machine-learning-databases/spambase/spambase.data, clear comma
+
+// holdout sample 1
+cap drop h1
+gen h1 = _n>3000
+
+// full sample
+pystacked v58 v1-v57, type(class) pyseed(123) methods(logit rf gradboost)
+pystacked, graph
+
+// with holdout sample
+pystacked v58 v1-v57 if _n<2000, type(class) pyseed(123) methods(logit rf gradboost)
+// default holdout - all available obs
+pystacked, graph holdout
+// specified holdout sample
+pystacked, graph holdout(h1)
+// histogram option
+pystacked, graph hist holdout
+// graphing options - combined graph
+pystacked, graph(subtitle("subtitle goes here")) holdout
+// graphing options - learner graphs
+pystacked, lgraph(percent) hist holdout
+
+// as pystacked option
+pystacked v58 v1-v57 if _n<2000, type(class) pyseed(123) ///
+	methods(logit rf gradboost) graph holdout
+
+// syntax 2
+pystacked v58 v1-v57 if _n<2000 || method(logit) || method(rf) || method(gradboost), ///
+	type(class) pyseed(123)
+pystacked, graph holdout
+
 
 log close
