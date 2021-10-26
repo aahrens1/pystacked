@@ -1,5 +1,5 @@
 *! pystacked v0.1 (first release)
-*! last edited: 25oct2021
+*! last edited: 26oct2021
 *! authors: aa/ms
 
 // parent program
@@ -30,9 +30,20 @@ program define pystacked, eclass
 	}
 
 	// parse and check for graph/table options
+	// code borrowed from _pstacked below - needed to accommodate syntax #2
+	if ~replay() {
+		tokenize "`0'", parse(",")
+		local beforecomma `1'
+		macro shift
+		local restargs `*'
+		tokenize `beforecomma', parse("|")
+		local mainargs `1'
+		local 0 "`mainargs' `restargs'"
+	}
 	syntax [anything]  [if] [in] [aweight fweight] , 	///
 				[										///
 					GRAPH1								/// vanilla option, abbreviates to "graph"
+					HISTogram							/// report histogram instead of default ROC
 					graph(string)						/// for passing options to graph combine
 					lgraph(string)						/// for passing options to the graphs of the learners
 					table								/// 
@@ -42,10 +53,11 @@ program define pystacked, eclass
 				]
 	
 	// graph/table block
-	if "`graph'`graph1'`table'" ~= "" {
+	if "`graph'`graph1'`lgraph'`histogram'`table'" ~= "" {
 		pystacked_graph_table,							///
 			`holdout1' holdout(`holdout')				///
 			`graph1'									///
+			`histogram'									///
 			goptions(`graph') lgoptions(`lgraph')		///
 			`table'
 	}
@@ -132,12 +144,16 @@ program define pystacked_graph_table, rclass
 				[						///
 					HOLDOUT1			/// vanilla option, abbreviates to "holdout"
 					holdout(varname)	///
-					GRAPH1				///
+					GRAPH1				/// vanilla option, abbreviates to "graph"
+					HISTogram			/// report histogram instead of default ROC
 					goptions(string)	///
 					lgoptions(string)	///
 					table				/// 
 				]
-		
+
+	// any graph options implies graph
+	local graphflag = "`graph1'`histogram'`goptions'`lgoptions'"~=""
+	
 	if "`holdout'`holdout1'"=="" {
 		local title In-sample
 		tempvar touse
@@ -166,6 +182,13 @@ program define pystacked_graph_table, rclass
 				di as err "error - holdout and estimation samples overlap"
 				exit 198
 			}
+			qui count if `holdout' > 0 & `holdout' < .
+			if r(N) == 0 {
+				di as err "error - no observations in holdout sample"
+				exit 198
+			}
+			di
+			di as text "Number of holdout observations:" as res %5.0f r(N)
 			local touse `holdout'
 		}
 	}
@@ -196,7 +219,7 @@ program define pystacked_graph_table, rclass
 		}
 	
 		tempname g0
-		if "`graph1'"~="" {
+		if `graphflag' {
 			twoway (scatter `stacking_p' `y') (line `y' `y') if `touse'		///
 				,															///
 				legend(off)													///
@@ -264,9 +287,6 @@ program define pystacked_graph_table, rclass
 	else {
 		// classification problem
 		
-		// complete graph title
-		local title `title' ROC
-		
 		tempvar stacking_p stacking_c
 		predict double `stacking_p', pr
 		label var `stacking_p' "Predicted Probability: Stacking Regressor"
@@ -281,7 +301,10 @@ program define pystacked_graph_table, rclass
 			label var `stacking_c'`i' "Predicted Classification: `lname'"
 		}
 		
-		if "`graph1'"~="" {
+		if `graphflag' & "`histogram'"=="" {							/// default is ROC
+			// complete graph title
+			local title `title' ROC
+		
 			tempname g0
 			roctab `y' `stacking_p',									///
 				graph													///
@@ -296,6 +319,44 @@ program define pystacked_graph_table, rclass
 				roctab `y' `stacking_p'`i',								///
 					graph												///
 					title("Learner: `lname'")							///
+					`lgoptions'											///
+					nodraw												///
+					name(`g`i'', replace)
+				local glist `glist' `g`i''
+			}
+			graph combine `glist'										///
+							,											///
+							title("`title'")							///
+							`goptions'
+		}
+		else if "`histogram'"~="" {										/// histogram
+			// complete graph title
+			local title `title' predicted probabilities
+
+			// user may have specified something other than freq
+			local 0 , `lgoptions'
+			syntax , [ DENsity FRACtion FREQuency percent * ]
+			if "`density'`fraction'`frequency'`percent'"== "" {
+				// default is frequency
+				local ystyle freq
+			}
+			
+			tempname g0
+			qui histogram `stacking_p',									///
+				title("STACKING")										///
+				`ystyle'												///
+				start(0)												///
+				`lgoptions'												///
+				nodraw													///
+				name(`g0', replace)
+			local glist `g0'
+			forvalues i=1/`nlearners' {
+				tempname g`i'
+				local lname : word `i' of `learners'
+				qui histogram `stacking_p'`i',							///
+					title("Learner: `lname'")							///
+					`ystyle'											///
+					start(0)											///
 					`lgoptions'											///
 					nodraw												///
 					name(`g`i'', replace)
@@ -430,6 +491,7 @@ version 16.0
 					///
 					/// options for graphing; ignore here
 					GRAPH1								/// vanilla option, abbreviates to "graph"
+					HISTogram							/// report histogram instead of default ROC
 					graph(string)						/// for passing options to graph combine
 					lgraph(string)						/// for passing options to the graphs of the learners
 					table								/// 
