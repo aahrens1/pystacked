@@ -523,17 +523,6 @@ version 16.0
 		local finalest nnls
 	}
 
-	if "`votetype'"!=""&"`type'"=="reg" {
-		di as err "votetype not allowed with type(reg). ignored."
-	}
-	if "`votetype'"==""&"`type'"=="class" {
-		local votetype hard
-	}
-	if "`votetype'"!="hard"&"`votetype'"!="soft"&"`votetype'"!="" {
-		di as err "votetype(`votetype') not supported"
-		exit 198
-	}
-
 	if "`backend'"=="" {
 		if "`c(os)'"=="Windows" {
 			local backend threading
@@ -547,13 +536,21 @@ version 16.0
 		exit 198
 	}
 
-	if "`votetype'"=="" {
-		local votetype hard
+	if "`votetype'"!="" {
+		local voting voting
 	}
-	else if "`votetype'"!="hard"&"`votetype'"!="soft" {
-		di as error "votetype(`votetype') not allowed"
-		error 198
+	if "`voteweights'"!="" {
+		local voting voting
 	}
+	if "`voting'"!="" {
+		if "`votetype'"=="" {
+			local votetype hard
+		}
+		else if "`votetype'"!="hard"&"`votetype'"!="soft" {
+			di as error "votetype(`votetype') not allowed"
+			error 198
+		}
+	} 
 
 	if (`doublebarsyntax'==0)&("`methods'"=="") {
 		if ("`type'"=="reg") {
