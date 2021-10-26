@@ -426,7 +426,14 @@ version 16.0
 	if "`votetype'"!=""&"`type'"=="reg" {
 		di as err "votetype not allowed with type(reg). ignored."
 	}
-	
+	if "`votetype'"==""&"`type'"=="class" {
+		local votetype hard
+	}
+	if "`votetype'"!="hard"&"`votetype'"!="soft"&"`votetype'"!="" {
+		di as err "votetype(`votetype') not supported"
+		exit 198
+	}
+
 	if "`backend'"=="" {
 		if "`c(os)'"=="Windows" {
 			local backend threading
@@ -831,6 +838,7 @@ def run_stacked(type,finalest,methods,yvar,xvars,training,allopt,allpipe,
 	if len(methods)==1:
 		voting="voting"
 		voteweights=""
+		votetype="soft"
 		sfi.SFIToolkit.stata('di as text "Single base learner: no stacking done."')
 		#"
 
@@ -930,7 +938,7 @@ def run_stacked(type,finalest,methods,yvar,xvars,training,allopt,allpipe,
 		pred[x0_hasnan] = np.nan
 		__main__.predict = pred
 
-	if nosavepred == "" and type =="class":
+	if nosavepred == "" and type =="class" and votetype!="hard":
 		pred_proba = model.predict_proba(x_0)
 		# Set any predictions that should be missing to missing (NaN)
 		pred[x0_hasnan] = np.nan
