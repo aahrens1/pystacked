@@ -51,7 +51,7 @@ program define pystacked, eclass
 	}
 	
 	// print MSPE table for regression problem
-	if "`table'" ~= "" & "`e(class)'"=="reg" {
+	if "`table'" ~= "" & "`e(type)'"=="reg" {
 		tempname m w
 		mat `m' = r(m)
 		
@@ -79,8 +79,48 @@ program define pystacked, eclass
 		ereturn mat mspe = `m'
 	}
 	
-	// confusion matrix not yet implemented
-	if "`table'" ~= "" & "`e(class)'"=="class" {
+	// print confusion matrix for classification problem
+	if "`table'" ~= "" & "`e(type)'"=="class" {
+		tempname m w
+		mat `m' = r(m)
+		
+		di
+		di as text "Confusion matrix: In-Sample and Out-of-Sample"
+		di as text "{hline 17}{c TT}{hline 42}"
+		di as text "  Method" _c
+		di as text _col(18) "{c |} Weight      In-Sample       Out-of-Sample"
+		di as text _col(18) "{c |}             0       1         0       1  "
+		di as text "{hline 17}{c +}{hline 42}"
+		
+		// di as text "  STACKING" _c
+		// di as text _col(16) "0 {c |}" _c
+		// di as text "    .  " _c
+		// di as res  _col(27) %7.0f 1234567 _col(35) %7.0f 1234567 _col(45) %7.0f 1234567 _col(53) %7.0f 1234567
+		di as text "  STACKING" _c
+		di as text _col(16) "0 {c |}" _c
+		di as text "    .  " _c
+		di as res  _col(27) %7.0f el(`m',1,1) _col(35) %7.0f el(`m',1,2) _col(45) %7.0f el(`m',1,3) _col(53) %7.0f el(`m',1,4)
+		di as text "  STACKING" _c
+		di as text _col(16) "1 {c |}" _c
+		di as text "    .  " _c
+		di as res  _col(27) %7.0f el(`m',2,1) _col(35) %7.0f el(`m',2,2) _col(45) %7.0f el(`m',2,3) _col(53) %7.0f el(`m',2,4)
+		
+		forvalues j=1/`nlearners' {
+			local b : word `j' of `base_est'
+			di as text "  `b'" _c
+			di as text _col(16) "0 {c |}" _c
+			di as res  _col(20) %5.3f el(`weights_mat',`j',1) _c
+			local r = 2*`j' + 1
+			di as res  _col(27) %7.0f el(`m',`r',1) _col(35) %7.0f el(`m',`r',2) _col(45) %7.0f el(`m',`r',3) _col(53) %7.0f el(`m',`r',4)
+			di as text "  `b'" _c
+			di as text _col(16) "1 {c |}" _c
+			di as res  _col(20) %5.3f el(`weights_mat',`j',1) _c
+			local r = 2*`j' + 2
+			di as res  _col(27) %7.0f el(`m',`r',1) _col(35) %7.0f el(`m',`r',2) _col(45) %7.0f el(`m',`r',3) _col(53) %7.0f el(`m',`r',4)
+		}
+		
+		// add to estimation macros
+		ereturn mat confusion = `m'
 	}
 	
 end
@@ -272,8 +312,6 @@ program define pystacked_graph_table, rclass
 			// save in matrix
 			tempname m mrow
 			
-			tab `y' `stacking_c' if e(sample)
-			
 			// stacking rows
 			forvalues r=0/1 {
 				qui count if `y'==`r' & `stacking_c'==0 & e(sample)
@@ -326,8 +364,8 @@ program define pystacked_graph_table, rclass
 			}
 			mat rownames `m' = `rnames'
 			mat colnames `m' = in_0 in_1 out_0 out_1
-			mat list `m'
-			* return matrix m = `m'
+			
+			return matrix m = `m'
 	
 		}
 	}
