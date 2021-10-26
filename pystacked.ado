@@ -46,7 +46,7 @@ program define pystacked, eclass
 					HISTogram							/// report histogram instead of default ROC
 					graph(string)						/// for passing options to graph combine
 					lgraph(string)						/// for passing options to the graphs of the learners
-					table								/// 
+					TABle								/// 
 					HOLDOUT1							/// vanilla option, abbreviates to "holdout"
 					holdout(varname)					///
 					*									///
