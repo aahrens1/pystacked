@@ -1379,16 +1379,15 @@ program define parse_MLPReg, rclass
 	local optstr
 	*** hidden layer sizes
 	if "`hidden_layer_sizes'"!="" {
-		// commented out - seems to clear the macro unnecessarily
-		// local hidden_layer_sizes 
+		local hidden_layer_sizes_all
 		foreach i of numlist `hidden_layer_sizes' {
-			local hidden_layer_sizes `hidden_layer_sizes'`i',
+			local hidden_layer_sizes_all `hidden_layer_sizes_all'`i',
 		}
 	} 
 	else {
-		local hidden_layer_sizes 100,
+		local hidden_layer_sizes_all 100,
 	}
-	local optstr `optstr' 'hidden_layer_sizes':(`hidden_layer_sizes'),
+	local optstr `optstr' 'hidden_layer_sizes':(`hidden_layer_sizes_all'),
 	*** activation
 	if "`activation'"=="identity"|"`activation'"=="logistic"|"`activation'"=="tanh"|"`activation'"=="relu" {
 		local optstr `optstr' 'activation':'`activation'',
@@ -1587,15 +1586,15 @@ program define parse_MLPClass, rclass
 	local optstr
 	*** hidden layer sizes
 	if "`hidden_layer_sizes'"!="" {
-		local hidden_layer_sizes 
+		local hidden_layer_sizes_all
 		foreach i of numlist `hidden_layer_sizes' {
-			local hidden_layer_sizes `hidden_layer_sizes'`i',
+			local hidden_layer_sizes_all `hidden_layer_sizes_all'`i',
 		}
 	} 
 	else {
-		local hidden_layer_sizes 100,
+		local hidden_layer_sizes_all 100,
 	}
-	local optstr `optstr' 'hidden_layer_sizes':(`hidden_layer_sizes'),
+	local optstr `optstr' 'hidden_layer_sizes':(`hidden_layer_sizes_all'),
 	*** activation
 	if "`activation'"=="identity"|"`activation'"=="logistic"|"`activation'"=="tanh"|"`activation'"=="relu" {
 		local optstr `optstr' 'activation':'`activation'',
