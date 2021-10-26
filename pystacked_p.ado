@@ -104,9 +104,11 @@ def post_prediction(pred_var,transform,var_type,touse,pred_type):
 			else: 
 				Data.addVarFloat(pred_var+str(j+1))
 			transf[touse==0,j]=np.nan
-			if pred_type=="class":
-				transf[:,j]=transf[:,j]>0.5
+			print(pred_type)
 			Data.setVarLabel(pred_var+str(j+1),"Prediction"+" "+methods[j])
-			Data.store(var=pred_var+str(j+1),val=transf[:,j],obs=None)
+			if pred_type=="class":
+				Data.store(var=pred_var+str(j+1),val=transf[:,j]>0.5,obs=None)
+			else: 
+				Data.store(var=pred_var+str(j+1),val=transf[:,j],obs=None)
 
 end
