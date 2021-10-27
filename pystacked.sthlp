@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 8oct2020}{...}
+{* *! version 27oct2021}{...}
 {hline}
 {cmd:help pystacked}{right: v0.1}
 {hline}
@@ -43,8 +43,8 @@ for how to set up Python for Stata on your system.
 	{helpb pystacked##syntax_overview:Syntax overview}
 	{helpb pystacked##syntax1:Syntax 1}
 	{helpb pystacked##syntax2:Syntax 2}
-	{helpb pystacked##syntax2:Other options}
-	{helpb pystacked##otheropts:Predictions}
+	{helpb pystacked##otheropts:Other options}
+	{helpb pystacked##postestimation:Postestimation and prediction options}
 	{helpb pystacked##section_stacking:Stacking}
 	{helpb pystacked##base_learners:Supported base learners}
 	{helpb pystacked##base_learners_opt:Base learners: Options}
@@ -218,8 +218,69 @@ ensure that sum(weights)=1.
 {p_end}
 {synoptline}
 
-{marker prediction}{...}
-{title:Prediction}
+{marker postestimation}{...}
+{title:Postestimation and prediction options}
+
+{pstd}
+{ul:Postestimation tables}
+
+{pstd}
+After estimation, {opt pystacked} can report a table of in-sample
+and, optionally, out-of-sample (holdout sample) performance
+for both the stacking regression and the base learners.
+For regression problems, the table reports the MSPE (mean squared prediction error);
+for classification problems, a confusion matrix is reported.
+The default holdout sample used for out-of-sample performance with the {opt holdout} option
+is all observations not included in the estimation.
+Alternatively, the user can specify the holdout sample explicitly
+using the syntax {opt holdout(varname)}.
+The table can be requested postestimation as below,
+or as part of the {opt pystacked} estimation command.
+
+{pstd}
+Table syntax:
+
+{p 8 14 2}
+{cmd:pystacked} {bind:[{cmd:,}}
+{opt tab:le}
+{opt holdout}[{cmd:(}{it:varname}{cmd:)}]
+]
+
+{pstd}
+{ul:Postestimation graphs}
+
+{pstd}
+{opt pystacked} can also report graphs of in-sample
+and, optionally, out-of-sample (holdout sample) performance
+for both the stacking regression and the base learners.
+For regression problems, the graphs compare predicted vs actual values of {it:depvar}.
+For classification problems, the default is to report ROC curves;
+optionally, histograms of predicted probabilities are reported.
+As with the {opt table} option, the default holdout sample used for out-of-sample performance
+is all observations not included in the estimation,
+but the user can instead specify the holdout sample explicitly.
+The table can be requested postestimation as below,
+or as part of the {opt pystacked} estimation command.
+
+{pstd}
+The {opt graph} option on its own reports the graphs using {opt psytack}'s default settings.
+Because graphs are produced using Stata's {helpb twoway}, {helpb roctab} and {helpb histogram} commands,
+the user can control either the combined graph ({opt graph(options)})
+or the individual learner graphs ({opt lgraph(options)}) appear by passing options to these commands.
+
+{pstd}
+Graph syntax:
+
+{p 8 14 2}
+{cmd:pystacked} {bind:[{cmd:,}}
+{opt graph}[{cmd:(}{it:options}{cmd:)}]
+{opt lgraph}[{cmd:(}{it:options}{cmd:)}]
+{opt hist:ogram}
+{opt holdout}[{cmd:(}{it:varname}{cmd:)}]
+]
+
+{pstd}
+{ul:Prediction}
 
 {pstd}
 To get predicted values:
@@ -765,6 +826,21 @@ The weights determine how much each base learner contributes
 to the final stacking prediction.{p_end}
 
 {pstd}
+Request the MSPE table (in-sample only):{p_end}
+{phang2}. {stata "pystacked, table"}{p_end}
+
+{pstd}
+Re-estimate using the first 400 observations, and
+request the MSPE table. Both in-sample and
+the default holdout sample (all unused observations) are reported.:{p_end}
+{phang2}. {stata "pystacked $model if _n<=400, type(regress) pyseed(123) methods(lassoic rf gradboost)"}{p_end}
+{phang2}. {stata "pystacked, table holdout"}{p_end}
+
+{pstd}
+Graph predicted vs actual for the holdout sample:{p_end}
+{phang2}. {stata "pystacked, graph holdout"}{p_end}
+
+{pstd}
 Getting the predicted values:{p_end}
 {phang2}. {stata "predict double yhat, xb"}{p_end}
 
@@ -904,9 +980,21 @@ see {browse "https://archive.ics.uci.edu/ml/datasets/spambase"}.
 {phang2}. {stata "predict spam, class"}{p_end}
 {phang2}. {stata "predict spam_p, pr"}{p_end}
 
-{pstd}Confusion matrix.{p_end}
-{phang2}. {stata "tab spam v58 if _n<=2000, cell"}{p_end}
-{phang2}. {stata "tab spam v58 if _n>2000, cell"}{p_end}
+{pstd}Confusion matrix, just in-sample and both in- and out-of-sample.{p_end}
+{phang2}. {stata "pystacked, table"}{p_end}
+{phang2}. {stata "pystacked, table holdout"}{p_end}
+
+{pstd}Confusion matrix for a specified holdout sample.{p_end}
+{phang2}. {stata "gen h = _n>3000"}{p_end}
+{phang2}. {stata "pystacked, table holdout(h)"}{p_end}
+
+{pstd}ROC curves for the default holdout sample. Specify a subtitle for the combined graph.{p_end}
+{phang2}. {stata "pystacked, graph(subtitle(Spam data)) holdout"}{p_end}
+
+{pstd}Predicted probabilites ({opt hist} option) for the default holdout sample.
+Specify number of bins for the individual learner graphs.{p_end}
+{phang2}. {stata "pystacked, graph hist lgraph(bin(20)) holdout"}{p_end}
+
 
 {marker installation}{title:Installation}
 
