@@ -1,5 +1,5 @@
 v 3
-d pystacked: Stacking regression in Stata
+d pystacked: Stacking regression and classification in Stata
 f pystacked.ado
 f _pyparse.ado
 f pystacked_p.ado

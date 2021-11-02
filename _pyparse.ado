@@ -1,5 +1,5 @@
-*! pystacked v0.1 (first release)
-*! last edited: 6oct2021
+*! pystacked v0.2 (first release)
+*! last edited: 2nov2021
 *! authors: aa/ms
 
 program _pyparse 
