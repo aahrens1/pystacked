@@ -1,7 +1,7 @@
 {smcl}
-{* *! version 2nov2021}{...}
+{* *! version 8dec2021}{...}
 {hline}
-{cmd:help pystacked}{right: v0.2}
+{cmd:help pystacked}{right: v0.2.1}
 {hline}
 
 {title:Title}
@@ -263,7 +263,7 @@ The table can be requested postestimation as below,
 or as part of the {opt pystacked} estimation command.
 
 {pstd}
-The {opt graph} option on its own reports the graphs using {opt psytack}'s default settings.
+The {opt graph} option on its own reports the graphs using {opt pystacked}'s default settings.
 Because graphs are produced using Stata's {helpb twoway}, {helpb roctab} and {helpb histogram} commands,
 the user can control either the combined graph ({opt graph(options)})
 or the individual learner graphs ({opt lgraph(options)}) appear by passing options to these commands.

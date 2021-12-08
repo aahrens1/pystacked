@@ -1,5 +1,5 @@
-*! pystacked v0.2 (first release)
-*! last edited: 2nov2021
+*! pystacked v0.2.1
+*! last edited: 8Dec2021
 *! authors: aa/ms
 
 // parent program
@@ -10,24 +10,12 @@ program define pystacked, eclass
 	if ~replay() {
 		_pystacked `0'
 	}
-	
-	// display results
+
+	// save for display results
 	tempname weights_mat
 	mat `weights_mat'=e(weights)
 	local base_est `e(base_est)'
 	local nlearners	= e(mcount)
-
-	di as text "{hline 17}{c TT}{hline 21}"
-	di as text "  Method" _c
-	di as text _col(18) "{c |}      Weight"
-	di as text "{hline 17}{c +}{hline 21}"
-
-	forvalues j=1/`nlearners' {
-		local b : word `j' of `base_est'
-		di as text "  `b'" _c
-		di as text _col(18) "{c |}" _c
-		di as res %15.7f el(`weights_mat',`j',1)
-	}
 
 	// parse and check for graph/table options
 	// code borrowed from _pstacked below - needed to accommodate syntax #2
@@ -52,6 +40,22 @@ program define pystacked, eclass
 					*									///
 				]
 	
+	// display results
+	if `"`graph'`graph1'`lgraph'`histogram'`table'"' == "" {
+
+		di as text "{hline 17}{c TT}{hline 21}"
+		di as text "  Method" _c
+		di as text _col(18) "{c |}      Weight"
+		di as text "{hline 17}{c +}{hline 21}"
+
+		forvalues j=1/`nlearners' {
+			local b : word `j' of `base_est'
+			di as text "  `b'" _c
+			di as text _col(18) "{c |}" _c
+			di as res %15.7f el(`weights_mat',`j',1)
+		}
+	}
+
 	// graph/table block
 	if `"`graph'`graph1'`lgraph'`histogram'`table'"' ~= "" {
 		pystacked_graph_table,							///
@@ -84,7 +88,7 @@ program define pystacked, eclass
 			di as text "  `b'" _c
 			di as text _col(18) "{c |}" _c
 			di as res _col(20) %5.3f el(`weights_mat',`j',1) _c
-			di as res _col(30) %7.3f el(`m',`j',1) _col(44) %7.3f el(`m',`j',2)
+			di as res _col(30) %7.3f el(`m',`j'+1,1) _col(44) %7.3f el(`m',`j'+1,2)
 		}
 
 		// add to estimation macros
@@ -172,7 +176,6 @@ program define pystacked_graph_table, rclass
 				di as err "error - no observations in holdout sample"
 				exit 198
 			}
-			di
 			di as text "Number of holdout observations:" as res %5.0f r(N)
 		}
 		else {
@@ -187,7 +190,6 @@ program define pystacked_graph_table, rclass
 				di as err "error - no observations in holdout sample"
 				exit 198
 			}
-			di
 			di as text "Number of holdout observations:" as res %5.0f r(N)
 			local touse `holdout'
 		}
