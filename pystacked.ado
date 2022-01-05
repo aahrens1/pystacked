@@ -88,7 +88,7 @@ program define pystacked, eclass
 			di as text "  `b'" _c
 			di as text _col(18) "{c |}" _c
 			di as res _col(20) %5.3f el(`weights_mat',`j',1) _c
-			di as res _col(30) %7.3f el(`m',`j'+1,1) _col(44) %7.3f el(`m',`j'+1,2)
+			di as res _col(30) %7.3f el(`m',`j',1) _col(44) %7.3f el(`m',`j',2)
 		}
 
 		// add to estimation macros
