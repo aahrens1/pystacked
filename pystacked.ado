@@ -499,6 +499,7 @@ version 16.0
 					table								/// 
 					HOLDOUT1							/// vanilla option, abbreviates to "holdout"
 					holdout(varname)					///
+					SParse								///
 				]
 
 	** set data signature for pystacked_p;
@@ -661,7 +662,8 @@ version 16.0
 					`folds', ///
 					"`nostandardscaler'", ///
 					"`showpywarnings'", ///
-					"`backend'" ///
+					"`backend'", ///
+					"`sparse'" ///
 					)
 
 	ereturn local cmd		pystacked
@@ -737,7 +739,7 @@ python:
 import sfi
 from sklearn.pipeline import make_pipeline,Pipeline
 from sklearn.neural_network import MLPRegressor,MLPClassifier
-from sklearn.preprocessing import StandardScaler,PolynomialFeatures
+from sklearn.preprocessing import StandardScaler,PolynomialFeatures,OneHotEncoder
 from sklearn.impute import SimpleImputer,KNNImputer
 from sklearn.linear_model import LassoLarsIC,LassoCV,LogisticRegression,LogisticRegressionCV,LinearRegression
 from sklearn.linear_model import RidgeCV,ElasticNetCV
@@ -745,7 +747,9 @@ from sklearn.ensemble import StackingRegressor,StackingClassifier
 from sklearn.ensemble import VotingRegressor,VotingClassifier
 from sklearn.ensemble import RandomForestRegressor,RandomForestClassifier
 from sklearn.ensemble import GradientBoostingRegressor,GradientBoostingClassifier
+from sklearn.base import TransformerMixin
 from sklearn.svm import LinearSVR,LinearSVC,SVC,SVR
+from scipy.sparse import coo_matrix,csr_matrix,issparse
 import numpy as np
 import scipy 
 import sys
@@ -759,12 +763,24 @@ class LinearRegressionClassifier(LinearRegression):
     def predict_proba(self, X):
     	return self._decision_function(X)
 
+class SparseTransformer(TransformerMixin):
+    def fit(self, X, y=None, **fit_params):
+        return self
+    def transform(self, X, y=None, **fit_params):
+        return csr_matrix(X)
+
 def build_pipeline(pipes):
 	ll = []
 	pipes = pipes.split()
 	for p in range(len(pipes)):
 		if pipes[p]=="stdscaler":
 			ll.append(('stdscaler',StandardScaler()))
+		elif pipes[p]=="dense":
+			ll.append(('dense',DenseTransformer()))
+		elif pipes[p]=="sparse":
+			ll.append(('sparse',SparseTransformer()))
+		elif pipes[p]=="onehot":
+			ll.append(('onehot',OneHotEncoder(sparse=False)))
 		elif pipes[p]=="minmaxscaler":
 			ll.append(('minmaxscaler',MinMaxScaler()))
 		elif pipes[p]=="medianimputer":
@@ -781,7 +797,7 @@ def build_pipeline(pipes):
 
 def run_stacked(type,finalest,methods,yvar,xvars,training,allopt,allpipe,
 	touse,seed,nosavepred,nosavetransform,
-	voting,votetype,voteweights,njobs,nfolds,nostandardscaler,showpywarnings,parbackend):
+	voting,votetype,voteweights,njobs,nfolds,nostandardscaler,showpywarnings,parbackend,sparse):
 	
 	if int(format(sklearn.__version__).split(".")[1])<24 and int(format(sklearn.__version__).split(".")[0])<1:
 		sfi.SFIToolkit.stata('di as err "pystacked requires sklearn 0.24.0 or higher. Please update sklearn."')
@@ -813,11 +829,14 @@ def run_stacked(type,finalest,methods,yvar,xvars,training,allopt,allpipe,
 	### load data  											   ###
 	##############################################################	
 
-	# Load into Pandas data frame
 	y = np.array(sfi.Data.get(yvar,selectvar=touse))
 	x = np.array(sfi.Data.get(xvars,selectvar=touse))
 	# If missings are present, need to specify they are NaNs.
 	x_0 = np.array(sfi.Data.get(xvars,missingval=np.nan))
+
+	if sparse!="coo":
+		x = coo_matrix(x).tocsc()
+		#x = csr_matrix(x)
 
 	##############################################################
 	### prepare fit											   ###
