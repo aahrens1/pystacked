@@ -775,6 +775,8 @@ def build_pipeline(pipes):
 	for p in range(len(pipes)):
 		if pipes[p]=="stdscaler":
 			ll.append(('stdscaler',StandardScaler()))
+		elif pipes[p]=="stdscaler0":
+			ll.append(('stdscaler',StandardScaler(with_mean=False)))
 		elif pipes[p]=="dense":
 			ll.append(('dense',DenseTransformer()))
 		elif pipes[p]=="sparse":
