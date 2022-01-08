@@ -836,7 +836,7 @@ def run_stacked(type,finalest,methods,yvar,xvars,training,allopt,allpipe,
 	# If missings are present, need to specify they are NaNs.
 	x_0 = np.array(sfi.Data.get(xvars,missingval=np.nan))
 
-	if sparse!="coo":
+	if sparse!="":
 		x = coo_matrix(x).tocsc()
 		#x = csr_matrix(x)
 
