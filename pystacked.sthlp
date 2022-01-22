@@ -1,7 +1,7 @@
 {smcl}
-{* *! version 8dec2021}{...}
+{* *! version 22Jan2022}{...}
 {hline}
-{cmd:help pystacked}{right: v0.2.1}
+{cmd:help pystacked}{right: v0.3.0}
 {hline}
 
 {title:Title}
@@ -49,6 +49,7 @@ for how to set up Python for Stata on your system.
 	{helpb pystacked##base_learners:Supported base learners}
 	{helpb pystacked##base_learners_opt:Base learners: Options}
 	{helpb pystacked##pipelines:Pipelines}
+	{helpb pystacked##predictors:Learner-specific predictors}
 	{helpb pystacked##example_prostate:Example Stacking Regression}
 	{helpb pystacked##example_spam:Example Stacking Classification}
 	{helpb pystacked##installation:Installation}
@@ -62,7 +63,7 @@ There are two alternative syntaxes. The {ul:first syntax} is:
 
 {p 8 14 2}
 {cmd:pystacked}
-{it:depvar} {it:regressors} 
+{it:depvar} {it:predictors} 
 [{cmd:if} {it:exp}] [{cmd:in} {it:range}]
 {bind:[{cmd:,}}
 {opt methods(string)}
@@ -72,6 +73,9 @@ There are two alternative syntaxes. The {ul:first syntax} is:
 {opt pipe1(string)} 
 {opt pipe2(string)} 
 {opt ...}
+{opt xvars1(varlist)} 
+{opt xvars2(varlist)} 
+{opt ...}
 {helpb pystacked##otheropts:{it:otheropts}}
 ]
 
@@ -80,14 +84,16 @@ The {ul:second syntax} is:
 
 {p 8 14 2}
 {cmd:pystacked}
-{it:depvar} {it:regressors} 
+{it:depvar} {it:predictors} 
 [{cmd:if} {it:exp}] [{cmd:in} {it:range}]
 || {opt m:ethod(string)}
 {opt opt(string)} 
 {opt pipe:line(string)} 
+{opt xvars(varlist)} 
 || {opt m:ethod(string)}
 {opt opt(string)} 
 {opt pipe:line(string)} 
+{opt xvars(varlist)} 
 ||
 {opt ...}
 {bind:[{cmd:,}}
@@ -104,6 +110,8 @@ That is, up to
 they appear in {opt methods(string)} (see {helpb pystacked##base_learners_opt:Command options}).
 Likewise, the {opt pipe*(string)} option can be used 
 for pre-processing predictors within Python on the fly (see {helpb pystacked##pipelines:Pipelines}).
+Furthermore, {opt xvars*(varlist)} can be used to subset the predictors used for a specific
+learner.
 
 {pstd}
 The second syntax imposes no limit on the number of base learners (aside from the increasing
@@ -128,6 +136,12 @@ options passed to the base learners, see {helpb pystacked##base_learners_opt:Com
 {synopt:{opt pipe*(string)}}
 pipelines passed to the base learners, see {helpb pystacked##pipelines:Pipelines}.
 {p_end}
+{synopt:{opt xvars*(varlist)}}
+only a subset of predictors is used for the base learner.
+The {it:varlist} must be a subset of {it:predictors}. That is, 
+you can only remove predictors for a specific learner, but not add.
+See {helpb pystacked##predictors:here}.
+{p_end}
 {synoptline}
 {pstd}
 {it:Note:} {opt *} is replaced
@@ -148,6 +162,12 @@ options, see {helpb pystacked##base_learners_opt:Command options}.
 {p_end}
 {synopt:{opt pipe:line(string)}}
 pipelines applied to the predictors, see {helpb pystacked##pipelines:Pipelines}.
+{p_end}
+{synopt:{opt xvars(varlist)}}
+only a subset of predictors is used for the base learner.
+The {it:varlist} must be a subset of {it:predictors}. That is, 
+you can only remove predictors for a specific learner, but not add.
+See {helpb pystacked##predictors:here}.
 {p_end}
 {synoptline}
 
@@ -190,10 +210,21 @@ See {browse "https://scikit-learn.org/stable/modules/generated/sklearn.utils.par
 number of folds used for cross-validation (not relevant for voting); 
 default is 5
 {p_end}
+{synopt:{opt sparse}} 
+converts predictor matrix to a sparse matrix. This will only lead to speed improvements
+if the predictor matrix is sufficiently sparse. Not all learners support sparse matrices
+and not all learners will benefit from sparse matrices in the same way. You can also 
+use the sparse pipeline to use sparse matrices for some learners, but not for others.
+{p_end}
 {synopt:{opt pyseed(int)}} 
-set the Python seed. Note that, since {cmd:pystacked} uses
-Python, using {helpb "set seed"} won't be sufficient
-for replication. 
+set the Python seed. Note that since {cmd:pystacked} uses
+Python, we also need to set the Python seed to ensure replicability.
+You have two options: {opt pyseed(-1)} draws a number 
+between 0 and 10^8 in Stata which is then used as a Python seed.
+This way, you only need to deal with the Stata seed ({helpb "set seed 42"})--the Python seed
+is generated automatically. Alternatively, setting {opt pyseed(x)} 
+with any positive integer {it:x} allows to control the Python seed 
+directly.  
 {p_end}
 {synoptline}
 
@@ -735,6 +766,26 @@ Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklear
 {opt n_iter_no_change(integer 10)}
 {opt max_fun(integer 15000)}
 
+
+{marker predictors}{...}
+{title:Learner-specific predictors}
+
+{pstd}
+By default, {cmd:pystacked} uses the same set of predictors for all base learners. This is often not 
+desirable. For example, when using linear machine learners such as the lasso, 
+it is recommended to create interactions. There are two methods to allow for learner-specific
+sets of predictors: 
+
+{pstd}
+1) Pipelines, discussed in the next section, can be used to create polynomials on the fly. 
+
+{pstd}
+2) The {opt xvars*(varlist)} option allows to only use a subset of predictors for a specific learner. 
+The {it:varlist} must be a subset of {it:predictors}. That is, you can only remove predictors
+for a specific learner, but not add. This is no restriction in practice: the
+idea is simply to include all predictors in the varlist {it:predictors} and then 
+subset for each learner. 
+
 {marker pipelines}{...}
 {title:Pipelines}
 
@@ -742,9 +793,6 @@ Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklear
 Scikit-learn uses pipelines to pre-preprocess input data on the fly. 
 Pipelines can be used to impute missing observations or 
 create transformation of predictors such as interactions and polynomials.
-For example, when using linear machine learners such as the lasso, 
-it is recommended to create interactions. This can be done on the fly in 
-Python. 
 
 {pstd}
 The following pipelines are currently supported: 
@@ -752,6 +800,9 @@ The following pipelines are currently supported:
 {synoptset 10 tabbed}{...}
 {p2col 5 29 23 2:Pipelines}{p_end}
 {p2col 7 29 23 2:{it:stdscaler}}{browse "https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html":StandardScaler()}{p_end}
+{p2col 7 29 23 2:{it:stdscaler0}}{browse "https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html":StandardScaler(with_mean=False)}{p_end}
+{p2col 7 29 23 2:{it:sparse}}{browse "https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.SparseTransformer.html":SparseTransformer()}{p_end}
+{p2col 7 29 23 2:{it:onehot}}{browse "https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OneHotEncoder.html":OneHotEncoder()()}{p_end}
 {p2col 7 29 23 2:{it:minmaxscaler}}{browse "https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.MinMaxScaler.html":MinMaxScaler()}{p_end}
 {p2col 7 29 23 2:{it:medianimputer}}{browse "https://scikit-learn.org/stable/modules/generated/sklearn.impute.SimpleImputer.html":SimpleImputer(strategy='median')}{p_end}
 {p2col 7 29 23 2:{it:knnimputer}}{browse "https://scikit-learn.org/stable/modules/generated/sklearn.impute.KNNImputer.html":KNNImputer()}{p_end}
@@ -763,12 +814,7 @@ Pipelines can be passed to the base learners via {opt pipe*(string)}
 (Syntax 1) or {opt pipe:line(string)} (Syntax 2).
 
 {pstd}
-NB: Users should take care when employing pipelines
-that they don't accidentally introduce data leakage.
-For example, a pipeline that transforms the data
-prior to passing the data to a base learner that uses cross-validation
-could do this if the data transformation (e.g., standardizing predictors)
-uses information from the entire dataset.
+{it:stdscaler0} is intended for sparse matrices, since {it:stdscaler} will make a sparse matrix dense.
 
 {marker example_prostate}{...}
 {title:Example using Boston Housing data (Harrison et al., {helpb pystacked##Harrison1978:1978})}

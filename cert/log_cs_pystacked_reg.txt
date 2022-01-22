@@ -1,8 +1,8 @@
----------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------------
       name:  <unnamed>
-       log:  C:\Users\ecomes\Documents\GitHub\pystacked\cert\log_cs_pystacked_reg.txt
+       log:  /Users/kahrens/MyProjects/pystacked/cert/log_cs_pystacked_reg.txt
   log type:  text
- opened on:  26 Oct 2021, 21:34:31
+ opened on:  22 Jan 2022, 12:10:08
 
 . 
 . clear all
@@ -10,56 +10,49 @@
 .  
 . if "`c(username)'"=="kahrens" {
 .         adopath + "/Users/kahrens/MyProjects/pystacked"
+  [1]  (BASE)      "/Applications/Stata 16/ado/base/"
+  [2]  (SITE)      "/Applications/Stata 16/ado/site/"
+  [3]              "."
+  [4]  (PERSONAL)  "/Users/kahrens/Documents/Stata/ado/personal/"
+  [5]  (PLUS)      "/Users/kahrens/Library/Application Support/Stata/ado/plus/"
+  [6]  (OLDPLACE)  "~/ado/"
+  [7]              "/Users/kahrens/MyProjects/pylearn2"
+  [8]              "/Users/kahrens/MyProjects/ddml"
+  [9]              "/Users/kahrens/MyProjects/pystacked"
 . }
 
 . else if "`c(username)'"=="ecomes" {
 .         adopath + "/Users/ecomes/Documents/GitHub/pystacked/cert"
-  [1]  (BASE)      "C:\LocalStore\ecomes\Stata16\ado\base/"
-  [2]  (SITE)      "C:\LocalStore\ecomes\Stata16\ado\site/"
-  [3]              "."
-  [4]  (PERSONAL)  "C:\LocalStore\ecomes\Dropbox\ado\personal/"
-  [5]  (PLUS)      "c:\ado\plus/"
-  [6]  (OLDPLACE)  "c:\ado/"
-  [7]              "C:\LocalStore\ecomes\Dropbox\Statadat\underid"
-  [8]              "C:\LocalStore\ecomes\Dropbox\StataLasso\iclasso"
-  [9]              "C:\Users\ecomes\Documents\GitHub\lassopack\lassopack_v141"
-  [10]             "C:\Users\ecomes\Documents\GitHub\pdslasso"
-  [11]             "C:\Users\ecomes\Documents\GitHub\ddml"
-  [12]             "C:\Users\ecomes\Documents\GitHub\pylearn2"
-  [13]             "C:\Users\ecomes\Documents\GitHub\pystacked"
-  [14]             "/Users/ecomes/Documents/GitHub/pystacked/cert"
 . }
 
 . else {
 .         net install pystacked, ///
->                 from(https://raw.githubusercontent.com/aahrens1/pystacked/main) repla
-> ce
+>                 from(https://raw.githubusercontent.com/aahrens1/pystacked/main) replace
 . }
 
 . which pystacked 
-C:\Users\ecomes\Documents\GitHub\pystacked\pystacked.ado
-*! pystacked v0.1 (first release)
-*! last edited: 26oct2021
+/Users/kahrens/MyProjects/pystacked/pystacked.ado
+*! pystacked v0.3
+*! last edited: 22Jan2022
 *! authors: aa/ms
 
 . python: import sklearn
 
 . python: sklearn.__version__
-'0.24.2'
+'1.0'
 
 . 
 . global xvars lcavol lweight age lbph svi lcp gleason pgg45
 
 . 
 . *******************************************************************************
-. *** voting                                                                           
->                                                            ***
+. *** voting                                                                                                                                 
+>      ***
 . *******************************************************************************
 . 
 . clear
 
-. insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data, 
->  tab clear
+. insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
 (11 vars, 97 obs)
 
 . 
@@ -88,14 +81,12 @@ C:\Users\ecomes\Documents\GitHub\pystacked\pystacked.ado
 
 .                                                  
 . *******************************************************************************
-. *** check pipeline                                                                   
->                                                    ***
+. *** check pipeline                                                                                                                      ***
 . *******************************************************************************
 . 
 . clear
 
-. insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data, 
->  tab clear
+. insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
 (11 vars, 97 obs)
 
 . 
@@ -110,29 +101,23 @@ C:\Users\ecomes\Documents\GitHub\pystacked\pystacked.ado
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  ols            |      0.1414704
-  lassoic        |      0.7752922
-  rf             |      0.0832373
+  ols            |      0.1409161
+  lassoic        |      0.7803993
+  rf             |      0.0786846
 
 . predict a, transf
-
-
-
 
 .                          
 . pystacked lpsa c.($xvars)##c.($xvars), ///
 >                                                  type(regress) pyseed(243) ///
->                                                  methods(ols lassoic )               
->                             
+>                                                  methods(ols lassoic )                                           
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  ols            |      0.1540086
-  lassoic        |      0.8459914
+  ols            |      0.1527270
+  lassoic        |      0.8472730
 
 . predict b, transf
-
-
 
 . list lpsa a* b*
 
@@ -146,19 +131,19 @@ C:\Users\ecomes\Documents\GitHub\pystacked\pystacked.ado
   5. |  .3715636    62   1.388298   2.006096   .6309908   1.388298   2.006096 |
      |------------------------------------------------------------------------|
   6. |  .7654678    50   .6148925   1.149503   .4314515   .6148925   1.149503 |
-  7. |  .7654678    64   1.843947   2.014224   1.001568   1.843947   2.014224 |
+  7. |  .7654678    64   1.843947   2.014224   .9852015   1.843947   2.014224 |
   8. |  .8544153    58   1.820537   2.018032   1.204382   1.820537   2.018032 |
   9. |  1.047319    47   1.383648   1.377017   .8778588   1.383648   1.377017 |
  10. |  1.047319    63   .8287085   1.710201   1.310555   .8287085   1.710201 |
      |------------------------------------------------------------------------|
- 11. |  1.266948    65   1.328171   1.849305   1.394067   1.328171   1.849305 |
+ 11. |  1.266948    65   1.328171   1.849305   1.377701   1.328171   1.849305 |
  12. |  1.266948    63   1.140312   1.148796   1.119272   1.140312   1.148796 |
  13. |  1.266948    63   1.584554   2.300465   1.665706   1.584554   2.300465 |
  14. |  1.348073    67   1.723184   2.231895     1.5656   1.723184   2.231895 |
- 15. |  1.398717    57   1.603024    2.27736    1.76954   1.603024    2.27736 |
+ 15. |  1.398717    57   1.603024    2.27736   1.769843   1.603024    2.27736 |
      |------------------------------------------------------------------------|
  16. |  1.446919    66   1.482576   2.221097   1.633146   1.482576   2.221097 |
- 17. |  1.470176    70   1.292764   1.597425   1.648572   1.292764   1.597425 |
+ 17. |  1.470176    70   1.292764   1.597425   1.652644   1.292764   1.597425 |
  18. |  1.492904    66   1.922884   2.752154   1.942684   1.922884   2.752154 |
  19. |  1.558145    41   1.227521   1.375761   1.185681   1.227521   1.375761 |
  20. |  1.599388    70   1.785388   1.894892   1.774653   1.785388   1.894892 |
@@ -166,13 +151,13 @@ C:\Users\ecomes\Documents\GitHub\pystacked\pystacked.ado
  21. |  1.638997    59   1.690516   2.174275   1.580182   1.690516   2.174275 |
  22. |  1.658228    60   3.007411   2.671294    2.15157   3.007411   2.671294 |
  23. |  1.695616    59   .9841912   1.421073   1.390526   .9841912   1.421073 |
- 24. |  1.713798    63   2.333647   2.531999   2.166787   2.333647   2.531999 |
- 25. |  1.731655    69   1.696714   1.928332   1.807534   1.696714   1.928332 |
+ 24. |  1.713798    63   2.333647   2.531999   2.168105   2.333647   2.531999 |
+ 25. |  1.731655    69   1.696714   1.928332   1.811623   1.696714   1.928332 |
      |------------------------------------------------------------------------|
  26. |  1.766442    68   2.027972   2.202135   1.801851   2.027972   2.202135 |
  27. |  1.800058    65   1.720829   2.077445   2.142257   1.720829   2.077445 |
- 28. |  1.816452    67    1.65189   1.733074   1.947935    1.65189   1.733074 |
- 29. |  1.848455    67   2.463503   2.089611   2.024031   2.463503   2.089611 |
+ 28. |  1.816452    67    1.65189   1.733074   1.934302    1.65189   1.733074 |
+ 29. |  1.848455    67   2.463503   2.089611   2.027623   2.463503   2.089611 |
  30. |  1.894617    65   1.874244   2.709655   2.078271   1.874244   2.709655 |
      |------------------------------------------------------------------------|
  31. |  1.924249    65   2.214339    2.03207   1.987578   2.214339    2.03207 |
@@ -182,44 +167,44 @@ C:\Users\ecomes\Documents\GitHub\pystacked\pystacked.ado
  35. |  2.047693    63   .7396169   1.598844   1.811493   .7396169   1.598844 |
      |------------------------------------------------------------------------|
  36. |  2.085672    64   2.349068   2.572035   2.315722   2.349068   2.572035 |
- 37. |  2.157559    73   2.323647   2.525409    2.33831   2.323647   2.525409 |
- 38. |  2.191653    64   1.390078   1.557253   1.914502   1.390078   1.557253 |
+ 37. |  2.157559    73   2.323647   2.525409   2.335715   2.323647   2.525409 |
+ 38. |  2.191653    64   1.390078   1.557253   1.918574   1.390078   1.557253 |
  39. |  2.213754    68   3.187775   3.563096   2.698245   3.187775   3.563096 |
  40. |  2.277267    56   2.618418   1.940984   2.038516   2.618418   1.940984 |
      |------------------------------------------------------------------------|
  41. |  2.297573    60    2.40577   2.038509   2.079149    2.40577   2.038509 |
  42. |  2.307573    68   1.672259   2.469141   2.349403   1.672259   2.469141 |
  43. |  2.327278    62   2.159884   2.083466   2.303073   2.159884   2.083466 |
- 44. |  2.374906    61   2.602152    2.69184   2.595668   2.602152    2.69184 |
- 45. |  2.521721    66   2.485967   2.387562   2.464077   2.485967   2.387562 |
+ 44. |  2.374906    61   2.602152    2.69184    2.58603   2.602152    2.69184 |
+ 45. |  2.521721    66   2.485967   2.387562   2.465395   2.485967   2.387562 |
      |------------------------------------------------------------------------|
  46. |  2.553344    61   2.865782   2.458958   2.546973   2.865782   2.458958 |
  47. |  2.568788    79   2.578777   3.728069   2.883233   2.578777   3.728069 |
  48. |  2.568788    68    2.73771    2.47746   2.642203    2.73771    2.47746 |
- 49. |  2.591516    43   2.811579   2.462658   2.368951   2.811579   2.462658 |
- 50. |  2.591516    70   1.827751   2.258163    2.35556   1.827751   2.258163 |
+ 49. |  2.591516    43   2.811579   2.462658   2.359313   2.811579   2.462658 |
+ 50. |  2.591516    70   1.827751   2.258163   2.343282   1.827751   2.258163 |
      |------------------------------------------------------------------------|
  51. |  2.656757    68   2.698367   2.431077   2.619197   2.698367   2.431077 |
  52. |  2.677591    64   2.955599   2.682204   2.720211   2.955599   2.682204 |
  53. |   2.68444    64   2.330682   2.045715   2.408432   2.330682   2.045715 |
- 54. |  2.691243    68   2.802072   2.929722   2.704366   2.802072   2.929722 |
+ 54. |  2.691243    68   2.802072   2.929722   2.709242   2.802072   2.929722 |
  55. |  2.704711    59   2.795548    3.15413   3.037796   2.795548    3.15413 |
      |------------------------------------------------------------------------|
  56. |     2.718    66    2.71479   2.613106   2.595958    2.71479   2.613106 |
  57. |  2.788093    47   2.567233   1.963605   2.570182   2.567233   1.963605 |
- 58. |  2.794228    49   2.200077   1.996474   2.534795   2.200077   1.996474 |
+ 58. |  2.794228    49   2.200077   1.996474   2.551162   2.200077   1.996474 |
  59. |  2.806386    70   2.370852   2.259464   2.640188   2.370852   2.259464 |
  60. |   2.81241    61   3.403167   2.365178   2.780008   3.403167   2.365178 |
      |------------------------------------------------------------------------|
- 61. |  2.841998    73   2.796116   2.258619   2.652102   2.796116   2.258619 |
+ 61. |  2.841998    73   2.796116   2.258619   2.656301   2.796116   2.258619 |
  62. |  2.853592    63   3.128426   3.067439   2.894105   3.128426   3.067439 |
  63. |  2.853592    72   2.911506   3.135225    3.06972   2.911506   3.135225 |
- 64. |  2.882004    66   2.819702   3.160516   2.871333   2.819702   3.160516 |
+ 64. |  2.882004    66   2.819702   3.160516   2.876209   2.819702   3.160516 |
  65. |  2.882004    64   2.482604   2.649055   2.549042   2.482604   2.649055 |
      |------------------------------------------------------------------------|
- 66. |   2.88759    61   2.604916   2.532961   2.770929   2.604916   2.532961 |
- 67. |   2.92047    68    2.95794    2.79465   2.897167    2.95794    2.79465 |
- 68. |  2.962692    72   2.565041   2.934791   2.908983   2.565041   2.934791 |
+ 66. |   2.88759    61   2.604916   2.532961   2.766053   2.604916   2.532961 |
+ 67. |   2.92047    68    2.95794    2.79465    2.90395    2.95794    2.79465 |
+ 68. |  2.962692    72   2.565041   2.934791   2.913181   2.565041   2.934791 |
  69. |  2.962692    69   2.914459    1.82403   2.541458   2.914459    1.82403 |
  70. |  2.972975    72   2.949435   2.765781   2.841401   2.949435   2.765781 |
      |------------------------------------------------------------------------|
@@ -227,18 +212,18 @@ C:\Users\ecomes\Documents\GitHub\pystacked\pystacked.ado
  72. |  3.037354    77   3.096022   2.220091    2.78612   3.096022   2.220091 |
  73. |  3.056357    69    2.96146     2.6809   2.913517    2.96146     2.6809 |
  74. |  3.075006    60   3.065017   2.934107   3.044554   3.065017   2.934107 |
- 75. |  3.275256    69    3.72425   3.659978   3.573852    3.72425   3.659978 |
+ 75. |  3.275256    69    3.72425   3.659978   3.576408    3.72425   3.659978 |
      |------------------------------------------------------------------------|
  76. |  3.337547    68   4.152031   3.521276   3.762278   4.152031   3.521276 |
- 77. |  3.392829    72   3.723232   2.994266   3.215779   3.723232   2.994266 |
+ 77. |  3.392829    72   3.723232   2.994266    3.21105   3.723232   2.994266 |
  78. |  3.435599    78   3.524962   3.194877   3.332311   3.524962   3.194877 |
  79. |  3.457893    69    3.06631    3.37067   3.435096    3.06631    3.37067 |
  80. |  3.513037    63   2.962056   3.104248   3.538206   2.962056   3.104248 |
      |------------------------------------------------------------------------|
  81. |  3.516013    66   2.140939   2.254506    2.89927   2.140939   2.254506 |
- 82. |  3.530763    57   3.176303    2.85934   3.187349   3.176303    2.85934 |
- 83. |  3.565298    77   3.967295    3.46458   3.463933   3.967295    3.46458 |
- 84. |   3.57094    65   3.349466    3.22075   3.415458   3.349466    3.22075 |
+ 82. |  3.530763    57   3.176303    2.85934   3.188838   3.176303    2.85934 |
+ 83. |  3.565298    77   3.967295    3.46458   3.468391   3.967295    3.46458 |
+ 84. |   3.57094    65   3.349466    3.22075   3.417366   3.349466    3.22075 |
  85. |  3.587677    60   2.728997   2.531612    3.24823   2.728997   2.531612 |
      |------------------------------------------------------------------------|
  86. |  3.630985    64   3.963735   3.703329    3.78159   3.963735   3.703329 |
@@ -264,12 +249,201 @@ C:\Users\ecomes\Documents\GitHub\pystacked\pystacked.ado
 
 . 
 . *******************************************************************************
-. *** try various combinations of estimators                                           
->                            ***
+. *** check that xvar() subsetting works                                                                          ***
 . *******************************************************************************
 . 
-. insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data, 
->  tab clear
+. 
+. insheet using https://statalasso.github.io/dta/housing.csv, clear
+(14 vars, 506 obs)
+
+. 
+. set seed 789
+
+. pystacked medv crim lstat, method(gradboost lassocv) pyseed(-1)
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  gradboost      |      0.7048644
+  lassocv        |      0.2951356
+
+. predict double xb
+
+. 
+. set seed 789
+
+. pystacked medv crim-lstat, method(gradboost lassocv) xvars1(crim lstat) xvars2(crim lstat) pyseed(-1)
+medv crim zn indus chas nox rm age dis rad tax ptratio b lstat
+crim lstat
+[0, 12]
+medv crim zn indus chas nox rm age dis rad tax ptratio b lstat
+crim lstat
+[0, 12]
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  gradboost      |      0.7048644
+  lassocv        |      0.2951356
+
+. predict double xb2
+
+. 
+. set seed 789
+
+. pystacked medv crim-lstat || method(gradboost) xvars(crim lstat) || m(lassocv) xvars(crim lstat), pyseed(-1)
+medv crim zn indus chas nox rm age dis rad tax ptratio b lstat
+crim lstat
+[0, 12]
+medv crim zn indus chas nox rm age dis rad tax ptratio b lstat
+crim lstat
+[0, 12]
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  gradboost      |      0.7048644
+  lassocv        |      0.2951356
+
+. predict double xb3
+
+. list xb* if _n<5
+
+     +-----------------------------------+
+     |        xb         xb2         xb3 |
+     |-----------------------------------|
+  1. | 27.083518   27.083518   27.083518 |
+  2. | 22.860211   22.860211   22.860211 |
+  3. | 33.673617   33.673617   33.673617 |
+  4. | 34.823881   34.823881   34.823881 |
+     +-----------------------------------+
+
+. assert reldif(xb,xb2)<10e-9
+
+. assert reldif(xb,xb3)<10e-9
+
+. 
+. 
+. *** with factor variables
+. 
+. insheet using https://statalasso.github.io/dta/housing.csv, clear
+(14 vars, 506 obs)
+
+. 
+. set seed 789
+
+. pystacked medv i.rad##c.crim, method(gradboost lassocv) pyseed(-1)
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  gradboost      |      0.7201726
+  lassocv        |      0.2798274
+
+. predict double xb
+
+. 
+. set seed 789
+
+. pystacked medv i.rad##c.(crim-lstat), method(gradboost lassocv) xvars1(i.rad##c.crim) xvars2(i.rad##c.crim) pyseed(-1)
+medv 1b.rad 2.rad 3.rad 4.rad 5.rad 6.rad 7.rad 8.rad 24.rad crim zn indus chas nox rm age dis rad tax ptratio b lstat 1b.rad#co.crim 2.rad#c
+> .crim 3.rad#c.crim 4.rad#c.crim 5.rad#c.crim 6.rad#c.crim 7.rad#c.crim 8.rad#c.crim 24.rad#c.crim 1b.rad#co.zn 2.rad#c.zn 3.rad#c.zn 4.rad#
+> c.zn 5.rad#c.zn 6.rad#c.zn 7.rad#c.zn 8.rad#c.zn 24.rad#c.zn 1b.rad#co.indus 2.rad#c.indus 3.rad#c.indus 4.rad#c.indus 5.rad#c.indus 6.rad#
+> c.indus 7.rad#c.indus 8.rad#c.indus 24.rad#c.indus 1b.rad#co.chas 2.rad#c.chas 3.rad#c.chas 4.rad#c.chas 5.rad#c.chas 6.rad#c.chas 7.rad#c.
+> chas 8.rad#c.chas 24.rad#c.chas 1b.rad#co.nox 2.rad#c.nox 3.rad#c.nox 4.rad#c.nox 5.rad#c.nox 6.rad#c.nox 7.rad#c.nox 8.rad#c.nox 24.rad#c.
+> nox 1b.rad#co.rm 2.rad#c.rm 3.rad#c.rm 4.rad#c.rm 5.rad#c.rm 6.rad#c.rm 7.rad#c.rm 8.rad#c.rm 24.rad#c.rm 1b.rad#co.age 2.rad#c.age 3.rad#c
+> .age 4.rad#c.age 5.rad#c.age 6.rad#c.age 7.rad#c.age 8.rad#c.age 24.rad#c.age 1b.rad#co.dis 2.rad#c.dis 3.rad#c.dis 4.rad#c.dis 5.rad#c.dis
+>  6.rad#c.dis 7.rad#c.dis 8.rad#c.dis 24.rad#c.dis 1b.rad#co.rad 2.rad#c.rad 3.rad#c.rad 4.rad#c.rad 5.rad#c.rad 6.rad#c.rad 7.rad#c.rad 8.r
+> ad#c.rad 24.rad#c.rad 1b.rad#co.tax 2.rad#c.tax 3.rad#c.tax 4.rad#c.tax 5.rad#c.tax 6.rad#c.tax 7.rad#c.tax 8.rad#c.tax 24.rad#c.tax 1b.rad
+> #co.ptratio 2.rad#c.ptratio 3.rad#c.ptratio 4.rad#c.ptratio 5.rad#c.ptratio 6.rad#c.ptratio 7.rad#c.ptratio 8.rad#c.ptratio 24.rad#c.ptrati
+> o 1b.rad#co.b 2.rad#c.b 3.rad#c.b 4.rad#c.b 5.rad#c.b 6.rad#c.b 7.rad#c.b 8.rad#c.b 24.rad#c.b 1b.rad#co.lstat 2.rad#c.lstat 3.rad#c.lstat 
+> 4.rad#c.lstat 5.rad#c.lstat 6.rad#c.lstat 7.rad#c.lstat 8.rad#c.lstat 24.rad#c.lstat
+1b.rad 2.rad 3.rad 4.rad 5.rad 6.rad 7.rad 8.rad 24.rad crim 1b.rad#co.crim 2.rad#c.crim 3.rad#c.crim 4.rad#c.crim 5.rad#c.crim 6.rad#c.crim 
+> 7.rad#c.crim 8.rad#c.crim 24.rad#c.crim
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 22, 23, 24, 25, 26, 27, 28, 29, 30]
+medv 1b.rad 2.rad 3.rad 4.rad 5.rad 6.rad 7.rad 8.rad 24.rad crim zn indus chas nox rm age dis rad tax ptratio b lstat 1b.rad#co.crim 2.rad#c
+> .crim 3.rad#c.crim 4.rad#c.crim 5.rad#c.crim 6.rad#c.crim 7.rad#c.crim 8.rad#c.crim 24.rad#c.crim 1b.rad#co.zn 2.rad#c.zn 3.rad#c.zn 4.rad#
+> c.zn 5.rad#c.zn 6.rad#c.zn 7.rad#c.zn 8.rad#c.zn 24.rad#c.zn 1b.rad#co.indus 2.rad#c.indus 3.rad#c.indus 4.rad#c.indus 5.rad#c.indus 6.rad#
+> c.indus 7.rad#c.indus 8.rad#c.indus 24.rad#c.indus 1b.rad#co.chas 2.rad#c.chas 3.rad#c.chas 4.rad#c.chas 5.rad#c.chas 6.rad#c.chas 7.rad#c.
+> chas 8.rad#c.chas 24.rad#c.chas 1b.rad#co.nox 2.rad#c.nox 3.rad#c.nox 4.rad#c.nox 5.rad#c.nox 6.rad#c.nox 7.rad#c.nox 8.rad#c.nox 24.rad#c.
+> nox 1b.rad#co.rm 2.rad#c.rm 3.rad#c.rm 4.rad#c.rm 5.rad#c.rm 6.rad#c.rm 7.rad#c.rm 8.rad#c.rm 24.rad#c.rm 1b.rad#co.age 2.rad#c.age 3.rad#c
+> .age 4.rad#c.age 5.rad#c.age 6.rad#c.age 7.rad#c.age 8.rad#c.age 24.rad#c.age 1b.rad#co.dis 2.rad#c.dis 3.rad#c.dis 4.rad#c.dis 5.rad#c.dis
+>  6.rad#c.dis 7.rad#c.dis 8.rad#c.dis 24.rad#c.dis 1b.rad#co.rad 2.rad#c.rad 3.rad#c.rad 4.rad#c.rad 5.rad#c.rad 6.rad#c.rad 7.rad#c.rad 8.r
+> ad#c.rad 24.rad#c.rad 1b.rad#co.tax 2.rad#c.tax 3.rad#c.tax 4.rad#c.tax 5.rad#c.tax 6.rad#c.tax 7.rad#c.tax 8.rad#c.tax 24.rad#c.tax 1b.rad
+> #co.ptratio 2.rad#c.ptratio 3.rad#c.ptratio 4.rad#c.ptratio 5.rad#c.ptratio 6.rad#c.ptratio 7.rad#c.ptratio 8.rad#c.ptratio 24.rad#c.ptrati
+> o 1b.rad#co.b 2.rad#c.b 3.rad#c.b 4.rad#c.b 5.rad#c.b 6.rad#c.b 7.rad#c.b 8.rad#c.b 24.rad#c.b 1b.rad#co.lstat 2.rad#c.lstat 3.rad#c.lstat 
+> 4.rad#c.lstat 5.rad#c.lstat 6.rad#c.lstat 7.rad#c.lstat 8.rad#c.lstat 24.rad#c.lstat
+1b.rad 2.rad 3.rad 4.rad 5.rad 6.rad 7.rad 8.rad 24.rad crim 1b.rad#co.crim 2.rad#c.crim 3.rad#c.crim 4.rad#c.crim 5.rad#c.crim 6.rad#c.crim 
+> 7.rad#c.crim 8.rad#c.crim 24.rad#c.crim
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 22, 23, 24, 25, 26, 27, 28, 29, 30]
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  gradboost      |      0.7201726
+  lassocv        |      0.2798274
+
+. predict double xb2
+
+. 
+. set seed 789
+
+. pystacked medv i.rad##c.(crim-lstat) || method(gradboost) xvars(i.rad##c.crim) || m(lassocv) xvars(i.rad##c.crim), pyseed(-1)
+medv 1b.rad 2.rad 3.rad 4.rad 5.rad 6.rad 7.rad 8.rad 24.rad crim zn indus chas nox rm age dis rad tax ptratio b lstat 1b.rad#co.crim 2.rad#c
+> .crim 3.rad#c.crim 4.rad#c.crim 5.rad#c.crim 6.rad#c.crim 7.rad#c.crim 8.rad#c.crim 24.rad#c.crim 1b.rad#co.zn 2.rad#c.zn 3.rad#c.zn 4.rad#
+> c.zn 5.rad#c.zn 6.rad#c.zn 7.rad#c.zn 8.rad#c.zn 24.rad#c.zn 1b.rad#co.indus 2.rad#c.indus 3.rad#c.indus 4.rad#c.indus 5.rad#c.indus 6.rad#
+> c.indus 7.rad#c.indus 8.rad#c.indus 24.rad#c.indus 1b.rad#co.chas 2.rad#c.chas 3.rad#c.chas 4.rad#c.chas 5.rad#c.chas 6.rad#c.chas 7.rad#c.
+> chas 8.rad#c.chas 24.rad#c.chas 1b.rad#co.nox 2.rad#c.nox 3.rad#c.nox 4.rad#c.nox 5.rad#c.nox 6.rad#c.nox 7.rad#c.nox 8.rad#c.nox 24.rad#c.
+> nox 1b.rad#co.rm 2.rad#c.rm 3.rad#c.rm 4.rad#c.rm 5.rad#c.rm 6.rad#c.rm 7.rad#c.rm 8.rad#c.rm 24.rad#c.rm 1b.rad#co.age 2.rad#c.age 3.rad#c
+> .age 4.rad#c.age 5.rad#c.age 6.rad#c.age 7.rad#c.age 8.rad#c.age 24.rad#c.age 1b.rad#co.dis 2.rad#c.dis 3.rad#c.dis 4.rad#c.dis 5.rad#c.dis
+>  6.rad#c.dis 7.rad#c.dis 8.rad#c.dis 24.rad#c.dis 1b.rad#co.rad 2.rad#c.rad 3.rad#c.rad 4.rad#c.rad 5.rad#c.rad 6.rad#c.rad 7.rad#c.rad 8.r
+> ad#c.rad 24.rad#c.rad 1b.rad#co.tax 2.rad#c.tax 3.rad#c.tax 4.rad#c.tax 5.rad#c.tax 6.rad#c.tax 7.rad#c.tax 8.rad#c.tax 24.rad#c.tax 1b.rad
+> #co.ptratio 2.rad#c.ptratio 3.rad#c.ptratio 4.rad#c.ptratio 5.rad#c.ptratio 6.rad#c.ptratio 7.rad#c.ptratio 8.rad#c.ptratio 24.rad#c.ptrati
+> o 1b.rad#co.b 2.rad#c.b 3.rad#c.b 4.rad#c.b 5.rad#c.b 6.rad#c.b 7.rad#c.b 8.rad#c.b 24.rad#c.b 1b.rad#co.lstat 2.rad#c.lstat 3.rad#c.lstat 
+> 4.rad#c.lstat 5.rad#c.lstat 6.rad#c.lstat 7.rad#c.lstat 8.rad#c.lstat 24.rad#c.lstat
+1b.rad 2.rad 3.rad 4.rad 5.rad 6.rad 7.rad 8.rad 24.rad crim 1b.rad#co.crim 2.rad#c.crim 3.rad#c.crim 4.rad#c.crim 5.rad#c.crim 6.rad#c.crim 
+> 7.rad#c.crim 8.rad#c.crim 24.rad#c.crim
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 22, 23, 24, 25, 26, 27, 28, 29, 30]
+medv 1b.rad 2.rad 3.rad 4.rad 5.rad 6.rad 7.rad 8.rad 24.rad crim zn indus chas nox rm age dis rad tax ptratio b lstat 1b.rad#co.crim 2.rad#c
+> .crim 3.rad#c.crim 4.rad#c.crim 5.rad#c.crim 6.rad#c.crim 7.rad#c.crim 8.rad#c.crim 24.rad#c.crim 1b.rad#co.zn 2.rad#c.zn 3.rad#c.zn 4.rad#
+> c.zn 5.rad#c.zn 6.rad#c.zn 7.rad#c.zn 8.rad#c.zn 24.rad#c.zn 1b.rad#co.indus 2.rad#c.indus 3.rad#c.indus 4.rad#c.indus 5.rad#c.indus 6.rad#
+> c.indus 7.rad#c.indus 8.rad#c.indus 24.rad#c.indus 1b.rad#co.chas 2.rad#c.chas 3.rad#c.chas 4.rad#c.chas 5.rad#c.chas 6.rad#c.chas 7.rad#c.
+> chas 8.rad#c.chas 24.rad#c.chas 1b.rad#co.nox 2.rad#c.nox 3.rad#c.nox 4.rad#c.nox 5.rad#c.nox 6.rad#c.nox 7.rad#c.nox 8.rad#c.nox 24.rad#c.
+> nox 1b.rad#co.rm 2.rad#c.rm 3.rad#c.rm 4.rad#c.rm 5.rad#c.rm 6.rad#c.rm 7.rad#c.rm 8.rad#c.rm 24.rad#c.rm 1b.rad#co.age 2.rad#c.age 3.rad#c
+> .age 4.rad#c.age 5.rad#c.age 6.rad#c.age 7.rad#c.age 8.rad#c.age 24.rad#c.age 1b.rad#co.dis 2.rad#c.dis 3.rad#c.dis 4.rad#c.dis 5.rad#c.dis
+>  6.rad#c.dis 7.rad#c.dis 8.rad#c.dis 24.rad#c.dis 1b.rad#co.rad 2.rad#c.rad 3.rad#c.rad 4.rad#c.rad 5.rad#c.rad 6.rad#c.rad 7.rad#c.rad 8.r
+> ad#c.rad 24.rad#c.rad 1b.rad#co.tax 2.rad#c.tax 3.rad#c.tax 4.rad#c.tax 5.rad#c.tax 6.rad#c.tax 7.rad#c.tax 8.rad#c.tax 24.rad#c.tax 1b.rad
+> #co.ptratio 2.rad#c.ptratio 3.rad#c.ptratio 4.rad#c.ptratio 5.rad#c.ptratio 6.rad#c.ptratio 7.rad#c.ptratio 8.rad#c.ptratio 24.rad#c.ptrati
+> o 1b.rad#co.b 2.rad#c.b 3.rad#c.b 4.rad#c.b 5.rad#c.b 6.rad#c.b 7.rad#c.b 8.rad#c.b 24.rad#c.b 1b.rad#co.lstat 2.rad#c.lstat 3.rad#c.lstat 
+> 4.rad#c.lstat 5.rad#c.lstat 6.rad#c.lstat 7.rad#c.lstat 8.rad#c.lstat 24.rad#c.lstat
+1b.rad 2.rad 3.rad 4.rad 5.rad 6.rad 7.rad 8.rad 24.rad crim 1b.rad#co.crim 2.rad#c.crim 3.rad#c.crim 4.rad#c.crim 5.rad#c.crim 6.rad#c.crim 
+> 7.rad#c.crim 8.rad#c.crim 24.rad#c.crim
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 22, 23, 24, 25, 26, 27, 28, 29, 30]
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  gradboost      |      0.7201726
+  lassocv        |      0.2798274
+
+. predict double xb3
+
+. list xb* if _n<5
+
+     +-----------------------------------+
+     |        xb         xb2         xb3 |
+     |-----------------------------------|
+  1. | 26.492983   26.492983   26.492983 |
+  2. | 25.362446   25.362446   25.362446 |
+  3. | 28.312739   28.312739   28.312739 |
+  4. | 28.473006   28.473006   28.473006 |
+     +-----------------------------------+
+
+. assert reldif(xb,xb2)<10e-9
+
+. assert reldif(xb,xb3)<10e-9
+
+. 
+. 
+. *******************************************************************************
+. *** try various combinations of estimators                                                                      ***
+. *******************************************************************************
+. 
+. insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
 (11 vars, 97 obs)
 
 . 
@@ -316,9 +490,9 @@ ols lassoic gradboost nnet
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  ols            |      0.0890671
-  lassoic        |      0.5065911
-  gradboost      |      0.4043418
+  ols            |      0.0883088
+  lassoic        |      0.5093814
+  gradboost      |      0.4023098
   nnet           |      0.0000000
 ols ridgecv gradboost nnet
 ---------------------------------------
@@ -348,18 +522,17 @@ ols elasticcv gradboost linsvm
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  ols            |      0.0528410
-  elasticcv      |      0.9471590
+  ols            |      0.0499055
+  elasticcv      |      0.5170138
   gradboost      |      0.0000000
-  linsvm         |      0.0000000
+  linsvm         |      0.4330807
 
 . 
 . *******************************************************************************
 . *** check that predicted value = weighted avg of transform variables            ***
 . *******************************************************************************
 . 
-. insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data, 
->  tab clear
+. insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
 (11 vars, 97 obs)
 
 . 
@@ -398,9 +571,6 @@ ols elasticcv gradboost linsvm
 . 
 . predict double t, transform  
 
-
-
-
 . 
 . mat W = e(weights)
 
@@ -412,14 +582,12 @@ ols elasticcv gradboost linsvm
 . 
 . 
 . *******************************************************************************
-. *** check for error message when data in memory changed                              
->            ***
+. *** check for error message when data in memory changed                                         ***
 . *******************************************************************************
 . 
 . clear
 
-. insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data, 
->  tab clear
+. insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
 (11 vars, 97 obs)
 
 . 
@@ -446,14 +614,12 @@ ols elasticcv gradboost linsvm
 
 . 
 . *******************************************************************************
-. *** check table option                                                               
->                                            ***
+. *** check table option                                                                                                          ***
 . *******************************************************************************
 . 
 . clear
 
-. insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data, 
->  tab clear
+. insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
 (11 vars, 97 obs)
 
 . 
@@ -481,26 +647,20 @@ ols elasticcv gradboost linsvm
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  ols            |      0.1414704
-  lassoic        |      0.7752922
-  rf             |      0.0832373
+  ols            |      0.1409161
+  lassoic        |      0.7803993
+  rf             |      0.0786846
 
 . pystacked, table
----------------------------------------
-  Method         |      Weight
------------------+---------------------
-  ols            |      0.1414704
-  lassoic        |      0.7752922
-  rf             |      0.0832373
 
 MSPE: In-Sample and Out-of-Sample
 -----------------------------------------------------
   Method         | Weight   In-Sample   Out-of-Sample
 -----------------+-----------------------------------
-  STACKING       |    .        0.637             .
-  ols            | 0.141       0.637             .
-  lassoic        | 0.775       0.501             .
-  rf             | 0.083       0.728             .
+  STACKING       |    .        0.639             .
+  ols            | 0.141       0.501             .
+  lassoic        | 0.780       0.728             .
+  rf             | 0.079       0.286             .
 
 . 
 . // with holdout sample
@@ -511,58 +671,38 @@ MSPE: In-Sample and Out-of-Sample
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  ols            |      0.0000000
-  lassoic        |      0.8320215
-  rf             |      0.1679785
+  ols            |      0.0031037
+  lassoic        |      0.8192673
+  rf             |      0.1776290
 
 . // default holdout - all available obs
 . pystacked, table holdout
----------------------------------------
-  Method         |      Weight
------------------+---------------------
-  ols            |      0.0000000
-  lassoic        |      0.8320215
-  rf             |      0.1679785
-
 Number of holdout observations:   48
 
 MSPE: In-Sample and Out-of-Sample
 -----------------------------------------------------
   Method         | Weight   In-Sample   Out-of-Sample
 -----------------+-----------------------------------
-  STACKING       |    .        0.523         0.649
-  ols            | 0.000       0.523         0.649
-  lassoic        | 0.832       0.317         5.612
-  rf             | 0.168       0.582         0.644
+  STACKING       |    .        0.518         0.653
+  ols            | 0.003       0.317         5.612
+  lassoic        | 0.819       0.582         0.644
+  rf             | 0.178       0.257         0.703
 
 . // specified holdout sample
 . pystacked, table holdout(h1)
----------------------------------------
-  Method         |      Weight
------------------+---------------------
-  ols            |      0.0000000
-  lassoic        |      0.8320215
-  rf             |      0.1679785
-
 Number of holdout observations:   37
 
 MSPE: In-Sample and Out-of-Sample
 -----------------------------------------------------
   Method         | Weight   In-Sample   Out-of-Sample
 -----------------+-----------------------------------
-  STACKING       |    .        0.523         0.662
-  ols            | 0.000       0.523         0.662
-  lassoic        | 0.832       0.317         5.957
-  rf             | 0.168       0.582         0.659
+  STACKING       |    .        0.518         0.665
+  ols            | 0.003       0.317         5.957
+  lassoic        | 0.819       0.582         0.659
+  rf             | 0.178       0.257         0.701
 
 . // holdout sample overlaps with estimation sample
 . cap noi pystacked, table holdout(h2)
----------------------------------------
-  Method         |      Weight
------------------+---------------------
-  ols            |      0.0000000
-  lassoic        |      0.8320215
-  rf             |      0.1679785
 error - holdout and estimation samples overlap
 
 . assert _rc != 0
@@ -574,34 +714,50 @@ error - holdout and estimation samples overlap
 >                                                  methods(ols lassoic rf) ///
 >                                                  pipe1(poly2) pipe2(poly2) ///
 >                                                  table holdout
----------------------------------------
-  Method         |      Weight
------------------+---------------------
-  ols            |      0.0000000
-  lassoic        |      0.8320215
-  rf             |      0.1679785
-
 Number of holdout observations:   48
 
 MSPE: In-Sample and Out-of-Sample
 -----------------------------------------------------
   Method         | Weight   In-Sample   Out-of-Sample
 -----------------+-----------------------------------
-  STACKING       |    .        0.523         0.649
-  ols            | 0.000       0.523         0.649
-  lassoic        | 0.832       0.317         5.612
-  rf             | 0.168       0.582         0.644
+  STACKING       |    .        0.518         0.653
+  ols            | 0.003       0.317         5.612
+  lassoic        | 0.819       0.582         0.644
+  rf             | 0.178       0.257         0.703
+
+. 
+. // syntax 2
+. pystacked lpsa $xvars if _n<50 ///
+>                                                 || method(ols) || method(lassoic) || method(rf), ///
+>                                                  type(regress) pyseed(243) ///
+>                                                  methods(ols lassoic rf)
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.4556444
+  lassoic        |      0.5443556
+  rf             |      0.0000000
+
+. pystacked, table holdout(h1)
+Number of holdout observations:   37
+
+MSPE: In-Sample and Out-of-Sample
+-----------------------------------------------------
+  Method         | Weight   In-Sample   Out-of-Sample
+-----------------+-----------------------------------
+  STACKING       |    .        0.537         0.741
+  ols            | 0.456       0.526         0.871
+  lassoic        | 0.544       0.562         0.661
+  rf             | 0.000       0.257         0.701
 
 . 
 . *******************************************************************************
-. *** check graph option                                                               
->                                            ***
+. *** check graph option                                                                                                          ***
 . *******************************************************************************
 . 
 . clear
 
-. insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data, 
->  tab clear
+. insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
 (11 vars, 97 obs)
 
 . 
@@ -629,18 +785,12 @@ MSPE: In-Sample and Out-of-Sample
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  ols            |      0.1414704
-  lassoic        |      0.7752922
-  rf             |      0.0832373
+  ols            |      0.1409161
+  lassoic        |      0.7803993
+  rf             |      0.0786846
 
 . // in-sample predictions
 . pystacked, graph
----------------------------------------
-  Method         |      Weight
------------------+---------------------
-  ols            |      0.1414704
-  lassoic        |      0.7752922
-  rf             |      0.0832373
 
 . 
 . // with holdout sample
@@ -651,61 +801,27 @@ MSPE: In-Sample and Out-of-Sample
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  ols            |      0.0000000
-  lassoic        |      0.8320215
-  rf             |      0.1679785
+  ols            |      0.0031037
+  lassoic        |      0.8192673
+  rf             |      0.1776290
 
 . // in-sample predictions
 . pystacked, graph
----------------------------------------
-  Method         |      Weight
------------------+---------------------
-  ols            |      0.0000000
-  lassoic        |      0.8320215
-  rf             |      0.1679785
 
 . // default holdout - all available obs
 . pystacked, graph holdout
----------------------------------------
-  Method         |      Weight
------------------+---------------------
-  ols            |      0.0000000
-  lassoic        |      0.8320215
-  rf             |      0.1679785
-
 Number of holdout observations:   48
 
 . // specified holdout sample
 . pystacked, graph holdout(h1)
----------------------------------------
-  Method         |      Weight
------------------+---------------------
-  ols            |      0.0000000
-  lassoic        |      0.8320215
-  rf             |      0.1679785
-
 Number of holdout observations:   37
 
 . // graphing options - combined graph
 . pystacked, graph(subtitle("subtitle goes here")) holdout
----------------------------------------
-  Method         |      Weight
------------------+---------------------
-  ols            |      0.0000000
-  lassoic        |      0.8320215
-  rf             |      0.1679785
-
 Number of holdout observations:   48
 
 . // graphing options - learner graphs
 . pystacked, lgraph(ytitle("ytitle goes here")) holdout
----------------------------------------
-  Method         |      Weight
------------------+---------------------
-  ols            |      0.0000000
-  lassoic        |      0.8320215
-  rf             |      0.1679785
-
 Number of holdout observations:   48
 
 . 
@@ -715,20 +831,29 @@ Number of holdout observations:   48
 >                                                  methods(ols lassoic rf) ///
 >                                                  pipe1(poly2) pipe2(poly2) ///
 >                                                  graph holdout
+Number of holdout observations:   48
+
+. 
+. // syntax 2
+. pystacked lpsa $xvars if _n<50 ///
+>                                                 || method(ols) || method(lassoic) || method(rf), ///
+>                                                  type(regress) pyseed(243) ///
+>                                                  methods(ols lassoic rf)
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  ols            |      0.0000000
-  lassoic        |      0.8320215
-  rf             |      0.1679785
+  ols            |      0.4556444
+  lassoic        |      0.5443556
+  rf             |      0.0000000
 
+. pystacked, graph holdout
 Number of holdout observations:   48
 
 . 
 . 
 . log close
       name:  <unnamed>
-       log:  C:\Users\ecomes\Documents\GitHub\pystacked\cert\log_cs_pystacked_reg.txt
+       log:  /Users/kahrens/MyProjects/pystacked/cert/log_cs_pystacked_reg.txt
   log type:  text
- closed on:  26 Oct 2021, 21:35:20
----------------------------------------------------------------------------------------
+ closed on:  22 Jan 2022, 12:11:10
+---------------------------------------------------------------------------------------------------------------------------------------------

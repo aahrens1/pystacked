@@ -70,6 +70,49 @@ assert a1==b1
 assert a2==b2
 
 *******************************************************************************
+*** check that xvar() subsetting works								 		***
+*******************************************************************************
+
+
+insheet using https://statalasso.github.io/dta/housing.csv, clear
+
+set seed 789
+pystacked medv crim lstat, method(gradboost lassocv) pyseed(-1)
+predict double xb
+
+set seed 789
+pystacked medv crim-lstat, method(gradboost lassocv) xvars1(crim lstat) xvars2(crim lstat) pyseed(-1)
+predict double xb2
+
+set seed 789
+pystacked medv crim-lstat || method(gradboost) xvars(crim lstat) || m(lassocv) xvars(crim lstat), pyseed(-1)
+predict double xb3
+list xb* if _n<5
+assert reldif(xb,xb2)<10e-9
+assert reldif(xb,xb3)<10e-9
+
+
+*** with factor variables
+
+insheet using https://statalasso.github.io/dta/housing.csv, clear
+
+set seed 789
+pystacked medv i.rad##c.crim, method(gradboost lassocv) pyseed(-1)
+predict double xb
+
+set seed 789
+pystacked medv i.rad##c.(crim-lstat), method(gradboost lassocv) xvars1(i.rad##c.crim) xvars2(i.rad##c.crim) pyseed(-1)
+predict double xb2
+
+set seed 789
+pystacked medv i.rad##c.(crim-lstat) || method(gradboost) xvars(i.rad##c.crim) || m(lassocv) xvars(i.rad##c.crim), pyseed(-1)
+predict double xb3
+list xb* if _n<5
+assert reldif(xb,xb2)<10e-9
+assert reldif(xb,xb3)<10e-9
+
+
+*******************************************************************************
 *** try various combinations of estimators							 		***
 *******************************************************************************
 

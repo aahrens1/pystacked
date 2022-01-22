@@ -1,5 +1,5 @@
-*! pystacked v0.2.1
-*! last edited: 8Dec2021
+*! pystacked v0.3
+*! last edited: 22Jan2022
 *! authors: aa/ms
 
 // parent program
@@ -138,6 +138,330 @@ program define pystacked, eclass
 		// add to estimation macros
 		ereturn mat confusion = `m'
 	}
+	
+end
+
+// main program
+program define _pystacked, eclass
+version 16.0
+
+	tokenize "`0'", parse(",")
+	local beforecomma `1'
+	macro shift
+	local restargs `*'
+	tokenize `beforecomma', parse("|")
+	local mainargs `1'
+	local 0 "`mainargs' `restargs'"
+	local doublebarsyntax = ("`2'"=="|")*("`3'"=="|")
+
+	syntax varlist(min=2 fv) [if] [in] [aweight fweight], ///
+				[ ///
+					type(string) /// classification or regression
+					finalest(string) ///
+					njobs(int 0) ///
+					folds(int 5) ///
+					///
+					///
+					pyseed(integer 0) ///
+					printopt ///
+					NOSAVEPred ///
+					NOSAVETransform ///
+					///
+					voting ///
+					///
+					VOTEType(string) ///
+					VOTEWeights(numlist >0) ///
+					debug ///
+					Methods(string) ///
+					cmdopt1(string asis) ///
+					cmdopt2(string asis) ///
+					cmdopt3(string asis) ///
+					cmdopt4(string asis) ///
+					cmdopt5(string asis) ///
+					cmdopt6(string asis) ///
+					cmdopt7(string asis) ///
+					cmdopt8(string asis) ///
+					cmdopt9(string asis) ///
+					cmdopt10(string asis) ///
+					pipe1(string asis) ///
+					pipe2(string asis) ///
+					pipe3(string asis) ///
+					pipe4(string asis) ///
+					pipe5(string asis) ///
+					pipe6(string asis) ///
+					pipe7(string asis) ///
+					pipe8(string asis) ///
+					pipe9(string asis) ///
+					pipe10(string asis) ///
+					xvars1(varlist fv) ///
+					xvars2(varlist fv) ///
+					xvars3(varlist fv) ///
+					xvars4(varlist fv) ///
+					xvars5(varlist fv) ///
+					xvars6(varlist fv) ///
+					xvars7(varlist fv) ///
+					xvars8(varlist fv) ///
+					xvars9(varlist fv) ///
+					xvars10(varlist fv) ///
+					///
+					showpywarnings ///
+					backend(string) ///
+					///
+					/// options for graphing; ignore here
+					GRAPH1								/// vanilla option, abbreviates to "graph"
+					HISTogram							/// report histogram instead of default ROC
+					graph(string asis)					/// for passing options to graph combine
+					lgraph(string asis)					/// for passing options to the graphs of the learners
+					table								/// 
+					HOLDOUT1							/// vanilla option, abbreviates to "holdout"
+					holdout(varname)					///
+					SParse								///
+				]
+
+	** set data signature for pystacked_p;
+	* need to do this before temp vars are created
+	if ("`debug'"=="") local dqui qui
+	`dqui' datasignature clear 
+	`dqui'  datasignature set
+	`dqui' datasignature report
+
+	if "`type'"=="" local type reg
+	if substr("`type'",1,3)=="reg" {
+		local type reg
+	}
+	else if substr("`type'",1,5)=="class" {
+		local type class
+	}
+	else {
+		di as err "type(`type') not recognized"
+		exit 198
+	}
+
+	* set the Python seed using randomly drawn number 
+	if `pyseed'<0 {
+		local pyseed = round(runiform()*10^8)
+	}
+
+	* defaults
+	if "`finalest'"=="" {
+		local finalest nnls
+	}
+
+	if "`backend'"=="" {
+		if "`c(os)'"=="Windows" {
+			local backend threading
+		}
+		else {
+			local backend loky
+		}
+	}
+	if "`backend'"!="loky"&"`backend'"!="multiprocessing"&"`backend'"!="threading" {
+		di as err "backend not supported"
+		exit 198
+	}
+
+	if "`votetype'"!="" {
+		local voting voting
+	}
+	if "`voteweights'"!="" {
+		local voting voting
+	}
+	if "`voting'"!="" {
+		if "`votetype'"=="" {
+			local votetype hard
+		}
+		else if "`votetype'"!="hard"&"`votetype'"!="soft" {
+			di as error "votetype(`votetype') not allowed"
+			error 198
+		}
+	} 
+
+	if (`doublebarsyntax'==0)&("`methods'"=="") {
+		if ("`type'"=="reg") {
+			local methods ols lassoic gradboost
+		}
+		else {
+			local methods logit lassocv gradboost
+		}
+	}
+	if (`doublebarsyntax'==0)&("`methods'"!="") {
+		local mcount : word count `methods'
+		if `mcount'>10 {
+			di as err "more than 10 methods specified, but only up to 10 supported using this syntax"
+			di as err "use e.g. 'pystacked y x* || m(rf) || m(lassocv) || ...' to specify as many base learners as you want"
+		}
+	}
+
+	// mark sample 
+	marksample touse
+	markout `touse' `varlist'
+	qui count if `touse'
+	local N		= r(N)
+
+	******** parse options using _pyparse.ado ********************************* 
+
+	if `doublebarsyntax' {
+		// Syntax 2
+		syntax_parse `beforecomma' , type(`type') touse(`touse')
+		local allmethods `r(allmethods)'
+		local allpyopt `r(allpyopt)'
+		local mcount = `r(mcount)'
+		local allpipe (
+		local allxvars (
+		forvalues i = 1(1)`mcount' {
+			local opt`i' `r(opt`i')'
+			local method`i' `r(method`i')'
+			local pyopt`i' `r(pyopt`i')'
+			local pipe`i' `r(pipe`i')'
+			local xvars`i' `r(xvars`i')'
+			local allpipe `allpipe' '`pipe`i''', 
+			local allxvars `allxvars' '`xvars`i''', 
+		}
+		local allpipe `allpipe')
+		local allxvars `allxvars')
+	} 
+	else {
+		// Syntax 1
+		local allmethods `methods'
+		local allpipe (
+		local allxvars (
+		forvalues i = 1(1)10 {
+			local method : word `i' of `allmethods'
+			if "`method'"!="" {
+				local mcount = `i'
+				_pyparse , `cmdopt`i'' type(`type') method(`method')  
+				if `i'==1 {
+					local allpyopt [`r(optstr)'
+				}
+				else {
+					local allpyopt `allpyopt' , `r(optstr)'
+				}
+				local opt`i' `cmdopt`i'' 
+				local method`i' `method'
+				local pyopt`i' `r(optstr)'
+				if "`pipe`i''"=="" local pipe`i' passthrough
+				local allpipe `allpipe' '`pipe`i''', 
+				fvexpand `xvars`i'' if `touse'
+				local xvars`i' `r(varlist)'
+				local allxvars `allxvars' '`xvars`i''', 
+			}			
+		}
+		local allpyopt `allpyopt']
+		local allpipe `allpipe')
+		local allxvars `allxvars')
+	}
+
+	******** parsing end ****************************************************** 
+
+	* Deal with factor and time-series vars
+	// first expand and unabbreviate
+	fvexpand `varlist' if `touse'
+	local varlist `r(varlist)'
+	// now create a varlist with temps etc. that can be passed to Python
+	fvrevar `varlist' if `touse'
+	local varlist_t `r(varlist)'
+
+	* Pass varlist into varlists called yvar and xvars
+	gettoken yvar xvars : varlist
+	gettoken yvar_t xvars_t : varlist_t
+
+	// no longer needed
+	// ereturn clear
+	// create esample variable for posting (disappears from memory after posting)
+	tempvar esample
+	qui gen byte `esample' = `touse'
+	ereturn post, depname(`yvar') esample(`esample') obs(`N')
+
+	python: run_stacked(	///
+					"`type'",	///
+					"`finalest'", ///
+					"`allmethods'", ///
+					"`yvar_t'", ///
+					"`xvars_t'",	///
+					"`varlist'", ///
+					"`training_var'", ///
+					///
+					"`allpyopt'", ///
+					"`allpipe'", ///
+					"`allxvars'", ///
+					///  
+					"`touse'", ///
+					`pyseed', ///
+					"`nosavepred'", ///
+					"`nosavetransform'", ///
+					"`voting'" , ///
+					"`votetype'", ///
+					"`voteweights'", ///
+					`njobs' , ///
+					`folds', ///
+					"`showpywarnings'", ///
+					"`backend'", ///
+					"`sparse'" ///
+					)
+
+	ereturn local cmd		pystacked
+	ereturn local predict	pystacked_p
+	ereturn local depvar	`yvar'
+	ereturn local type		`type'
+
+	forvalues i = 1(1)`mcount' {
+		ereturn local opt`i' `opt`i'' 
+		ereturn local method`i' `method`i''
+		ereturn local pyopt`i' `pyopt`i''	
+		ereturn local pipe`i' `pipe`i''	
+		ereturn local xvars`i' `xvars`i''
+	}
+	ereturn scalar mcount = `mcount'
+
+end
+
+// parses Syntax 2
+program define syntax_parse, rclass
+
+	syntax [anything(everything)] , type(string) touse(varname)
+
+	// save y x and if/in	
+	tokenize `anything', parse("|")
+	local mainargs `1'
+	
+	// save method-specific parts
+	local mcount = 0
+	local j = 1
+	while "``j''"!="" {
+		local mcount = `mcount'+1
+		local j = `j'+3
+		local part`mcount' ``j''
+	}
+	local mcount = `mcount'-1
+	
+	// parse each part 
+	local allmethods
+	forvalues i=1(1)`mcount' {
+		local 0 ", `part`i''"
+		syntax , [Method(string asis) OPTions(string asis) PIPEline(string asis) XVARs(varlist fv) ]
+		local allmethods `allmethods' `method'
+		return local method`i' `method'
+		return local opt`i' `options'
+		if "`pipeline'"=="" local pipeline passthrough
+		_pyparse , `options' type(`type') method(`method') 
+		return local pyopt`i' `r(optstr)'
+		return local pipe`i' `pipeline'
+		if `i'==1 {
+			local allpyopt [`r(optstr)'
+		}
+		else {
+			local allpyopt `allpyopt' , `r(optstr)'
+		}
+		fvexpand `xvars' if `touse'
+		return local xvars`i' `r(varlist)'
+	}
+	local allpyopt `allpyopt']
+
+	return local allmethods `allmethods'
+	return scalar mcount = `mcount' 
+	return local mainargs `mainargs'
+	return local restargs `restargs'
+	return local allpyopt `allpyopt'
 	
 end
 
@@ -435,299 +759,6 @@ program define pystacked_graph_table, rclass
 	
 end
 
-// main program
-program define _pystacked, eclass
-version 16.0
-
-	tokenize "`0'", parse(",")
-	local beforecomma `1'
-	macro shift
-	local restargs `*'
-	tokenize `beforecomma', parse("|")
-	local mainargs `1'
-	local 0 "`mainargs' `restargs'"
-	local doublebarsyntax = ("`2'"=="|")*("`3'"=="|")
-
-	syntax varlist(min=2 fv) [if] [in] [aweight fweight], ///
-				[ ///
-					type(string) /// classification or regression
-					finalest(string) ///
-					njobs(int 0) ///
-					folds(int 5) ///
-					///
-					///
-					pyseed(integer 0) ///
-					printopt ///
-					NOSAVEPred ///
-					NOSAVETransform ///
-					///
-					voting ///
-					///
-					VOTEType(string) ///
-					VOTEWeights(numlist >0) ///
-					debug ///
-					Methods(string) ///
-					cmdopt1(string asis) ///
-					cmdopt2(string asis) ///
-					cmdopt3(string asis) ///
-					cmdopt4(string asis) ///
-					cmdopt5(string asis) ///
-					cmdopt6(string asis) ///
-					cmdopt7(string asis) ///
-					cmdopt8(string asis) ///
-					cmdopt9(string asis) ///
-					cmdopt10(string asis) ///
-					pipe1(string asis) ///
-					pipe2(string asis) ///
-					pipe3(string asis) ///
-					pipe4(string asis) ///
-					pipe5(string asis) ///
-					pipe6(string asis) ///
-					pipe7(string asis) ///
-					pipe8(string asis) ///
-					pipe9(string asis) ///
-					pipe10(string asis) ///
-					///
-					showpywarnings ///
-					backend(string) ///
-					///
-					/// options for graphing; ignore here
-					GRAPH1								/// vanilla option, abbreviates to "graph"
-					HISTogram							/// report histogram instead of default ROC
-					graph(string asis)					/// for passing options to graph combine
-					lgraph(string asis)					/// for passing options to the graphs of the learners
-					table								/// 
-					HOLDOUT1							/// vanilla option, abbreviates to "holdout"
-					holdout(varname)					///
-					SParse								///
-				]
-
-	** set data signature for pystacked_p;
-	* need to do this before temp vars are created
-	if ("`debug'"=="") local dqui qui
-	`dqui' datasignature clear 
-	`dqui'  datasignature set
-	`dqui' datasignature report
-
-	if "`type'"=="" local type reg
-	if substr("`type'",1,3)=="reg" {
-		local type reg
-	}
-	else if substr("`type'",1,5)=="class" {
-		local type class
-	}
-	else {
-		di as err "type(`type') not recognized"
-		exit 198
-	}
-
-	* defaults
-	if "`finalest'"=="" {
-		local finalest nnls
-	}
-
-	if "`backend'"=="" {
-		if "`c(os)'"=="Windows" {
-			local backend threading
-		}
-		else {
-			local backend loky
-		}
-	}
-	if "`backend'"!="loky"&"`backend'"!="multiprocessing"&"`backend'"!="threading" {
-		di as err "backend not supported"
-		exit 198
-	}
-
-	if "`votetype'"!="" {
-		local voting voting
-	}
-	if "`voteweights'"!="" {
-		local voting voting
-	}
-	if "`voting'"!="" {
-		if "`votetype'"=="" {
-			local votetype hard
-		}
-		else if "`votetype'"!="hard"&"`votetype'"!="soft" {
-			di as error "votetype(`votetype') not allowed"
-			error 198
-		}
-	} 
-
-	if (`doublebarsyntax'==0)&("`methods'"=="") {
-		if ("`type'"=="reg") {
-			local methods ols lassoic gradboost
-		}
-		else {
-			local methods logit lassocv gradboost
-		}
-	}
-	if (`doublebarsyntax'==0)&("`methods'"!="") {
-		local mcount : word count `methods'
-		if `mcount'>10 {
-			di as err "more than 10 methods specified, but only up to 10 supported using this syntax"
-			di as err "use e.g. 'pystacked y x* || m(rf) || m(lassocv) || ...' to specify as many base learners as you want"
-		}
-	}
-
-
-	******** parse options using _pyparse.ado ********************************* 
-
-	if `doublebarsyntax' {
-		syntax_parse `beforecomma' , type(`type')
-		local allmethods `r(allmethods)'
-		local allpyopt `r(allpyopt)'
-		local mcount = `r(mcount)'
-		local allpipe (
-		forvalues i = 1(1)`mcount' {
-			local opt`i' `r(opt`i')'
-			local method`i' `r(method`i')'
-			local pyopt`i' `r(pyopt`i')'
-			local pipe`i' `r(pipe`i')'
-			local allpipe `allpipe' '`pipe`i''', 
-		}
-		local allpipe `allpipe')
-	} 
-	else {
-		local allmethods `methods'
-		local allpipe (
-		forvalues i = 1(1)10 {
-			local method : word `i' of `allmethods'
-			if "`method'"!="" {
-				local mcount = `i'
-				_pyparse , `cmdopt`i'' type(`type') method(`method') 
-				if `i'==1 {
-					local allpyopt [`r(optstr)'
-				}
-				else {
-					local allpyopt `allpyopt' , `r(optstr)'
-				}
-				local opt`i' `cmdopt`i'' 
-				local method`i' `method'
-				local pyopt`i' `r(optstr)'
-				if "`pipe`i''"=="" local pipe`i' passthrough
-				local allpipe `allpipe' '`pipe`i''', 
-			}			
-		}
-		local allpyopt `allpyopt']
-		local allpipe `allpipe')
-	}
-
-	******** parsing end ****************************************************** 
-
-	marksample touse
-	markout `touse' `varlist'
-	qui count if `touse'
-	local N		= r(N)
-
-	* Deal with factor and time-series vars
-	// first expand and unabbreviate
-	fvexpand `varlist' if `touse'
-	local varlist `r(varlist)'
-	// now create a varlist with temps etc. that can be passed to Python
-	fvrevar `varlist' if `touse'
-	local varlist_t `r(varlist)'
-
-	* Pass varlist into varlists called yvar and xvars
-	gettoken yvar xvars : varlist
-	gettoken yvar_t xvars_t : varlist_t
-
-	// no longer needed
-	// ereturn clear
-	// create esample variable for posting (disappears from memory after posting)
-	tempvar esample
-	qui gen byte `esample' = `touse'
-	ereturn post, depname(`yvar') esample(`esample') obs(`N')
-
-	python: run_stacked(	///
-					"`type'",	///
-					"`finalest'", ///
-					"`allmethods'", ///
-					"`yvar_t'", ///
-					"`xvars_t'",	///
-					"`training_var'", ///
-					///
-					"`allpyopt'", ///
-					"`allpipe'", ///
-					///  
-					"`touse'", ///
-					`pyseed', ///
-					"`nosavepred'", ///
-					"`nosavetransform'", ///
-					"`voting'" , ///
-					"`votetype'", ///
-					"`voteweights'", ///
-					`njobs' , ///
-					`folds', ///
-					"`nostandardscaler'", ///
-					"`showpywarnings'", ///
-					"`backend'", ///
-					"`sparse'" ///
-					)
-
-	ereturn local cmd		pystacked
-	ereturn local predict	pystacked_p
-	ereturn local depvar	`yvar'
-	ereturn local type		`type'
-
-	forvalues i = 1(1)`mcount' {
-		ereturn local opt`i' `opt`i'' 
-		ereturn local method`i' `method`i''
-		ereturn local pyopt`i' `pyopt`i''	
-		ereturn local pipe`i' `pipe`i''		
-	}
-	ereturn scalar mcount = `mcount'
-
-end
-
-program define syntax_parse, rclass
-
-	syntax [anything(everything)] , type(string)
-
-	// save y x and if/in	
-	tokenize `anything', parse("|")
-	local mainargs `1'
-	
-	// save method-specific parts
-	local mcount = 0
-	local j = 1
-	while "``j''"!="" {
-		local mcount = `mcount'+1
-		local j = `j'+3
-		local part`mcount' ``j''
-	}
-	local mcount = `mcount'-1
-	
-	// parse each part 
-	local allmethods
-	forvalues i=1(1)`mcount' {
-		local 0 ", `part`i''"
-		syntax , [Method(string asis) OPTions(string asis) PIPEline(string asis)]
-		local allmethods `allmethods' `method'
-		return local method`i' `method'
-		return local opt`i' `options'
-		if "`pipeline'"=="" local pipeline passthrough
-		_pyparse , `options' type(`type') method(`method') 
-		return local pyopt`i' `r(optstr)'
-		return local pipe`i' `pipeline'
-		if `i'==1 {
-			local allpyopt [`r(optstr)'
-		}
-		else {
-			local allpyopt `allpyopt' , `r(optstr)'
-		}
-	}
-	local allpyopt `allpyopt']
-
-	return local allmethods `allmethods'
-	return scalar mcount = `mcount' 
-	return local mainargs `mainargs'
-	return local restargs `restargs'
-	return local allpyopt `allpyopt'
-	
-end
-
 *===============================================================================
 * Python helper function
 *===============================================================================
@@ -740,6 +771,7 @@ import sfi
 from sklearn.pipeline import make_pipeline,Pipeline
 from sklearn.neural_network import MLPRegressor,MLPClassifier
 from sklearn.preprocessing import StandardScaler,PolynomialFeatures,OneHotEncoder
+from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer,KNNImputer
 from sklearn.linear_model import LassoLarsIC,LassoCV,LogisticRegression,LogisticRegressionCV,LinearRegression
 from sklearn.linear_model import RidgeCV,ElasticNetCV
@@ -769,8 +801,34 @@ class SparseTransformer(TransformerMixin):
     def transform(self, X, y=None, **fit_params):
         return csr_matrix(X)
 
-def build_pipeline(pipes):
+def get_index(lst, w):
+    #
+    #return indexes of where elements in 'w' are stored in 'lst'
+    #
+	lst = lst.split(" ")
+	w = w.split(" ")
+	sel = []
+	for i in range(len(w)):
+		if w[i] in lst:
+			ix = lst.index(w[i])-1
+			sel.append(ix)
+	return(sel)
+
+def build_pipeline(pipes,xvars,xvar_sel):
+    #
+    #builds the pipeline for each base learner
+    #pipes = string with pipes
+    #xvars = string with all predictors (expanded original names)
+    #xvar_sel = string with to-be-selected predictors
+    #
 	ll = []
+	if xvar_sel!="":
+		sel_ix = get_index(xvars,xvar_sel)
+		ct = ColumnTransformer([("selector", "passthrough", sel_ix)],remainder="drop")
+		print(xvars)
+		print(xvar_sel)
+		print(sel_ix)
+		ll.append(("selector",ct))
 	pipes = pipes.split()
 	for p in range(len(pipes)):
 		if pipes[p]=="stdscaler":
@@ -782,7 +840,7 @@ def build_pipeline(pipes):
 		elif pipes[p]=="sparse":
 			ll.append(('sparse',SparseTransformer()))
 		elif pipes[p]=="onehot":
-			ll.append(('onehot',OneHotEncoder(sparse=False)))
+			ll.append(('onehot',OneHotEncoder()))
 		elif pipes[p]=="minmaxscaler":
 			ll.append(('minmaxscaler',MinMaxScaler()))
 		elif pipes[p]=="medianimputer":
@@ -797,9 +855,26 @@ def build_pipeline(pipes):
 			ll.append(('interact',PolynomialFeatures(include_bias=False,interaction_only=True)))
 	return ll
 
-def run_stacked(type,finalest,methods,yvar,xvars,training,allopt,allpipe,
-	touse,seed,nosavepred,nosavetransform,
-	voting,votetype,voteweights,njobs,nfolds,nostandardscaler,showpywarnings,parbackend,sparse):
+def run_stacked(type, # regression or classification 
+	finalest, # final estimator
+	methods, # list of base learners
+	yvar, # outcome
+	xvars, # predictors (temp names)
+	xvars0, # predictors (expanded original names)
+	training, # marks holdout sample
+	allopt, # options for each learner
+	allpipe, # pipes for each learner
+	allxvar_sel, # subset predictors for each learner (expanded var names)
+	touse, # sample
+	seed, # seed
+	nosavepred,nosavetransform, # store predictions
+	voting,votetype,voteweights, # voting
+	njobs, # number of jobs
+	nfolds, # number of folds
+	showpywarnings, # show warnings?
+	parbackend, # backend
+	sparse # sparse predictor matrix
+	):
 	
 	if int(format(sklearn.__version__).split(".")[1])<24 and int(format(sklearn.__version__).split(".")[0])<1:
 		sfi.SFIToolkit.stata('di as err "pystacked requires sklearn 0.24.0 or higher. Please update sklearn."')
@@ -808,15 +883,9 @@ def run_stacked(type,finalest,methods,yvar,xvars,training,allopt,allpipe,
 
 	# Set random seed
 	if seed>0:
-		#np.random.seed(seed)
 		rng=np.random.RandomState(seed)
 	else: 
 		rng=None
-
-	if nostandardscaler=="":
-		stdscaler = StandardScaler()
-	else: 
-		stdscaler = 'passthrough'
 
 	if showpywarnings=="":
 		import warnings
@@ -838,98 +907,99 @@ def run_stacked(type,finalest,methods,yvar,xvars,training,allopt,allpipe,
 
 	if sparse!="":
 		x = coo_matrix(x).tocsc()
-		#x = csr_matrix(x)
 
 	##############################################################
 	### prepare fit											   ###
 	##############################################################
 
+	# convert strings to python objects
 	methods = methods.split()
 	allopt = eval(allopt)
 	allpipe = eval(allpipe)
+	allxvar_sel = eval(allxvar_sel)
 
 	est_list = []
 	for m in range(len(methods)):
 		if type=="reg":
 			if methods[m]=="ols":
 				opt =allopt[m]
-				newmethod = build_pipeline(allpipe[m])
+				newmethod = build_pipeline(allpipe[m],xvars0,allxvar_sel[m])
 				newmethod.append(('ols',LinearRegression(**opt)))
 			if methods[m]=="lassoic":
 				opt =allopt[m]
-				newmethod = build_pipeline(allpipe[m])
+				newmethod = build_pipeline(allpipe[m],xvars0,allxvar_sel[m])
 				newmethod.append(('lassolarsic',LassoLarsIC(**opt)))
 			if methods[m]=="lassocv":
 				opt =allopt[m]
-				newmethod= build_pipeline(allpipe[m])
+				newmethod= build_pipeline(allpipe[m],xvars0,allxvar_sel[m])
 				newmethod.append(('lassocv',ElasticNetCV(**opt)))
 			if methods[m]=="ridgecv":
 				opt =allopt[m]
-				newmethod = build_pipeline(allpipe[m])
+				newmethod = build_pipeline(allpipe[m],xvars0,allxvar_sel[m])
 				newmethod.append(('lassocv',ElasticNetCV(**opt)))
 			if methods[m]=="elasticcv":
 				opt =allopt[m]
-				newmethod = build_pipeline(allpipe[m])
+				newmethod = build_pipeline(allpipe[m],xvars0,allxvar_sel[m])
 				newmethod.append(('lassocv',ElasticNetCV(**opt)))
 			if methods[m]=="rf":
 				opt =allopt[m]
-				newmethod = build_pipeline(allpipe[m])
+				newmethod = build_pipeline(allpipe[m],xvars0,allxvar_sel[m])
 				newmethod.append(('rf',RandomForestRegressor(**opt)))
 			if methods[m]=="gradboost":
 				opt =allopt[m]
-				newmethod = build_pipeline(allpipe[m])
+				newmethod = build_pipeline(allpipe[m],xvars0,allxvar_sel[m])
 				newmethod.append(('gbr',GradientBoostingRegressor(**opt)))
 			if methods[m]=="svm":
 				opt =allopt[m]
-				newmethod = build_pipeline(allpipe[m])
+				newmethod = build_pipeline(allpipe[m],xvars0,allxvar_sel[m])
 				newmethod.append(('svm', SVR(**opt)))
 			if methods[m]=="linsvm":	
 				opt =allopt[m]
-				newmethod = build_pipeline(allpipe[m])
+				newmethod = build_pipeline(allpipe[m],xvars0,allxvar_sel[m])
 				newmethod.append(('linsvm',LinearSVR(**opt)))
 			if methods[m]=="nnet":	
 				opt =allopt[m]
-				newmethod = build_pipeline(allpipe[m])
+				newmethod = build_pipeline(allpipe[m],xvars0,allxvar_sel[m])
 				newmethod.append(('mlp',MLPRegressor(**opt)))
 		elif type=="class":
 			if methods[m]=="logit":
 				opt =allopt[m]
-				newmethod = build_pipeline(allpipe[m])
+				newmethod = build_pipeline(allpipe[m],xvars0,allxvar_sel[m])
 				newmethod.append(('lassocv',LogisticRegression(**opt)))
 			if methods[m]=="lassoic":
 				sfi.SFIToolkit.stata("di as err lassoic not supported with type(class)")
 				sfi.SFIToolkit.error()
 			if methods[m]=="lassocv":
 				opt =allopt[m]
-				newmethod = build_pipeline(allpipe[m])
+				newmethod = build_pipeline(allpipe[m],xvars0,allxvar_sel[m])
 				newmethod.append(('lassocv',LogisticRegressionCV(**opt)))
 			if methods[m]=="ridgecv":
 				opt =allopt[m]
-				newmethod = build_pipeline(allpipe[m])
+				newmethod = build_pipeline(allpipe[m],xvars0,allxvar_sel[m])
 				newmethod.append(('lassocv',LogisticRegressionCV(**opt)))
 			if methods[m]=="elasticcv":
 				opt =allopt[m]
-				newmethod = build_pipeline(allpipe[m])
+				newmethod = build_pipeline(allpipe[m],xvars0,allxvar_sel[m])
 				newmethod.append(('lassocv',LogisticRegressionCV(**opt)))
 			if methods[m]=="rf":
 				opt =allopt[m]
-				newmethod = build_pipeline(allpipe[m])
+				newmethod = build_pipeline(allpipe[m],xvars0,allxvar_sel[m])
 				newmethod.append(('rf',RandomForestClassifier(**opt)))
 			if methods[m]=="gradboost":
 				opt =allopt[m]
-				newmethod = build_pipeline(allpipe[m])
+				newmethod = build_pipeline(allpipe[m],xvars0,allxvar_sel[m])
 				newmethod.append(('gradboost',GradientBoostingClassifier(**opt)))
 			if methods[m]=="svm":	
 				opt =allopt[m]
-				newmethod = build_pipeline(allpipe[m])
+				newmethod = build_pipeline(allpipe[m],xvars0,allxvar_sel[m])
 				newmethod.append(('svm',SVC(**opt)))
 			if methods[m]=="linsvm":
 				opt =allopt[m]
-				newmethod = build_pipeline(allpipe[m])
+				newmethod = build_pipeline(allpipe[m],xvars0,allxvar_sel[m])
 				newmethod.append(('linsvm',LinearSVC(**opt)))
 			if methods[m]=="nnet":	
 				opt =allopt[m]
-				newmethod = build_pipeline(allpipe[m])
+				newmethod = build_pipeline(allpipe[m],xvars0,allxvar_sel[m])
 				newmethod.append(('mlp',MLPClassifier(**opt)))
 		else: 
 			sfi.SFIToolkit.stata('di as err "method not known"') 
