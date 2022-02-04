@@ -766,7 +766,6 @@ end
 version 16.0
 python:
 
-### Import required Python modules
 import sfi
 from sklearn.pipeline import make_pipeline,Pipeline
 from sklearn.neural_network import MLPRegressor,MLPClassifier
@@ -788,7 +787,7 @@ import sys
 import sklearn
 import __main__
 
-### Define required Python functions/classes
+# Define required Python functions/classes
 
 class LinearRegressionClassifier(LinearRegression):
     _estimator_type="classifier"
@@ -896,9 +895,9 @@ def run_stacked(type, # regression or classification
 	else: 
 		nj = njobs
 		
-	##############################################################
-	### load data  											   ###
-	##############################################################	
+	# ------------------------------------------------------------
+	#  load data  											  
+	# ------------------------------------------------------------
 
 	y = np.array(sfi.Data.get(yvar,selectvar=touse))
 	x = np.array(sfi.Data.get(xvars,selectvar=touse))
@@ -908,9 +907,9 @@ def run_stacked(type, # regression or classification
 	if sparse!="":
 		x = coo_matrix(x).tocsc()
 
-	##############################################################
-	### prepare fit											   ###
-	##############################################################
+	# ------------------------------------------------------------
+	#   prepare fit											 
+	# ------------------------------------------------------------
 
 	# convert strings to python objects
 	methods = methods.split()
@@ -1076,9 +1075,9 @@ def run_stacked(type, # regression or classification
 						   weights=vweights
 					)
 
-	##############################################################
-	### fitting; save predictions in __main__				   ###
-	##############################################################
+	# ------------------------------------------------------------
+	#  fitting; save predictions in __main__				   
+	# ------------------------------------------------------------
 
 	# Train model on training data
 	if type=="class":
