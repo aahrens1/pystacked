@@ -791,20 +791,20 @@ import __main__
 ### Define required Python functions/classes
 
 class LinearRegressionClassifier(LinearRegression):
-    _estimator_type="classifier"
-    def predict_proba(self, X):
-    	return self._decision_function(X)
+	_estimator_type="classifier"
+	def predict_proba(self, X):
+		return self._decision_function(X)
 
 class SparseTransformer(TransformerMixin):
-    def fit(self, X, y=None, **fit_params):
-        return self
-    def transform(self, X, y=None, **fit_params):
-        return csr_matrix(X)
+	def fit(self, X, y=None, **fit_params):
+		return self
+	def transform(self, X, y=None, **fit_params):
+		return csr_matrix(X)
 
 def get_index(lst, w):
-    #
-    #return indexes of where elements in 'w' are stored in 'lst'
-    #
+	#
+	#return indexes of where elements in 'w' are stored in 'lst'
+	#
 	lst = lst.split(" ")
 	w = w.split(" ")
 	sel = []
@@ -815,12 +815,12 @@ def get_index(lst, w):
 	return(sel)
 
 def build_pipeline(pipes,xvars,xvar_sel):
-    #
-    #builds the pipeline for each base learner
-    #pipes = string with pipes
-    #xvars = string with all predictors (expanded original names)
-    #xvar_sel = string with to-be-selected predictors
-    #
+	#
+	#builds the pipeline for each base learner
+	#pipes = string with pipes
+	#xvars = string with all predictors (expanded original names)
+	#xvar_sel = string with to-be-selected predictors
+	#
 	ll = []
 	if xvar_sel!="":
 		sel_ix = get_index(xvars,xvar_sel)
