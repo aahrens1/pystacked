@@ -308,6 +308,7 @@ version 16.0
 		local mcount = `r(mcount)'
 		local allpipe (
 		local allxvars (
+		local allxvars0
 		forvalues i = 1(1)`mcount' {
 			local opt`i' `r(opt`i')'
 			local method`i' `r(method`i')'
@@ -316,6 +317,7 @@ version 16.0
 			local xvars`i' `r(xvars`i')'
 			local allpipe `allpipe' '`pipe`i''', 
 			local allxvars `allxvars' '`xvars`i''', 
+			local allxvars0 `allxvars0' `xvars`i'' 
 		}
 		local allpipe `allpipe')
 		local allxvars `allxvars')
@@ -325,6 +327,7 @@ version 16.0
 		local allmethods `methods'
 		local allpipe (
 		local allxvars (
+		local allxvars0 
 		forvalues i = 1(1)10 {
 			local method : word `i' of `allmethods'
 			if "`method'"!="" {
@@ -344,6 +347,7 @@ version 16.0
 				fvexpand `xvars`i'' if `touse'
 				local xvars`i' `r(varlist)'
 				local allxvars `allxvars' '`xvars`i''', 
+				local allxvars0 `allxvars0' `xvars`i''
 			}			
 		}
 		local allpyopt `allpyopt']

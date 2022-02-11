@@ -293,7 +293,7 @@ program define parse_ElasticCV, rclass
 	else {
 		local allist 
 		foreach i of numlist `alphas' {
-			local allist `allist',`i'
+			local allist `allist'`i',
 		}
 		local optstr `optstr' 'alphas':[`allist'],
 	}
