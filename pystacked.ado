@@ -361,9 +361,11 @@ version 16.0
 	fvrevar `varlist' if `touse'
 	local varlist_t `r(varlist)'
 
-	* Pass varlist into varlists called yvar and xvars
-	gettoken yvar xvars : varlist
-	gettoken yvar_t xvars_t : varlist_t
+	* Split varlists called yvar and xvars
+	local yvar : word 1 of `varlist' 
+	local yvar_t : word 1 of `varlist_t'
+	local xvars: list varlist - yvar
+	local xvars_t: list varlist_t - yvar_t
 
 	// no longer needed
 	// ereturn clear
@@ -378,7 +380,7 @@ version 16.0
 					"`allmethods'", ///
 					"`yvar_t'", ///
 					"`xvars_t'",	///
-					"`varlist'", ///
+					"`xvars'", ///
 					"`training_var'", ///
 					///
 					"`allpyopt'", ///
@@ -810,7 +812,7 @@ def get_index(lst, w):
 	sel = []
 	for i in range(len(w)):
 		if w[i] in lst:
-			ix = lst.index(w[i])-1
+			ix = lst.index(w[i]) 
 			sel.append(ix)
 	return(sel)
 
@@ -825,9 +827,10 @@ def build_pipeline(pipes,xvars,xvar_sel):
 	if xvar_sel!="":
 		sel_ix = get_index(xvars,xvar_sel)
 		ct = ColumnTransformer([("selector", "passthrough", sel_ix)],remainder="drop")
-		print(xvars)
-		print(xvar_sel)
-		print(sel_ix)
+		#print(xvars.split(" "))
+		#print(xvar_sel)
+		#print(sel_ix)
+		#print([xvars.split(" ")[i] for i in sel_ix])
 		ll.append(("selector",ct))
 	pipes = pipes.split()
 	for p in range(len(pipes)):
