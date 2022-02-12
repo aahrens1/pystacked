@@ -141,6 +141,36 @@ program define pystacked, eclass
 	
 end
 
+// Internal version of matchnames
+// Sample syntax:
+// matchnames "`varlist'" "`list1'" "`list2'"
+// takes list in `varlist', looks up in `list1', returns entries in `list2', called r(names)
+program define matchnames, rclass
+	version 11.2
+	args	varnames namelist1 namelist2
+
+	local k1 : word count `namelist1'
+	local k2 : word count `namelist2'
+
+	if `k1' ~= `k2' {
+		di as err "namelist error"
+		exit 198
+	}
+	foreach vn in `varnames' {
+		local i : list posof `"`vn'"' in namelist1
+		if `i' > 0 {
+			local newname : word `i' of `namelist2'
+		}
+		else {
+* Keep old name if not found in list
+			local newname "`vn'"
+		}
+		local names "`names' `newname'"
+	}
+	local names	: list clean names
+	return local names "`names'"
+end
+
 // main program
 program define _pystacked, eclass
 version 16.0
@@ -307,7 +337,6 @@ version 16.0
 		local allpyopt `r(allpyopt)'
 		local mcount = `r(mcount)'
 		local allpipe (
-		local allxvars (
 		local allxvars0
 		forvalues i = 1(1)`mcount' {
 			local opt`i' `r(opt`i')'
@@ -316,17 +345,14 @@ version 16.0
 			local pipe`i' `r(pipe`i')'
 			local xvars`i' `r(xvars`i')'
 			local allpipe `allpipe' '`pipe`i''', 
-			local allxvars `allxvars' '`xvars`i''', 
 			local allxvars0 `allxvars0' `xvars`i'' 
 		}
 		local allpipe `allpipe')
-		local allxvars `allxvars')
 	} 
 	else {
 		// Syntax 1
 		local allmethods `methods'
 		local allpipe (
-		local allxvars (
 		local allxvars0 
 		forvalues i = 1(1)10 {
 			local method : word `i' of `allmethods'
@@ -346,13 +372,11 @@ version 16.0
 				local allpipe `allpipe' '`pipe`i''', 
 				fvexpand `xvars`i'' if `touse'
 				local xvars`i' `r(varlist)'
-				local allxvars `allxvars' '`xvars`i''', 
 				local allxvars0 `allxvars0' `xvars`i''
 			}			
 		}
 		local allpyopt `allpyopt']
 		local allpipe `allpipe')
-		local allxvars `allxvars')
 	}
 
 	******** parsing end ****************************************************** 
@@ -361,18 +385,50 @@ version 16.0
 	// first expand and unabbreviate
 	fvexpand `varlist' if `touse'
 	local varlist `r(varlist)'
-	// now create a varlist with temps etc. that can be passed to Python
-	fvrevar `varlist' if `touse'
-	local varlist_t `r(varlist)'
 
 	* Split varlists called yvar and xvars
 	local yvar : word 1 of `varlist' 
-	local yvar_t : word 1 of `varlist_t'
 	local xvars: list varlist - yvar
-	local xvars_t: list varlist_t - yvar_t
 
-	// no longer needed
-	// ereturn clear
+	** xvars is the default predictor set.
+	** allxvars0 collects all predictors specified in the xvars*() options
+	** xvars_all is the unique list of all predictors; this will be passed to Python
+	local xvars_all `xvars' `allxvars0'
+	local xvars_all : list uniq xvars_all
+
+	// now create a varlist with temps etc. that can be passed to Python
+	fvrevar `yvar'
+	local yvar_t `r(varlist)'
+	fvrevar `xvars_all'
+	local xvars_all_t `r(varlist)'
+
+	* Set xvars`i':=xvars if xvars`i' is empty
+	local allxvars (
+	local allxvars_t (
+	forvalues i = 1(1)`mcount' {
+		if "`xvars`i''"=="" {
+			local xvars`i' `xvars'
+		}
+		matchnames "`xvars`i''" "`xvars_all'" "`xvars_all_t'"
+		local xvars_i_t `r(names)'
+		* remove collinear predictors for OLS only
+		if "`method`i''"=="ols" { 
+			_rmcoll `xvars_i_t'
+			local xvars_i_t `r(varlist)'
+		}
+		local allxvars `allxvars' '`xvars`i''', 
+		local allxvars_t `allxvars_t' '`xvars_i_t'', 
+	}
+	local allxvars `allxvars')
+	local allxvars_t `allxvars_t')
+
+	di "Default predictors = `xvars'"
+	di "All predictors = `xvars_all'"
+	di "All predictors (temp) = `xvars_all_t'"
+	di "Additional predictors = `allxvars0'"
+	di "Predictors for each learners = `allxvars'"
+	di "Predictors for each learners (temp) = `allxvars_t'"
+
 	// create esample variable for posting (disappears from memory after posting)
 	tempvar esample
 	qui gen byte `esample' = `touse'
@@ -383,13 +439,13 @@ version 16.0
 					"`finalest'", ///
 					"`allmethods'", ///
 					"`yvar_t'", ///
-					"`xvars_t'",	///
-					"`xvars'", ///
+					"`xvars_all_t'",	///
+					"`xvars_all'", ///
 					"`training_var'", ///
 					///
 					"`allpyopt'", ///
 					"`allpipe'", ///
-					"`allxvars'", ///
+					"`allxvars_t'", ///
 					///  
 					"`touse'", ///
 					`pyseed', ///
@@ -930,83 +986,83 @@ def run_stacked(type, # regression or classification
 		if type=="reg":
 			if methods[m]=="ols":
 				opt =allopt[m]
-				newmethod = build_pipeline(allpipe[m],xvars0,allxvar_sel[m])
+				newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
 				newmethod.append(('ols',LinearRegression(**opt)))
 			if methods[m]=="lassoic":
 				opt =allopt[m]
-				newmethod = build_pipeline(allpipe[m],xvars0,allxvar_sel[m])
+				newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
 				newmethod.append(('lassolarsic',LassoLarsIC(**opt)))
 			if methods[m]=="lassocv":
 				opt =allopt[m]
-				newmethod= build_pipeline(allpipe[m],xvars0,allxvar_sel[m])
+				newmethod= build_pipeline(allpipe[m],xvars,allxvar_sel[m])
 				newmethod.append(('lassocv',ElasticNetCV(**opt)))
 			if methods[m]=="ridgecv":
 				opt =allopt[m]
-				newmethod = build_pipeline(allpipe[m],xvars0,allxvar_sel[m])
+				newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
 				newmethod.append(('lassocv',ElasticNetCV(**opt)))
 			if methods[m]=="elasticcv":
 				opt =allopt[m]
-				newmethod = build_pipeline(allpipe[m],xvars0,allxvar_sel[m])
+				newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
 				newmethod.append(('lassocv',ElasticNetCV(**opt)))
 			if methods[m]=="rf":
 				opt =allopt[m]
-				newmethod = build_pipeline(allpipe[m],xvars0,allxvar_sel[m])
+				newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
 				newmethod.append(('rf',RandomForestRegressor(**opt)))
 			if methods[m]=="gradboost":
 				opt =allopt[m]
-				newmethod = build_pipeline(allpipe[m],xvars0,allxvar_sel[m])
+				newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
 				newmethod.append(('gbr',GradientBoostingRegressor(**opt)))
 			if methods[m]=="svm":
 				opt =allopt[m]
-				newmethod = build_pipeline(allpipe[m],xvars0,allxvar_sel[m])
+				newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
 				newmethod.append(('svm', SVR(**opt)))
 			if methods[m]=="linsvm":	
 				opt =allopt[m]
-				newmethod = build_pipeline(allpipe[m],xvars0,allxvar_sel[m])
+				newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
 				newmethod.append(('linsvm',LinearSVR(**opt)))
 			if methods[m]=="nnet":	
 				opt =allopt[m]
-				newmethod = build_pipeline(allpipe[m],xvars0,allxvar_sel[m])
+				newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
 				newmethod.append(('mlp',MLPRegressor(**opt)))
 		elif type=="class":
 			if methods[m]=="logit":
 				opt =allopt[m]
-				newmethod = build_pipeline(allpipe[m],xvars0,allxvar_sel[m])
+				newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
 				newmethod.append(('lassocv',LogisticRegression(**opt)))
 			if methods[m]=="lassoic":
 				sfi.SFIToolkit.stata("di as err lassoic not supported with type(class)")
 				sfi.SFIToolkit.error()
 			if methods[m]=="lassocv":
 				opt =allopt[m]
-				newmethod = build_pipeline(allpipe[m],xvars0,allxvar_sel[m])
+				newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
 				newmethod.append(('lassocv',LogisticRegressionCV(**opt)))
 			if methods[m]=="ridgecv":
 				opt =allopt[m]
-				newmethod = build_pipeline(allpipe[m],xvars0,allxvar_sel[m])
+				newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
 				newmethod.append(('lassocv',LogisticRegressionCV(**opt)))
 			if methods[m]=="elasticcv":
 				opt =allopt[m]
-				newmethod = build_pipeline(allpipe[m],xvars0,allxvar_sel[m])
+				newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
 				newmethod.append(('lassocv',LogisticRegressionCV(**opt)))
 			if methods[m]=="rf":
 				opt =allopt[m]
-				newmethod = build_pipeline(allpipe[m],xvars0,allxvar_sel[m])
+				newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
 				newmethod.append(('rf',RandomForestClassifier(**opt)))
 			if methods[m]=="gradboost":
 				opt =allopt[m]
-				newmethod = build_pipeline(allpipe[m],xvars0,allxvar_sel[m])
+				newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
 				newmethod.append(('gradboost',GradientBoostingClassifier(**opt)))
 			if methods[m]=="svm":	
 				opt =allopt[m]
-				newmethod = build_pipeline(allpipe[m],xvars0,allxvar_sel[m])
+				newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
 				newmethod.append(('svm',SVC(**opt)))
 			if methods[m]=="linsvm":
 				opt =allopt[m]
-				newmethod = build_pipeline(allpipe[m],xvars0,allxvar_sel[m])
+				newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
 				newmethod.append(('linsvm',LinearSVC(**opt)))
 			if methods[m]=="nnet":	
 				opt =allopt[m]
-				newmethod = build_pipeline(allpipe[m],xvars0,allxvar_sel[m])
+				newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
 				newmethod.append(('mlp',MLPClassifier(**opt)))
 		else: 
 			sfi.SFIToolkit.stata('di as err "method not known"') 
