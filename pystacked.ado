@@ -422,12 +422,12 @@ version 16.0
 	local allxvars `allxvars')
 	local allxvars_t `allxvars_t')
 
-	di "Default predictors = `xvars'"
-	di "All predictors = `xvars_all'"
-	di "All predictors (temp) = `xvars_all_t'"
-	di "Additional predictors = `allxvars0'"
-	di "Predictors for each learners = `allxvars'"
-	di "Predictors for each learners (temp) = `allxvars_t'"
+	//di "Default predictors = `xvars'"
+	//di "All predictors = `xvars_all'"
+	//di "All predictors (temp) = `xvars_all_t'"
+	//di "Additional predictors = `allxvars0'"
+	//di "Predictors for each learners = `allxvars'"
+	//di "Predictors for each learners (temp) = `allxvars_t'"
 
 	// create esample variable for posting (disappears from memory after posting)
 	tempvar esample
