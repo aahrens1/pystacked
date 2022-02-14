@@ -141,35 +141,6 @@ program define pystacked, eclass
 	
 end
 
-// Internal version of matchnames
-// Sample syntax:
-// matchnames "`varlist'" "`list1'" "`list2'"
-// takes list in `varlist', looks up in `list1', returns entries in `list2', called r(names)
-program define matchnames, rclass
-	version 11.2
-	args	varnames namelist1 namelist2
-
-	local k1 : word count `namelist1'
-	local k2 : word count `namelist2'
-
-	if `k1' ~= `k2' {
-		di as err "namelist error"
-		exit 198
-	}
-	foreach vn in `varnames' {
-		local i : list posof `"`vn'"' in namelist1
-		if `i' > 0 {
-			local newname : word `i' of `namelist2'
-		}
-		else {
-* Keep old name if not found in list
-			local newname "`vn'"
-		}
-		local names "`names' `newname'"
-	}
-	local names	: list clean names
-	return local names "`names'"
-end
 
 // main program
 program define _pystacked, eclass
@@ -337,7 +308,6 @@ version 16.0
 		local allpyopt `r(allpyopt)'
 		local mcount = `r(mcount)'
 		local allpipe (
-		local allxvars0
 		forvalues i = 1(1)`mcount' {
 			local opt`i' `r(opt`i')'
 			local method`i' `r(method`i')'
@@ -345,7 +315,6 @@ version 16.0
 			local pipe`i' `r(pipe`i')'
 			local xvars`i' `r(xvars`i')'
 			local allpipe `allpipe' '`pipe`i''', 
-			local allxvars0 `allxvars0' `xvars`i'' 
 		}
 		local allpipe `allpipe')
 	} 
@@ -353,7 +322,6 @@ version 16.0
 		// Syntax 1
 		local allmethods `methods'
 		local allpipe (
-		local allxvars0 
 		forvalues i = 1(1)10 {
 			local method : word `i' of `allmethods'
 			if "`method'"!="" {
@@ -370,9 +338,6 @@ version 16.0
 				local pyopt`i' `r(optstr)'
 				if "`pipe`i''"=="" local pipe`i' passthrough
 				local allpipe `allpipe' '`pipe`i''', 
-				fvexpand `xvars`i'' if `touse'
-				local xvars`i' `r(varlist)'
-				local allxvars0 `allxvars0' `xvars`i''
 			}			
 		}
 		local allpyopt `allpyopt']
@@ -381,53 +346,70 @@ version 16.0
 
 	******** parsing end ****************************************************** 
 
-	* Deal with factor and time-series vars
-	// first expand and unabbreviate
-	fvexpand `varlist' if `touse'
-	local varlist `r(varlist)'
-
 	* Split varlists called yvar and xvars
+	** xvars is the default predictor set.
 	local yvar : word 1 of `varlist' 
 	local xvars: list varlist - yvar
 
-	** xvars is the default predictor set.
-	** allxvars0 collects all predictors specified in the xvars*() options
-	** xvars_all is the unique list of all predictors; this will be passed to Python
-	local xvars_all `xvars' `allxvars0'
-	local xvars_all : list uniq xvars_all
+		forvalues i = 1(1)`mcount' {
+			di "xvars`i' = `xvars`i''"
+		} 	
 
-	// now create a varlist with temps etc. that can be passed to Python
-	fvrevar `yvar'
-	local yvar_t `r(varlist)'
-	fvrevar `xvars_all'
-	local xvars_all_t `r(varlist)'
-
-	* Set xvars`i':=xvars if xvars`i' is empty
-	local allxvars (
-	local allxvars_t (
+	** predictors
+	local xvars_all  // expanded original vars for each learner (for info only)
+	local xvars_all_t // Python list with temp vars for each learner
+	local allxvars // Python list with expanded original vars for each learner (for info only)
+	local allxvars_t (  // Python list with temp vars for each learner
 	forvalues i = 1(1)`mcount' {
+		** if xvars() option is empty, use default list
 		if "`xvars`i''"=="" {
 			local xvars`i' `xvars'
 		}
-		matchnames "`xvars`i''" "`xvars_all'" "`xvars_all_t'"
-		local xvars_i_t `r(names)'
-		* remove collinear predictors for OLS only
+		** expand each varlist
+		fvexpand `xvars`i'' if `touse'
+		local xvars`i' `r(varlist)'
+		** strip out variables with "o" and "b" prefix
+		fvstrip `xvars`i'', dropomit
+		local xvars`i' `r(varlist)'
+		local allxvars `allxvars' '`xvars`i''',
+		local xvars_all `xvars_all' `xvars`i''
+		** create temp vars
+		fvrevar `xvars`i''
+		local xvars`i' `r(varlist)'
+		** remove collinear predictors for OLS only
 		if "`method`i''"=="ols" { 
-			_rmcoll `xvars_i_t'
-			local xvars_i_t `r(varlist)'
+			_rmcoll `xvars`i''
+			local xvars`i'  `r(varlist)'
 		}
-		local allxvars `allxvars' '`xvars`i''', 
-		local allxvars_t `allxvars_t' '`xvars_i_t'', 
+		local xvars_all_t `xvars_all_t' `xvars`i''
+		local allxvars_t `allxvars_t' '`xvars`i''',
 	}
-	local allxvars `allxvars')
+	local allxvars `allxvars']
 	local allxvars_t `allxvars_t')
 
-	//di "Default predictors = `xvars'"
-	//di "All predictors = `xvars_all'"
-	//di "All predictors (temp) = `xvars_all_t'"
-	//di "Additional predictors = `allxvars0'"
-	//di "Predictors for each learners = `allxvars'"
-	//di "Predictors for each learners (temp) = `allxvars_t'"
+	** xvars_all_t is the unique list of all predictors; this will be passed to Python
+	** we use the union of all vars
+	local xvars_all_t : list uniq xvars_all_t
+	local xvars_all : list uniq xvars_all
+
+	** dependent variable (same procedure as above)
+	fvexpand `yvar' if `touse'
+	local yvar_t `r(varlist)'
+	fvstrip `yvar_t', dropomit
+	local yvar_t `r(varlist)'
+	fvrevar `yvar_t'
+	local yvar_t `r(varlist)'
+
+	if ("`debug'"!="") {
+		di "Default predictors = `xvars'"
+		di "All predictors = `xvars_all'"
+		di "All predictors (temp) = `xvars_all_t'"
+		di "Predictors for each learners = `allxvars'"
+		di "Predictors for each learners (temp) = `allxvars_t'"
+		forvalues i = 1(1)`mcount' {
+			di "xvars`i' = `xvars`i''"
+		} 	
+	}
 
 	// create esample variable for posting (disappears from memory after posting)
 	tempvar esample
@@ -440,7 +422,6 @@ version 16.0
 					"`allmethods'", ///
 					"`yvar_t'", ///
 					"`xvars_all_t'",	///
-					"`xvars_all'", ///
 					"`training_var'", ///
 					///
 					"`allpyopt'", ///
@@ -508,14 +489,13 @@ program define syntax_parse, rclass
 		_pyparse , `options' type(`type') method(`method') 
 		return local pyopt`i' `r(optstr)'
 		return local pipe`i' `pipeline'
+		return local xvars`i' `xvars'
 		if `i'==1 {
 			local allpyopt [`r(optstr)'
 		}
 		else {
 			local allpyopt `allpyopt' , `r(optstr)'
 		}
-		fvexpand `xvars' if `touse'
-		return local xvars`i' `r(varlist)'
 	}
 	local allpyopt `allpyopt']
 
@@ -821,6 +801,131 @@ program define pystacked_graph_table, rclass
 	
 end
 
+
+// Internal version of matchnames
+// Sample syntax:
+// matchnames "`varlist'" "`list1'" "`list2'"
+// takes list in `varlist', looks up in `list1', returns entries in `list2', called r(names)
+program define matchnames, rclass
+	version 11.2
+	args	varnames namelist1 namelist2
+
+	local k1 : word count `namelist1'
+	local k2 : word count `namelist2'
+
+	if `k1' ~= `k2' {
+		di as err "namelist error"
+		exit 198
+	}
+	foreach vn in `varnames' {
+		local i : list posof `"`vn'"' in namelist1
+		if `i' > 0 {
+			local newname : word `i' of `namelist2'
+		}
+		else {
+* Keep old name if not found in list
+			local newname "`vn'"
+		}
+		local names "`names' `newname'"
+	}
+	local names	: list clean names
+	return local names "`names'"
+end
+
+// internal version of fvstrip 1.01 ms 24march2015
+// takes varlist with possible FVs and strips out b/n/o notation
+// returns results in r(varnames)
+// optionally also omits omittable FVs
+// expand calls fvexpand either on full varlist
+// or (with onebyone option) on elements of varlist
+program define fvstrip, rclass
+	version 11.2
+	syntax [anything] [if] , [ dropomit expand onebyone NOIsily ]
+	if "`expand'"~="" {												//  force call to fvexpand
+		if "`onebyone'"=="" {
+			fvexpand `anything' `if'								//  single call to fvexpand
+			local anything `r(varlist)'
+		}
+		else {
+			foreach vn of local anything {
+				fvexpand `vn' `if'									//  call fvexpand on items one-by-one
+				local newlist	`newlist' `r(varlist)'
+			}
+			local anything	: list clean newlist
+		}
+	}
+	foreach vn of local anything {									//  loop through varnames
+		if "`dropomit'"~="" {										//  check & include only if
+			_ms_parse_parts `vn'									//  not omitted (b. or o.)
+			if ~`r(omit)' {
+				local unstripped	`unstripped' `vn'				//  add to list only if not omitted
+			}
+		}
+		else {														//  add varname to list even if
+			local unstripped		`unstripped' `vn'				//  could be omitted (b. or o.)
+		}
+	}
+// Now create list with b/n/o stripped out
+	foreach vn of local unstripped {
+		local svn ""											//  initialize
+		_ms_parse_parts `vn'
+		if "`r(type)'"=="variable" & "`r(op)'"=="" {			//  simplest case - no change
+			local svn	`vn'
+		}
+		else if "`r(type)'"=="variable" & "`r(op)'"=="o" {		//  next simplest case - o.varname => varname
+			local svn	`r(name)'
+		}
+		else if "`r(type)'"=="variable" {						//  has other operators so strip o but leave .
+			local op	`r(op)'
+			local op	: subinstr local op "o" "", all
+			local svn	`op'.`r(name)'
+		}
+		else if "`r(type)'"=="factor" {							//  simple factor variable
+			local op	`r(op)'
+			local op	: subinstr local op "b" "", all
+			local op	: subinstr local op "n" "", all
+			local op	: subinstr local op "o" "", all
+			local svn	`op'.`r(name)'							//  operator + . + varname
+		}
+		else if"`r(type)'"=="interaction" {						//  multiple variables
+			forvalues i=1/`r(k_names)' {
+				local op	`r(op`i')'
+				local op	: subinstr local op "b" "", all
+				local op	: subinstr local op "n" "", all
+				local op	: subinstr local op "o" "", all
+				local opv	`op'.`r(name`i')'					//  operator + . + varname
+				if `i'==1 {
+					local svn	`opv'
+				}
+				else {
+					local svn	`svn'#`opv'
+				}
+			}
+		}
+		else if "`r(type)'"=="product" {
+			di as err "fvstrip error - type=product for `vn'"
+			exit 198
+		}
+		else if "`r(type)'"=="error" {
+			di as err "fvstrip error - type=error for `vn'"
+			exit 198
+		}
+		else {
+			di as err "fvstrip error - unknown type for `vn'"
+			exit 198
+		}
+		local stripped `stripped' `svn'
+	}
+	local stripped	: list retokenize stripped						//  clean any extra spaces
+	
+	if "`noisily'"~="" {											//  for debugging etc.
+di as result "`stripped'"
+	}
+
+	return local varlist	`stripped'								//  return results in r(varlist)
+end
+
+
 *===============================================================================
 * Python helper function
 *===============================================================================
@@ -923,7 +1028,6 @@ def run_stacked(type, # regression or classification
 	methods, # list of base learners
 	yvar, # outcome
 	xvars, # predictors (temp names)
-	xvars0, # predictors (expanded original names)
 	training, # marks holdout sample
 	allopt, # options for each learner
 	allpipe, # pipes for each learner
