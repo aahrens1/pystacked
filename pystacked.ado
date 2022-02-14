@@ -365,20 +365,21 @@ version 16.0
 		if "`xvars`i''"=="" {
 			local xvars`i' `xvars'
 		}
-		** expand each varlist
-		fvexpand `xvars`i'' if `touse'
-		local xvars`i' `r(varlist)'
-		** strip out variables with "o" and "b" prefix
-		fvstrip `xvars`i'', dropomit
+		** expand each varlist, and strip out variables with "o" and "b" prefix
+		fvstrip `xvars`i'' if `touse', dropomit expand
 		local xvars`i' `r(varlist)'
 		local allxvars `allxvars' '`xvars`i''',
 		local xvars_all `xvars_all' `xvars`i''
-		** create temp vars
-		fvrevar `xvars`i''
-		local xvars`i' `r(varlist)'
+		** create temp vars; loop through one-by-one so no zero vector temps are created
+		local tlist
+		foreach v in `xvars`i'' {
+			fvrevar `v' if `touse'
+			local tlist `tlist' `r(varlist)'
+		}
+		local xvars`i' `tlist'
 		** remove collinear predictors for OLS only
 		if "`method`i''"=="ols" { 
-			_rmcoll `xvars`i''
+			_rmcoll `xvars`i'' if `touse'
 			local xvars`i'  `r(varlist)'
 		}
 		local xvars_all_t `xvars_all_t' `xvars`i''
@@ -393,22 +394,22 @@ version 16.0
 	local xvars_all : list uniq xvars_all
 
 	** dependent variable (same procedure as above)
-	fvexpand `yvar' if `touse'
+	fvstrip `yvar' if `touse', dropomit expand
 	local yvar_t `r(varlist)'
-	fvstrip `yvar_t', dropomit
-	local yvar_t `r(varlist)'
-	fvrevar `yvar_t'
+	fvrevar `yvar_t' if `touse'
 	local yvar_t `r(varlist)'
 
 	if ("`debug'"!="") {
 		di "Default predictors = `xvars'"
 		di "All predictors = `xvars_all'"
 		di "All predictors (temp) = `xvars_all_t'"
-		di "Predictors for each learners = `allxvars'"
-		di "Predictors for each learners (temp) = `allxvars_t'"
+		di "Predictors for each learner = `allxvars'"
+		di "Predictors for each learner (temp) = `allxvars_t'"
 		forvalues i = 1(1)`mcount' {
 			di "xvars`i' = `xvars`i''"
 		} 	
+		di "Summarize yvar_t and xvars_all_t:"
+		sum `yvar_t' `xvars_all_t' if `touse'
 	}
 
 	// create esample variable for posting (disappears from memory after posting)
