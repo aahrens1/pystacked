@@ -24,9 +24,12 @@ program define pystacked, eclass
 		local beforecomma `1'
 		macro shift
 		local restargs `*'
-		tokenize `beforecomma', parse("|")
+		local 0 `beforecomma'
+		syntax anything(name=beforeifinweight) [if] [in] [aweight fweight]
+		local ifinweight `if' `in' `weight' `exp'
+		tokenize `beforeifinweight', parse("|")
 		local mainargs `1'
-		local 0 "`mainargs' `restargs'"
+		local 0 `mainargs' `ifinweight' `restargs'
 	}
 	syntax [anything]  [if] [in] [aweight fweight] , 	///
 				[										///
@@ -150,11 +153,13 @@ version 16.0
 	local beforecomma `1'
 	macro shift
 	local restargs `*'
-	tokenize `beforecomma', parse("|")
+	local 0 `beforecomma'
+	syntax anything(name=beforeifinweight) [if] [in] [aweight fweight]
+	local ifinweight `if' `in' `weight' `exp'
+	tokenize `beforeifinweight', parse("|")
 	local mainargs `1'
-	local 0 "`mainargs' `restargs'"
+	local 0 `mainargs' `ifinweight' `restargs'
 	local doublebarsyntax = ("`2'"=="|")*("`3'"=="|")
-
 	syntax varlist(min=2 fv) [if] [in] [aweight fweight], ///
 				[ ///
 					type(string) /// classification or regression
@@ -303,7 +308,7 @@ version 16.0
 
 	if `doublebarsyntax' {
 		// Syntax 2
-		syntax_parse `beforecomma' , type(`type') touse(`touse')
+		syntax_parse `beforeifinweight' , type(`type') touse(`touse')
 		local allmethods `r(allmethods)'
 		local allpyopt `r(allpyopt)'
 		local mcount = `r(mcount)'
@@ -350,10 +355,11 @@ version 16.0
 	** xvars is the default predictor set.
 	local yvar : word 1 of `varlist' 
 	local xvars: list varlist - yvar
-
+	if ("`debug'"!="") {
 		forvalues i = 1(1)`mcount' {
 			di "xvars`i' = `xvars`i''"
-		} 	
+		}
+	}
 
 	** predictors
 	local xvars_all  // expanded original vars for each learner (for info only)
