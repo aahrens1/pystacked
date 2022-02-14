@@ -358,7 +358,7 @@ version 16.0
 	** predictors
 	local xvars_all  // expanded original vars for each learner (for info only)
 	local xvars_all_t // Python list with temp vars for each learner
-	local allxvars // Python list with expanded original vars for each learner (for info only)
+	local allxvars ( // Python list with expanded original vars for each learner (for info only)
 	local allxvars_t (  // Python list with temp vars for each learner
 	forvalues i = 1(1)`mcount' {
 		** if xvars() option is empty, use default list
@@ -384,7 +384,7 @@ version 16.0
 		local xvars_all_t `xvars_all_t' `xvars`i''
 		local allxvars_t `allxvars_t' '`xvars`i''',
 	}
-	local allxvars `allxvars']
+	local allxvars `allxvars')
 	local allxvars_t `allxvars_t')
 
 	** xvars_all_t is the unique list of all predictors; this will be passed to Python
