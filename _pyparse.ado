@@ -494,8 +494,7 @@ program define parse_rfReg, rclass
 		local optstr `optstr' 'max_features':'auto',
 	} 
 	else {
-		di as err "max_features(`max_features') not allowed"
-		exit 197
+		local optstr `optstr' 'max_features':`max_features',
 	}
 	** max leaf nodes
 	if `max_leaf_nodes'>0 {
@@ -635,8 +634,7 @@ program define parse_rfClass, rclass
 		local optstr `optstr' 'max_features':'auto',
 	}
 	else {
-		di as err "max_features(`max_features') not allowed"
-		error 197
+		local optstr `optstr' 'max_features':`max_features',
 	}
 	** max leaf nodes
 	if `max_leaf_nodes'>0 {
@@ -816,15 +814,11 @@ program define parse_gradboostReg, rclass
 	if "`max_features'"=="auto"|"`max_features'"=="sqrt"|"`max_features'"=="log2" {
 		local optstr `optstr' 'max_features':'`max_features'',
 	} 
-	else if real("`max_features'")!=. {
-		local optstr `optstr' 'max_features':`max_features',
-	}
 	else if "`max_features'"=="" {
 		local optstr `optstr' 'max_features':None,
 	}
 	else {
-		di as err "max_features(`max_features') not allowed"
-		error 197
+		local optstr `optstr' 'max_features':`max_features',
 	}
 	** alpha
 	if `alpha'>=0 {
@@ -962,15 +956,11 @@ program define parse_gradboostClass, rclass
 	if "`max_features'"=="auto"|"`max_features'"=="sqrt"|"`max_features'"=="log2" {
 		local optstr `optstr' 'max_features':'`max_features'',
 	} 
-	else if real("`max_features'")!=. {
-		local optstr `optstr' 'max_features':`max_features',
-	}
 	else if "`max_features'"=="" {
 		local optstr `optstr' 'max_features':None,
 	}
 	else {
-		di as err "max_features(`max_features') not allowed"
-		error 197
+		local optstr `optstr' 'max_features':`max_features',
 	}
 	** max leaf nodes
 	if `max_leaf_nodes'>0 {
