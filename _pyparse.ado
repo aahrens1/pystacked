@@ -446,7 +446,7 @@ program define parse_rfReg, rclass
 					random_state(integer -1) ///
 					warm_start ///
 					ccp_alpha(real 0) ///
-					max_samples(integer -1) /// only integer supported
+					max_samples(real -1) ///  
 					]
 
 	local optstr 
@@ -548,7 +548,7 @@ program define parse_rfReg, rclass
 		local optstr `optstr' 'ccp_alpha':`ccp_alpha',
 	}
 	** max samples
-	if `max_samples'>=1 {
+	if `max_samples'>=0 {
 		local optstr `optstr' 'max_samples':`max_samples',
 	}
 	else {
