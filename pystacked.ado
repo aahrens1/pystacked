@@ -953,9 +953,11 @@ from sklearn.ensemble import StackingRegressor,StackingClassifier
 from sklearn.ensemble import VotingRegressor,VotingClassifier
 from sklearn.ensemble import RandomForestRegressor,RandomForestClassifier
 from sklearn.ensemble import GradientBoostingRegressor,GradientBoostingClassifier
-from sklearn.base import TransformerMixin
+from sklearn.base import TransformerMixin,BaseEstimator
 from sklearn.svm import LinearSVR,LinearSVC,SVC,SVR
 from scipy.sparse import coo_matrix,csr_matrix,issparse
+from sklearn.utils import check_X_y,check_array
+from sklearn.utils.validation import check_is_fitted
 import numpy as np
 import scipy 
 import sys
@@ -964,6 +966,28 @@ import __main__
 
 ### Define required Python functions/classes
 
+class SingleBest(BaseEstimator):
+	_estimator_type="regressor"
+	def fit(self, X, y):
+		X, y = check_X_y(X, y, accept_sparse=True)
+		self.is_fitted_ = True
+		ncols = X.shape[1]
+		lowest_mse = np.Inf
+		for i in range(ncols):
+			this_mse=np.mean((y-X[:, i]) ** 2)
+			if this_mse < lowest_mse:
+				lowest_mse = this_mse
+				best = i
+		self.best = best
+		coef = np.zeros(ncols)
+		coef[best] = 1
+		self.coef_ = coef
+		return self
+	def predict(self, X):
+		X = check_array(X, accept_sparse=True)
+		check_is_fitted(self, 'is_fitted_')
+		return X[:,self.best]
+		
 class LinearRegressionClassifier(LinearRegression):
 	_estimator_type="classifier"
 	def predict_proba(self, X):
@@ -1189,6 +1213,8 @@ def run_stacked(type, # regression or classification
 		fin_est = LinearRegression(fit_intercept=False,positive=True)
 	elif finalest == "ridge" and type == "reg": 
 		fin_est = RidgeCV()
+	elif finalest == "singlebest" and type == "reg": 
+		fin_est = SingleBest()
 	elif finalest == "ols" and type == "class": 
 		fin_est = LinearRegressionClassifier()	
 	elif finalest == "ols" and type == "reg": 
