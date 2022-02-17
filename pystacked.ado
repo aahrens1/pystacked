@@ -1,5 +1,5 @@
-*! pystacked v0.3
-*! last edited: 22Jan2022
+*! pystacked v0.4
+*! last edited: 17feb2022
 *! authors: aa/ms
 
 // parent program
@@ -46,6 +46,7 @@ program define pystacked, eclass
 	// display results
 	if `"`graph'`graph1'`lgraph'`histogram'`table'"' == "" {
 
+		di as res "Stacking weights:"
 		di as text "{hline 17}{c TT}{hline 21}"
 		di as text "  Method" _c
 		di as text _col(18) "{c |}      Weight"
@@ -222,6 +223,7 @@ version 16.0
 					HOLDOUT1							/// vanilla option, abbreviates to "holdout"
 					holdout(varname)					///
 					SParse								///
+					SHOWOPTions 						///
 				]
 
 	** set data signature for pystacked_p;
@@ -446,7 +448,8 @@ version 16.0
 					`folds', ///
 					"`showpywarnings'", ///
 					"`backend'", ///
-					"`sparse'" ///
+					"`sparse'", ///
+					"`showoptions'" ///
 					)
 
 	ereturn local cmd		pystacked
@@ -1071,7 +1074,8 @@ def run_stacked(type, # regression or classification
 	nfolds, # number of folds
 	showpywarnings, # show warnings?
 	parbackend, # backend
-	sparse # sparse predictor matrix
+	sparse, # sparse predictor 
+	showopt #
 	):
 	
 	if int(format(sklearn.__version__).split(".")[1])<24 and int(format(sklearn.__version__).split(".")[0])<1:
@@ -1115,6 +1119,19 @@ def run_stacked(type, # regression or classification
 	allopt = eval(allopt)
 	allpipe = eval(allpipe)
 	allxvar_sel = eval(allxvar_sel)
+
+	# print options:
+	if showopt!="":
+		sfi.SFIToolkit.displayln("")
+		for m in range(len(methods)):
+			opt = allopt[m]
+			sfi.SFIToolkit.displayln("Base learner: "+methods[m])
+			for i in opt:
+				subopt_name = opt[i]
+				sfi.SFIToolkit.stata('di as text "'+str(i)+' = " _c')
+				sfi.SFIToolkit.stata('di as text "'+str(opt[i])+'; " _c')
+			sfi.SFIToolkit.displayln("")
+			sfi.SFIToolkit.displayln("")
 
 	est_list = []
 	for m in range(len(methods)):

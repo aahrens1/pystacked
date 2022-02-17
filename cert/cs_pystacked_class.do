@@ -20,15 +20,23 @@ which pystacked
 python: import sklearn
 python: sklearn.__version__
 
+tempfile testdata
+global model v58 v1-v30
+insheet using https://archive.ics.uci.edu/ml/machine-learning-databases/spambase/spambase.data, clear comma
+sample 50
+gen u = runiform()
+gen train = u<0.5
+gen train2 = u<.75
+save `testdata'
 
 *******************************************************************************
 *** try voting 														 		***
 *******************************************************************************
 
-insheet using https://archive.ics.uci.edu/ml/machine-learning-databases/spambase/spambase.data, clear comma
-						
-pystacked v58 v1-v57, type(class) pyseed(123) ///
-							methods(lassocv rf nnet) /// 
+use `testdata', clear
+			
+pystacked $model, type(class) pyseed(123) ///
+							methods(lassocv rf logit) /// 
 							njobs(4) pipe1(poly2) ///
 							voting voteweights(0.1 .4) ///
 							votetype(soft)
@@ -38,7 +46,7 @@ pystacked v58 v1-v57, type(class) pyseed(123) ///
 *** try other estimators											 		***
 *******************************************************************************
 
-insheet using https://archive.ics.uci.edu/ml/machine-learning-databases/spambase/spambase.data, clear comma
+use `testdata', clear
 
 local m1 logit lassocv gradboost nnet
 local m2 logit lassocv rf nnet
@@ -49,7 +57,7 @@ local m6 logit elasticcv gradboost linsvm
 
 foreach m in "`m1'" "`m2'" "`m3'" "`m4'" "`m5'" "`m6'" {
 	di "`m'"
-	pystacked v58 v1-v57, type(class) pyseed(123) ///
+	pystacked $model, type(class) pyseed(123) ///
 							methods(`m') /// 
 							njobs(4)
 }
@@ -58,9 +66,9 @@ foreach m in "`m1'" "`m2'" "`m3'" "`m4'" "`m5'" "`m6'" {
 *** check that predicted value = weighted avg of transform variables 		***
 *******************************************************************************
 						 
-insheet using https://archive.ics.uci.edu/ml/machine-learning-databases/spambase/spambase.data, clear comma
+use `testdata', clear
 
-pystacked v58 v1-v57, type(class) pyseed(123)
+pystacked $model, type(class) pyseed(123)
 
 predict double yhat, pr
 list yhat if _n < 10
@@ -77,29 +85,29 @@ assert reldif(yhat,myhat)<0.0001
 *** check table option 														***
 *******************************************************************************
 
-insheet using https://archive.ics.uci.edu/ml/machine-learning-databases/spambase/spambase.data, clear comma
+use `testdata', clear
 
 // holdout sample 1
 cap drop h1
-gen h1 = _n>3000
+gen h1 = !train2
 
 // full sample
-pystacked v58 v1-v57, type(class) pyseed(123) methods(logit rf gradboost)
+pystacked $model, type(class) pyseed(123) methods(logit rf gradboost)
 pystacked, table
 
 // with holdout sample
-pystacked v58 v1-v57 if _n<2000, type(class) pyseed(123) methods(logit rf gradboost)
+pystacked $model if train, type(class) pyseed(123) methods(logit rf gradboost)
 // default holdout - all available obs
 pystacked, table holdout
 // specified holdout sample
 pystacked, table holdout(h1)
 
 // as pystacked option
-pystacked v58 v1-v57 if _n<2000, type(class) pyseed(123) ///
+pystacked $model if train, type(class) pyseed(123) ///
 	methods(logit rf gradboost) table holdout
 
 // syntax 2
-pystacked v58 v1-v57 if _n<2000 || method(logit) || method(rf) || method(gradboost), ///
+pystacked $model || method(logit) || method(rf) || method(gradboost) || if train, ///
 	type(class) pyseed(123)
 pystacked, table holdout
 
@@ -108,18 +116,18 @@ pystacked, table holdout
 *** check graph option 														***
 *******************************************************************************
 
-insheet using https://archive.ics.uci.edu/ml/machine-learning-databases/spambase/spambase.data, clear comma
+use `testdata', clear
 
 // holdout sample 1
 cap drop h1
-gen h1 = _n>3000
+gen h1 = !train2
 
 // full sample
-pystacked v58 v1-v57, type(class) pyseed(123) methods(logit rf gradboost)
+pystacked $model, type(class) pyseed(123) methods(logit rf gradboost)
 pystacked, graph
 
 // with holdout sample
-pystacked v58 v1-v57 if _n<2000, type(class) pyseed(123) methods(logit rf gradboost)
+pystacked $model if train, type(class) pyseed(123) methods(logit rf gradboost)
 // default holdout - all available obs
 pystacked, graph holdout
 // specified holdout sample
@@ -132,11 +140,11 @@ pystacked, graph(subtitle("subtitle goes here")) holdout
 pystacked, lgraph(percent) hist holdout
 
 // as pystacked option
-pystacked v58 v1-v57 if _n<2000, type(class) pyseed(123) ///
+pystacked $model if train, type(class) pyseed(123) ///
 	methods(logit rf gradboost) graph holdout
 
 // syntax 2
-pystacked v58 v1-v57 if _n<2000 || method(logit) || method(rf) || method(gradboost), ///
+pystacked $model || method(logit) || method(rf) || method(gradboost) || if train, ///
 	type(class) pyseed(123)
 pystacked, graph holdout
 

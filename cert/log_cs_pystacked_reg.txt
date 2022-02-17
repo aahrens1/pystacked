@@ -1,8 +1,8 @@
----------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------
       name:  <unnamed>
        log:  /Users/kahrens/MyProjects/pystacked/cert/log_cs_pystacked_reg.txt
   log type:  text
- opened on:  22 Jan 2022, 12:10:08
+ opened on:  17 Feb 2022, 17:41:54
 
 . 
 . clear all
@@ -16,9 +16,7 @@
   [4]  (PERSONAL)  "/Users/kahrens/Documents/Stata/ado/personal/"
   [5]  (PLUS)      "/Users/kahrens/Library/Application Support/Stata/ado/plus/"
   [6]  (OLDPLACE)  "~/ado/"
-  [7]              "/Users/kahrens/MyProjects/pylearn2"
-  [8]              "/Users/kahrens/MyProjects/ddml"
-  [9]              "/Users/kahrens/MyProjects/pystacked"
+  [7]              "/Users/kahrens/MyProjects/pystacked"
 . }
 
 . else if "`c(username)'"=="ecomes" {
@@ -32,8 +30,8 @@
 
 . which pystacked 
 /Users/kahrens/MyProjects/pystacked/pystacked.ado
-*! pystacked v0.3
-*! last edited: 22Jan2022
+*! pystacked v0.4
+*! last edited: 17feb2022
 *! authors: aa/ms
 
 . python: import sklearn
@@ -46,8 +44,132 @@
 
 . 
 . *******************************************************************************
-. *** voting                                                                                                                                 
->      ***
+. *** xvar option                                                                                                
+>                          ***
+. *******************************************************************************
+. 
+. insheet using "/Users/kahrens/Dropbox (PP)/ddml/Data/housing.csv", ///
+>         clear comma
+(14 vars, 506 obs)
+
+.         
+. global xuse c.(crim lstat)##c.(crim lstat)
+
+. global xall c.(crim-lstat)##c.(crim-lstat)
+
+. 
+. set seed 789
+
+. pystacked medv $xuse, method(gradboost lassocv)   
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  gradboost      |      0.4306977
+  lassocv        |      0.5693023
+
+. predict double xb
+
+.  
+. set seed 789
+
+. pystacked medv $xall, method(gradboost lassocv) xvars1($xuse) xvars2($xuse) 
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  gradboost      |      0.4306977
+  lassocv        |      0.5693023
+
+. predict double xb2
+
+. 
+. set seed 789
+
+. pystacked medv $xall || method(gradboost) xvars($xuse) || m(lassocv) xvars($xuse),  
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  gradboost      |      0.4306977
+  lassocv        |      0.5693023
+
+. predict double xb3
+
+. 
+. set seed 789
+
+. pystacked medv crim, method(gradboost lassocv) xvars1($xuse) xvars2($xuse)  
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  gradboost      |      0.4306977
+  lassocv        |      0.5693023
+
+. predict double xb4
+
+. 
+. ** this should be different
+. set seed 789
+
+. pystacked medv crim, method(gradboost lassocv) xvars1(crim lstat) xvars2(crim lstat)   
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  gradboost      |      0.7048644
+  lassocv        |      0.2951356
+
+. predict double xb5
+
+. 
+. assert reldif(xb,xb2)<1e-5
+
+. assert reldif(xb,xb3)<1e-5
+
+. assert reldif(xb,xb4)<1e-5
+
+. assert xb!=xb5
+
+. 
+. 
+. *******************************************************************************
+. *** xvar vs pipeline                                                                                           
+>                  ***
+. *******************************************************************************
+. 
+. insheet using "/Users/kahrens/Dropbox (PP)/ddml/Data/housing.csv", ///
+>         clear comma
+(14 vars, 506 obs)
+
+.         
+. set seed 789
+
+. pystacked medv crim-lstat, method(gradboost lassocv) xvars2(c.(crim-lstat)##c.(crim-lstat))  
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  gradboost      |      0.8196822
+  lassocv        |      0.1803178
+
+. predict double xb1
+
+. 
+. set seed 789
+
+. pystacked medv crim-lstat, method(gradboost lassocv) pipe2(poly2) 
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  gradboost      |      0.8196822
+  lassocv        |      0.1803178
+
+. predict double xb2
+
+. 
+. assert reldif(xb1,xb2)<1e-5
+
+. 
+. 
+. *******************************************************************************
+. *** voting                                                                                                     
+>                                  ***
 . *******************************************************************************
 . 
 . clear
@@ -79,9 +201,12 @@
 >                                                  pipe1(poly2) pipe2(poly2) /// 
 >                                                  voting voteweights(.5 .9)      
 
-.                                                  
+. assert _rc == 198                                                
+
+.                                         
 . *******************************************************************************
-. *** check pipeline                                                                                                                      ***
+. *** check pipeline                                                                                             
+>                          ***
 . *******************************************************************************
 . 
 . clear
@@ -110,12 +235,14 @@
 .                          
 . pystacked lpsa c.($xvars)##c.($xvars), ///
 >                                                  type(regress) pyseed(243) ///
->                                                  methods(ols lassoic )                                           
+>                                                  methods(ols lassoic )                                         
+>   
+note: svi omitted because of collinearity
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  ols            |      0.1527270
-  lassoic        |      0.8472730
+  ols            |      0.1540086
+  lassoic        |      0.8459914
 
 . predict b, transf
 
@@ -243,13 +370,14 @@
      +------------------------------------------------------------------------+
 
 . 
-. assert a1==b1
+. assert reldif(a1,b1)<1e-5
 
-. assert a2==b2
+. assert reldif(a2,b2)<1e-5
 
 . 
 . *******************************************************************************
-. *** check that xvar() subsetting works                                                                          ***
+. *** check that xvar() subsetting works                                                                         
+>  ***
 . *******************************************************************************
 . 
 . 
@@ -272,12 +400,6 @@
 . set seed 789
 
 . pystacked medv crim-lstat, method(gradboost lassocv) xvars1(crim lstat) xvars2(crim lstat) pyseed(-1)
-medv crim zn indus chas nox rm age dis rad tax ptratio b lstat
-crim lstat
-[0, 12]
-medv crim zn indus chas nox rm age dis rad tax ptratio b lstat
-crim lstat
-[0, 12]
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
@@ -290,12 +412,6 @@ crim lstat
 . set seed 789
 
 . pystacked medv crim-lstat || method(gradboost) xvars(crim lstat) || m(lassocv) xvars(crim lstat), pyseed(-1)
-medv crim zn indus chas nox rm age dis rad tax ptratio b lstat
-crim lstat
-[0, 12]
-medv crim zn indus chas nox rm age dis rad tax ptratio b lstat
-crim lstat
-[0, 12]
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
@@ -333,92 +449,34 @@ crim lstat
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  gradboost      |      0.7201726
-  lassocv        |      0.2798274
+  gradboost      |      0.7191956
+  lassocv        |      0.2808044
 
 . predict double xb
 
 . 
 . set seed 789
 
-. pystacked medv i.rad##c.(crim-lstat), method(gradboost lassocv) xvars1(i.rad##c.crim) xvars2(i.rad##c.crim) pyseed(-1)
-medv 1b.rad 2.rad 3.rad 4.rad 5.rad 6.rad 7.rad 8.rad 24.rad crim zn indus chas nox rm age dis rad tax ptratio b lstat 1b.rad#co.crim 2.rad#c
-> .crim 3.rad#c.crim 4.rad#c.crim 5.rad#c.crim 6.rad#c.crim 7.rad#c.crim 8.rad#c.crim 24.rad#c.crim 1b.rad#co.zn 2.rad#c.zn 3.rad#c.zn 4.rad#
-> c.zn 5.rad#c.zn 6.rad#c.zn 7.rad#c.zn 8.rad#c.zn 24.rad#c.zn 1b.rad#co.indus 2.rad#c.indus 3.rad#c.indus 4.rad#c.indus 5.rad#c.indus 6.rad#
-> c.indus 7.rad#c.indus 8.rad#c.indus 24.rad#c.indus 1b.rad#co.chas 2.rad#c.chas 3.rad#c.chas 4.rad#c.chas 5.rad#c.chas 6.rad#c.chas 7.rad#c.
-> chas 8.rad#c.chas 24.rad#c.chas 1b.rad#co.nox 2.rad#c.nox 3.rad#c.nox 4.rad#c.nox 5.rad#c.nox 6.rad#c.nox 7.rad#c.nox 8.rad#c.nox 24.rad#c.
-> nox 1b.rad#co.rm 2.rad#c.rm 3.rad#c.rm 4.rad#c.rm 5.rad#c.rm 6.rad#c.rm 7.rad#c.rm 8.rad#c.rm 24.rad#c.rm 1b.rad#co.age 2.rad#c.age 3.rad#c
-> .age 4.rad#c.age 5.rad#c.age 6.rad#c.age 7.rad#c.age 8.rad#c.age 24.rad#c.age 1b.rad#co.dis 2.rad#c.dis 3.rad#c.dis 4.rad#c.dis 5.rad#c.dis
->  6.rad#c.dis 7.rad#c.dis 8.rad#c.dis 24.rad#c.dis 1b.rad#co.rad 2.rad#c.rad 3.rad#c.rad 4.rad#c.rad 5.rad#c.rad 6.rad#c.rad 7.rad#c.rad 8.r
-> ad#c.rad 24.rad#c.rad 1b.rad#co.tax 2.rad#c.tax 3.rad#c.tax 4.rad#c.tax 5.rad#c.tax 6.rad#c.tax 7.rad#c.tax 8.rad#c.tax 24.rad#c.tax 1b.rad
-> #co.ptratio 2.rad#c.ptratio 3.rad#c.ptratio 4.rad#c.ptratio 5.rad#c.ptratio 6.rad#c.ptratio 7.rad#c.ptratio 8.rad#c.ptratio 24.rad#c.ptrati
-> o 1b.rad#co.b 2.rad#c.b 3.rad#c.b 4.rad#c.b 5.rad#c.b 6.rad#c.b 7.rad#c.b 8.rad#c.b 24.rad#c.b 1b.rad#co.lstat 2.rad#c.lstat 3.rad#c.lstat 
-> 4.rad#c.lstat 5.rad#c.lstat 6.rad#c.lstat 7.rad#c.lstat 8.rad#c.lstat 24.rad#c.lstat
-1b.rad 2.rad 3.rad 4.rad 5.rad 6.rad 7.rad 8.rad 24.rad crim 1b.rad#co.crim 2.rad#c.crim 3.rad#c.crim 4.rad#c.crim 5.rad#c.crim 6.rad#c.crim 
-> 7.rad#c.crim 8.rad#c.crim 24.rad#c.crim
-[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 22, 23, 24, 25, 26, 27, 28, 29, 30]
-medv 1b.rad 2.rad 3.rad 4.rad 5.rad 6.rad 7.rad 8.rad 24.rad crim zn indus chas nox rm age dis rad tax ptratio b lstat 1b.rad#co.crim 2.rad#c
-> .crim 3.rad#c.crim 4.rad#c.crim 5.rad#c.crim 6.rad#c.crim 7.rad#c.crim 8.rad#c.crim 24.rad#c.crim 1b.rad#co.zn 2.rad#c.zn 3.rad#c.zn 4.rad#
-> c.zn 5.rad#c.zn 6.rad#c.zn 7.rad#c.zn 8.rad#c.zn 24.rad#c.zn 1b.rad#co.indus 2.rad#c.indus 3.rad#c.indus 4.rad#c.indus 5.rad#c.indus 6.rad#
-> c.indus 7.rad#c.indus 8.rad#c.indus 24.rad#c.indus 1b.rad#co.chas 2.rad#c.chas 3.rad#c.chas 4.rad#c.chas 5.rad#c.chas 6.rad#c.chas 7.rad#c.
-> chas 8.rad#c.chas 24.rad#c.chas 1b.rad#co.nox 2.rad#c.nox 3.rad#c.nox 4.rad#c.nox 5.rad#c.nox 6.rad#c.nox 7.rad#c.nox 8.rad#c.nox 24.rad#c.
-> nox 1b.rad#co.rm 2.rad#c.rm 3.rad#c.rm 4.rad#c.rm 5.rad#c.rm 6.rad#c.rm 7.rad#c.rm 8.rad#c.rm 24.rad#c.rm 1b.rad#co.age 2.rad#c.age 3.rad#c
-> .age 4.rad#c.age 5.rad#c.age 6.rad#c.age 7.rad#c.age 8.rad#c.age 24.rad#c.age 1b.rad#co.dis 2.rad#c.dis 3.rad#c.dis 4.rad#c.dis 5.rad#c.dis
->  6.rad#c.dis 7.rad#c.dis 8.rad#c.dis 24.rad#c.dis 1b.rad#co.rad 2.rad#c.rad 3.rad#c.rad 4.rad#c.rad 5.rad#c.rad 6.rad#c.rad 7.rad#c.rad 8.r
-> ad#c.rad 24.rad#c.rad 1b.rad#co.tax 2.rad#c.tax 3.rad#c.tax 4.rad#c.tax 5.rad#c.tax 6.rad#c.tax 7.rad#c.tax 8.rad#c.tax 24.rad#c.tax 1b.rad
-> #co.ptratio 2.rad#c.ptratio 3.rad#c.ptratio 4.rad#c.ptratio 5.rad#c.ptratio 6.rad#c.ptratio 7.rad#c.ptratio 8.rad#c.ptratio 24.rad#c.ptrati
-> o 1b.rad#co.b 2.rad#c.b 3.rad#c.b 4.rad#c.b 5.rad#c.b 6.rad#c.b 7.rad#c.b 8.rad#c.b 24.rad#c.b 1b.rad#co.lstat 2.rad#c.lstat 3.rad#c.lstat 
-> 4.rad#c.lstat 5.rad#c.lstat 6.rad#c.lstat 7.rad#c.lstat 8.rad#c.lstat 24.rad#c.lstat
-1b.rad 2.rad 3.rad 4.rad 5.rad 6.rad 7.rad 8.rad 24.rad crim 1b.rad#co.crim 2.rad#c.crim 3.rad#c.crim 4.rad#c.crim 5.rad#c.crim 6.rad#c.crim 
-> 7.rad#c.crim 8.rad#c.crim 24.rad#c.crim
-[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 22, 23, 24, 25, 26, 27, 28, 29, 30]
+. pystacked medv i.rad##c.(crim-lstat), method(gradboost lassocv) xvars1(i.rad##c.crim) xvars2(i.rad##c.crim) pys
+> eed(-1)
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  gradboost      |      0.7201726
-  lassocv        |      0.2798274
+  gradboost      |      0.7191956
+  lassocv        |      0.2808044
 
 . predict double xb2
 
 . 
 . set seed 789
 
-. pystacked medv i.rad##c.(crim-lstat) || method(gradboost) xvars(i.rad##c.crim) || m(lassocv) xvars(i.rad##c.crim), pyseed(-1)
-medv 1b.rad 2.rad 3.rad 4.rad 5.rad 6.rad 7.rad 8.rad 24.rad crim zn indus chas nox rm age dis rad tax ptratio b lstat 1b.rad#co.crim 2.rad#c
-> .crim 3.rad#c.crim 4.rad#c.crim 5.rad#c.crim 6.rad#c.crim 7.rad#c.crim 8.rad#c.crim 24.rad#c.crim 1b.rad#co.zn 2.rad#c.zn 3.rad#c.zn 4.rad#
-> c.zn 5.rad#c.zn 6.rad#c.zn 7.rad#c.zn 8.rad#c.zn 24.rad#c.zn 1b.rad#co.indus 2.rad#c.indus 3.rad#c.indus 4.rad#c.indus 5.rad#c.indus 6.rad#
-> c.indus 7.rad#c.indus 8.rad#c.indus 24.rad#c.indus 1b.rad#co.chas 2.rad#c.chas 3.rad#c.chas 4.rad#c.chas 5.rad#c.chas 6.rad#c.chas 7.rad#c.
-> chas 8.rad#c.chas 24.rad#c.chas 1b.rad#co.nox 2.rad#c.nox 3.rad#c.nox 4.rad#c.nox 5.rad#c.nox 6.rad#c.nox 7.rad#c.nox 8.rad#c.nox 24.rad#c.
-> nox 1b.rad#co.rm 2.rad#c.rm 3.rad#c.rm 4.rad#c.rm 5.rad#c.rm 6.rad#c.rm 7.rad#c.rm 8.rad#c.rm 24.rad#c.rm 1b.rad#co.age 2.rad#c.age 3.rad#c
-> .age 4.rad#c.age 5.rad#c.age 6.rad#c.age 7.rad#c.age 8.rad#c.age 24.rad#c.age 1b.rad#co.dis 2.rad#c.dis 3.rad#c.dis 4.rad#c.dis 5.rad#c.dis
->  6.rad#c.dis 7.rad#c.dis 8.rad#c.dis 24.rad#c.dis 1b.rad#co.rad 2.rad#c.rad 3.rad#c.rad 4.rad#c.rad 5.rad#c.rad 6.rad#c.rad 7.rad#c.rad 8.r
-> ad#c.rad 24.rad#c.rad 1b.rad#co.tax 2.rad#c.tax 3.rad#c.tax 4.rad#c.tax 5.rad#c.tax 6.rad#c.tax 7.rad#c.tax 8.rad#c.tax 24.rad#c.tax 1b.rad
-> #co.ptratio 2.rad#c.ptratio 3.rad#c.ptratio 4.rad#c.ptratio 5.rad#c.ptratio 6.rad#c.ptratio 7.rad#c.ptratio 8.rad#c.ptratio 24.rad#c.ptrati
-> o 1b.rad#co.b 2.rad#c.b 3.rad#c.b 4.rad#c.b 5.rad#c.b 6.rad#c.b 7.rad#c.b 8.rad#c.b 24.rad#c.b 1b.rad#co.lstat 2.rad#c.lstat 3.rad#c.lstat 
-> 4.rad#c.lstat 5.rad#c.lstat 6.rad#c.lstat 7.rad#c.lstat 8.rad#c.lstat 24.rad#c.lstat
-1b.rad 2.rad 3.rad 4.rad 5.rad 6.rad 7.rad 8.rad 24.rad crim 1b.rad#co.crim 2.rad#c.crim 3.rad#c.crim 4.rad#c.crim 5.rad#c.crim 6.rad#c.crim 
-> 7.rad#c.crim 8.rad#c.crim 24.rad#c.crim
-[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 22, 23, 24, 25, 26, 27, 28, 29, 30]
-medv 1b.rad 2.rad 3.rad 4.rad 5.rad 6.rad 7.rad 8.rad 24.rad crim zn indus chas nox rm age dis rad tax ptratio b lstat 1b.rad#co.crim 2.rad#c
-> .crim 3.rad#c.crim 4.rad#c.crim 5.rad#c.crim 6.rad#c.crim 7.rad#c.crim 8.rad#c.crim 24.rad#c.crim 1b.rad#co.zn 2.rad#c.zn 3.rad#c.zn 4.rad#
-> c.zn 5.rad#c.zn 6.rad#c.zn 7.rad#c.zn 8.rad#c.zn 24.rad#c.zn 1b.rad#co.indus 2.rad#c.indus 3.rad#c.indus 4.rad#c.indus 5.rad#c.indus 6.rad#
-> c.indus 7.rad#c.indus 8.rad#c.indus 24.rad#c.indus 1b.rad#co.chas 2.rad#c.chas 3.rad#c.chas 4.rad#c.chas 5.rad#c.chas 6.rad#c.chas 7.rad#c.
-> chas 8.rad#c.chas 24.rad#c.chas 1b.rad#co.nox 2.rad#c.nox 3.rad#c.nox 4.rad#c.nox 5.rad#c.nox 6.rad#c.nox 7.rad#c.nox 8.rad#c.nox 24.rad#c.
-> nox 1b.rad#co.rm 2.rad#c.rm 3.rad#c.rm 4.rad#c.rm 5.rad#c.rm 6.rad#c.rm 7.rad#c.rm 8.rad#c.rm 24.rad#c.rm 1b.rad#co.age 2.rad#c.age 3.rad#c
-> .age 4.rad#c.age 5.rad#c.age 6.rad#c.age 7.rad#c.age 8.rad#c.age 24.rad#c.age 1b.rad#co.dis 2.rad#c.dis 3.rad#c.dis 4.rad#c.dis 5.rad#c.dis
->  6.rad#c.dis 7.rad#c.dis 8.rad#c.dis 24.rad#c.dis 1b.rad#co.rad 2.rad#c.rad 3.rad#c.rad 4.rad#c.rad 5.rad#c.rad 6.rad#c.rad 7.rad#c.rad 8.r
-> ad#c.rad 24.rad#c.rad 1b.rad#co.tax 2.rad#c.tax 3.rad#c.tax 4.rad#c.tax 5.rad#c.tax 6.rad#c.tax 7.rad#c.tax 8.rad#c.tax 24.rad#c.tax 1b.rad
-> #co.ptratio 2.rad#c.ptratio 3.rad#c.ptratio 4.rad#c.ptratio 5.rad#c.ptratio 6.rad#c.ptratio 7.rad#c.ptratio 8.rad#c.ptratio 24.rad#c.ptrati
-> o 1b.rad#co.b 2.rad#c.b 3.rad#c.b 4.rad#c.b 5.rad#c.b 6.rad#c.b 7.rad#c.b 8.rad#c.b 24.rad#c.b 1b.rad#co.lstat 2.rad#c.lstat 3.rad#c.lstat 
-> 4.rad#c.lstat 5.rad#c.lstat 6.rad#c.lstat 7.rad#c.lstat 8.rad#c.lstat 24.rad#c.lstat
-1b.rad 2.rad 3.rad 4.rad 5.rad 6.rad 7.rad 8.rad 24.rad crim 1b.rad#co.crim 2.rad#c.crim 3.rad#c.crim 4.rad#c.crim 5.rad#c.crim 6.rad#c.crim 
-> 7.rad#c.crim 8.rad#c.crim 24.rad#c.crim
-[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 22, 23, 24, 25, 26, 27, 28, 29, 30]
+. pystacked medv i.rad##c.(crim-lstat) || method(gradboost) xvars(i.rad##c.crim) || m(lassocv) xvars(i.rad##c.cri
+> m), pyseed(-1)
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  gradboost      |      0.7201726
-  lassocv        |      0.2798274
+  gradboost      |      0.7191956
+  lassocv        |      0.2808044
 
 . predict double xb3
 
@@ -427,10 +485,10 @@ medv 1b.rad 2.rad 3.rad 4.rad 5.rad 6.rad 7.rad 8.rad 24.rad crim zn indus chas 
      +-----------------------------------+
      |        xb         xb2         xb3 |
      |-----------------------------------|
-  1. | 26.492983   26.492983   26.492983 |
-  2. | 25.362446   25.362446   25.362446 |
-  3. | 28.312739   28.312739   28.312739 |
-  4. | 28.473006   28.473006   28.473006 |
+  1. | 26.488789   26.488789   26.488789 |
+  2. | 25.359783   25.359783   25.359783 |
+  3. | 28.306074   28.306074   28.306074 |
+  4. | 28.466122   28.466122   28.466122 |
      +-----------------------------------+
 
 . assert reldif(xb,xb2)<10e-9
@@ -440,7 +498,8 @@ medv 1b.rad 2.rad 3.rad 4.rad 5.rad 6.rad 7.rad 8.rad 24.rad crim zn indus chas 
 . 
 . 
 . *******************************************************************************
-. *** try various combinations of estimators                                                                      ***
+. *** try various combinations of estimators                                                                     
+>  ***
 . *******************************************************************************
 . 
 . insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
@@ -469,7 +528,12 @@ medv 1b.rad 2.rad 3.rad 4.rad 5.rad 6.rad 7.rad 8.rad 24.rad crim zn indus chas 
 >                                                  methods(`m') /// 
 >                                                  njobs(4) ///
 >                                                  pipe2(poly2) pipe1(poly2)
-  4. }
+  4.         pystacked lpsa lcavol lweight age lbph svi lcp gleason pgg45, ///
+>                                                  type(regress) pyseed(243) ///
+>                                                  methods(`m') /// 
+>                                                  njobs(4) ///
+>                                                  pipe2(poly2) pipe1(poly2) finalest(singlebest)
+  5. }
 ols lassocv gradboost nnet
 ---------------------------------------
   Method         |      Weight
@@ -478,12 +542,26 @@ ols lassocv gradboost nnet
   lassocv        |      0.8518984
   gradboost      |      0.0741874
   nnet           |      0.0000000
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0000000
+  lassocv        |      1.0000000
+  gradboost      |      0.0000000
+  nnet           |      0.0000000
 ols lassocv rf nnet
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
   ols            |      0.0805984
   lassocv        |      0.9194016
+  rf             |      0.0000000
+  nnet           |      0.0000000
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0000000
+  lassocv        |      1.0000000
   rf             |      0.0000000
   nnet           |      0.0000000
 ols lassoic gradboost nnet
@@ -494,6 +572,13 @@ ols lassoic gradboost nnet
   lassoic        |      0.5093814
   gradboost      |      0.4023098
   nnet           |      0.0000000
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0000000
+  lassoic        |      1.0000000
+  gradboost      |      0.0000000
+  nnet           |      0.0000000
 ols ridgecv gradboost nnet
 ---------------------------------------
   Method         |      Weight
@@ -502,12 +587,26 @@ ols ridgecv gradboost nnet
   ridgecv        |      0.0000000
   gradboost      |      0.8874585
   nnet           |      0.0000000
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0000000
+  ridgecv        |      0.0000000
+  gradboost      |      1.0000000
+  nnet           |      0.0000000
 ols elasticcv gradboost nnet
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
   ols            |      0.0528410
   elasticcv      |      0.9471590
+  gradboost      |      0.0000000
+  nnet           |      0.0000000
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0000000
+  elasticcv      |      1.0000000
   gradboost      |      0.0000000
   nnet           |      0.0000000
 ols elasticcv gradboost svm
@@ -518,14 +617,28 @@ ols elasticcv gradboost svm
   elasticcv      |      0.9471590
   gradboost      |      0.0000000
   svm            |      0.0000000
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0000000
+  elasticcv      |      1.0000000
+  gradboost      |      0.0000000
+  svm            |      0.0000000
 ols elasticcv gradboost linsvm
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  ols            |      0.0499055
-  elasticcv      |      0.5170138
+  ols            |      0.0528410
+  elasticcv      |      0.9471590
   gradboost      |      0.0000000
-  linsvm         |      0.4330807
+  linsvm         |      0.0000000
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0000000
+  elasticcv      |      1.0000000
+  gradboost      |      0.0000000
+  linsvm         |      0.0000000
 
 . 
 . *******************************************************************************
@@ -614,7 +727,8 @@ ols elasticcv gradboost linsvm
 
 . 
 . *******************************************************************************
-. *** check table option                                                                                                          ***
+. *** check table option                                                                                         
+>                  ***
 . *******************************************************************************
 . 
 . clear
@@ -727,8 +841,7 @@ MSPE: In-Sample and Out-of-Sample
 
 . 
 . // syntax 2
-. pystacked lpsa $xvars if _n<50 ///
->                                                 || method(ols) || method(lassoic) || method(rf), ///
+. pystacked lpsa $xvars || method(ols) || method(lassoic) || method(rf) ||  if _n<50, ///
 >                                                  type(regress) pyseed(243) ///
 >                                                  methods(ols lassoic rf)
 ---------------------------------------
@@ -752,7 +865,8 @@ MSPE: In-Sample and Out-of-Sample
 
 . 
 . *******************************************************************************
-. *** check graph option                                                                                                          ***
+. *** check graph option                                                                                         
+>                  ***
 . *******************************************************************************
 . 
 . clear
@@ -835,8 +949,7 @@ Number of holdout observations:   48
 
 . 
 . // syntax 2
-. pystacked lpsa $xvars if _n<50 ///
->                                                 || method(ols) || method(lassoic) || method(rf), ///
+. pystacked lpsa $xvars || method(ols) || method(lassoic) || method(rf) || if _n<50 , ///
 >                                                  type(regress) pyseed(243) ///
 >                                                  methods(ols lassoic rf)
 ---------------------------------------
@@ -855,5 +968,5 @@ Number of holdout observations:   48
       name:  <unnamed>
        log:  /Users/kahrens/MyProjects/pystacked/cert/log_cs_pystacked_reg.txt
   log type:  text
- closed on:  22 Jan 2022, 12:11:10
----------------------------------------------------------------------------------------------------------------------------------------------
+ closed on:  17 Feb 2022, 17:44:16
+-----------------------------------------------------------------------------------------------------------------

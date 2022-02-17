@@ -860,14 +860,9 @@ by town{p_end}
 {phang2}. {stata "insheet using https://statalasso.github.io/dta/housing.csv, clear"}
 
 {pstd}
-Define a global for the model:
-{p_end}
-{phang2}. {stata "global model medv crim-lstat"}{p_end}
-
-{pstd}
 Stacking regression with lasso, random forest and gradient boosting.
 {p_end}
-{phang2}. {stata "pystacked $model, type(regress) pyseed(123) methods(lassoic rf gradboost)"}{p_end}
+{phang2}. {stata "pystacked medv crim-lstat, type(regress) pyseed(123) methods(lassoic rf gradboost)"}{p_end}
 
 {pstd}
 The weights determine how much each base learner contributes
@@ -881,7 +876,7 @@ Request the MSPE table (in-sample only):{p_end}
 Re-estimate using the first 400 observations, and
 request the MSPE table. Both in-sample and
 the default holdout sample (all unused observations) are reported.:{p_end}
-{phang2}. {stata "pystacked $model if _n<=400, type(regress) pyseed(123) methods(lassoic rf gradboost)"}{p_end}
+{phang2}. {stata "pystacked medv crim-lstat if _n<=400, type(regress) pyseed(123) methods(lassoic rf gradboost)"}{p_end}
 {phang2}. {stata "pystacked, table holdout"}{p_end}
 
 {pstd}
@@ -897,36 +892,30 @@ We can also save the predicted values of each base learner:{p_end}
 {phang2}. {stata "predict double yhat, transform"}{p_end}
 
 {pstd}
-{ul:Using pipelines (Syntax 1)}
+{ul:Learner-specific predictors (Syntax 1)}
 
 {pstd}
-Pipelines allow pre-processing predictors on the fly. For example, 
+{cmd:pystacked} allows to use different sets of predictors 
+for each base learners. For example, 
 linear estimators might perform better if interactions are 
 provided as inputs. Here, we use interactions and 2nd-order polynomials
-for ols and lasso, but not for the random forest. Note that the base inputs
-in Stata are only provided in levels. 
+for the lasso, but not for the other base learners. 
 {p_end}
-{phang2}. {stata "pystacked $model, type(regress) pyseed(123) methods(ols lassoic rf) pipe1(poly2) pipe2(poly2)"}{p_end}
-{phang2}. {stata "predict a, transf"}{p_end}
+{phang2}. {stata "pystacked medv crim-lstat, type(regress) pyseed(123) methods(ols lassoic rf) xvars2(c.(crim-lstat)# #c.(crim-lstat))"}{p_end}
 
 {pstd}
-You can verify that you get the same ols and lasso predicted values when 
-creating the polynomials in Stata:
+The same can be achieved using pipelines which create polynomials on-the-fly in Python. 
 {p_end}
-{phang2}. {stata "pystacked medv c.(crim-lstat)# #c.(crim-lstat), type(regress) pyseed(123) methods(ols lassoic rf)"}{p_end}
-{phang2}. {stata "predict b, transf"}{p_end}
-{phang2}. {stata "list a1 b1 a2 b2"}{p_end}
+{phang2}. {stata "pystacked medv crim-lstat, type(regress) pyseed(123) methods(ols lassoic rf) pipe2(poly2)"}{p_end}
 
 {pstd}
-Note that the stacking weights are different in the second estimation. 
-This is because we also include 2nd-order polynomials as inputs for the random forest.
-{p_end}
+{ul:Learner-specific predictors (Syntax 2)}
 
 {pstd}
-You can also use the same base learner more than once with different pipelines and/or
-different options.
-{p_end}
-{phang2}. {stata "pystacked $model, type(regress) pyseed(123) methods(lassoic lassoic lassoic) pipe2(poly2) pipe3(poly3)"}{p_end}
+We demonstrate the same using the alternative syntax, which is often more handy:
+
+{phang2}. {stata "pystacked medv crim-lstat || m(ols) || m(lassoic) xvars(c.(crim-lstat)# #c.(crim-lstat)) || m(rf) || , type(regress) pyseed(123)"}{p_end}
+{phang2}. {stata "pystacked medv crim-lstat || m(ols) || m(lassoic) pipe(poly2) || m(rf) || , type(regress) pyseed(123)"}{p_end}
 
 {pstd}
 {ul:Options of base learners (Syntax 1)}
@@ -934,9 +923,10 @@ different options.
 {pstd}
 We can pass options to the base learners using {cmdopt*(string)}. In this example, 
 we change the maximum tree depth for the random forest. Since random forest is
-the third base learner, we use {cmdopt3(max_depth(3))}.
+the third base learner, we use {opt cmdopt3(max_depth(3))}.
 {p_end}
-{phang2}. {stata "pystacked $model, type(regress) pyseed(123) methods(ols lassoic rf) pipe1(poly2) pipe2(poly2) cmdopt3(max_depth(3))"}{p_end}
+
+{phang2}. {stata "pystacked medv crim-lstat, type(regress) pyseed(123) methods(ols lassoic rf) pipe1(poly2) pipe2(poly2) cmdopt3(max_depth(3))"}{p_end}
 
 {pstd}
 You can verify that the option has been passed to Python correctly:
@@ -944,13 +934,14 @@ You can verify that the option has been passed to Python correctly:
 {phang2}. {stata "di e(pyopt3)"}{p_end}
 
 {pstd}
-{ul:Using the alternative syntax (Syntax 2)}
+{ul:Options of base learners (Syntax 2)}
 
 {pstd}
 The same results as above can be achieved using the alternative syntax, which 
 imposes no limit on the number of base learners.
 {p_end}
-{phang2}. {stata "pystacked $model || m(ols) pipe(poly2) || m(lassoic) pipe(poly2) || m(rf) opt(max_depth(3)) , type(regress) pyseed(123)"}{p_end}
+
+{phang2}. {stata "pystacked medv crim-lstat || m(ols) pipe(poly2) || m(lassoic) pipe(poly2) || m(rf) opt(max_depth(3)) , type(regress) pyseed(123)"}{p_end}
 
 {pstd}
 {ul:Single base learners}
@@ -959,7 +950,8 @@ imposes no limit on the number of base learners.
 You can use {cmd:pystacked} with a single base learner. 
 In this example, we are using a conventional random forest:
 {p_end}
-{phang2}. {stata "pystacked $model, type(regress) pyseed(123) methods(rf)"}{p_end}
+
+{phang2}. {stata "pystacked medv crim-lstat, type(regress) pyseed(123) methods(rf)"}{p_end}
 
 {pstd}
 {ul:Voting}
@@ -968,7 +960,7 @@ In this example, we are using a conventional random forest:
 You can also use pre-defined weights. Here, we assign weights of 0.5 to OLS, 
 .1 to the lasso and, implicitly, .4 to the random foreset.
 {p_end}
-{phang2}. {stata "pystacked $model, type(regress) pyseed(123) methods(ols lassoic rf) pipe1(poly2) pipe2(poly2) voting voteweights(.5 .1)"}{p_end}
+{phang2}. {stata "pystacked medv crim-lstat, type(regress) pyseed(123) methods(ols lassoic rf) pipe1(poly2) pipe2(poly2) voting voteweights(.5 .1)"}{p_end}
 
 {marker example_spam}{...}
 {title:Classification Example using Spam data}
@@ -1010,6 +1002,10 @@ see {browse "https://archive.ics.uci.edu/ml/datasets/spambase"}.
 
 {pstd}Load spam data.{p_end}
 {phang2}. {stata "insheet using https://archive.ics.uci.edu/ml/machine-learning-databases/spambase/spambase.data, clear comma"}{p_end}
+
+{pstd}
+Throughout this example, we add the option {opt njobs(4)}, which enables 
+parallelization with 4 cores. 
 
 {pstd}We consider three base learners: logit, random forest and gradient boosting:{p_end}
 {phang2}. {stata "pystacked v58 v1-v57, type(class) pyseed(123) methods(logit rf gradboost) njobs(4) pipe1(poly2)"}{p_end}
@@ -1115,9 +1111,11 @@ can also post on Statalist (please tag @Achim Ahrens).
 {pstd}
 {cmd:pystacked} took some inspiration from Michael Droste's 
 {browse "https://github.com/mdroste/stata-pylearn":pylearn}, 
-which implements other Sklearn programs for Stata.
+which implements other scikit-learn programs for Stata.
 Thanks to Jan Ditzen for testing an early version 
-of the program. All remaining errors are our own. 
+of the program. We also thank Brigham Frandsen and 
+Marco Alfano for feedback. 
+All remaining errors are our own. 
 
 {title:Citation}
 

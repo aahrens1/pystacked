@@ -23,6 +23,61 @@ python: sklearn.__version__
 global xvars lcavol lweight age lbph svi lcp gleason pgg45
 
 *******************************************************************************
+*** xvar option 													 		***
+*******************************************************************************
+
+insheet using "/Users/kahrens/Dropbox (PP)/ddml/Data/housing.csv", ///
+	clear comma
+	
+global xuse c.(crim lstat)##c.(crim lstat)
+global xall c.(crim-lstat)##c.(crim-lstat)
+
+set seed 789
+pystacked medv $xuse, method(gradboost lassocv)   
+predict double xb
+ 
+set seed 789
+pystacked medv $xall, method(gradboost lassocv) xvars1($xuse) xvars2($xuse) 
+predict double xb2
+
+set seed 789
+pystacked medv $xall || method(gradboost) xvars($xuse) || m(lassocv) xvars($xuse),  
+predict double xb3
+
+set seed 789
+pystacked medv crim, method(gradboost lassocv) xvars1($xuse) xvars2($xuse)  
+predict double xb4
+
+** this should be different
+set seed 789
+pystacked medv crim, method(gradboost lassocv) xvars1(crim lstat) xvars2(crim lstat)   
+predict double xb5
+
+assert reldif(xb,xb2)<1e-5
+assert reldif(xb,xb3)<1e-5
+assert reldif(xb,xb4)<1e-5
+assert xb!=xb5
+
+
+*******************************************************************************
+*** xvar vs pipeline												 		***
+*******************************************************************************
+
+insheet using "/Users/kahrens/Dropbox (PP)/ddml/Data/housing.csv", ///
+	clear comma
+	
+set seed 789
+pystacked medv crim-lstat, method(gradboost lassocv) xvars2(c.(crim-lstat)##c.(crim-lstat))  
+predict double xb1
+
+set seed 789
+pystacked medv crim-lstat, method(gradboost lassocv) pipe2(poly2) 
+predict double xb2
+
+assert reldif(xb1,xb2)<1e-5
+
+
+*******************************************************************************
 *** voting															 		***
 *******************************************************************************
 
@@ -43,7 +98,8 @@ cap pystacked lpsa $xvars, ///
 						 methods(ols lassoic rf) ///
 						 pipe1(poly2) pipe2(poly2) /// 
 						 voting voteweights(.5 .9)	
-						 
+assert _rc == 198						 
+					
 *******************************************************************************
 *** check pipeline													 		***
 *******************************************************************************
@@ -66,8 +122,8 @@ pystacked lpsa c.($xvars)##c.($xvars), ///
 predict b, transf
 list lpsa a* b*
 
-assert a1==b1
-assert a2==b2
+assert reldif(a1,b1)<1e-5
+assert reldif(a2,b2)<1e-5
 
 *******************************************************************************
 *** check that xvar() subsetting works								 		***
@@ -133,6 +189,11 @@ foreach m in "`m1'" "`m2'" "`m3'" "`m4'" "`m5'" "`m6'" "`m7'" {
 						 methods(`m') /// 
 						 njobs(4) ///
 						 pipe2(poly2) pipe1(poly2)
+	pystacked lpsa lcavol lweight age lbph svi lcp gleason pgg45, ///
+						 type(regress) pyseed(243) ///
+						 methods(`m') /// 
+						 njobs(4) ///
+						 pipe2(poly2) pipe1(poly2) finalest(singlebest)
 }
 
 *******************************************************************************
@@ -220,8 +281,7 @@ pystacked lpsa $xvars if _n<50, ///
 						 table holdout
 
 // syntax 2
-pystacked lpsa $xvars if _n<50 ///
-						|| method(ols) || method(lassoic) || method(rf), ///
+pystacked lpsa $xvars || method(ols) || method(lassoic) || method(rf) ||  if _n<50, ///
 						 type(regress) pyseed(243) ///
 						 methods(ols lassoic rf)
 pystacked, table holdout(h1)
@@ -276,8 +336,7 @@ pystacked lpsa $xvars if _n<50, ///
 						 graph holdout
 
 // syntax 2
-pystacked lpsa $xvars if _n<50 ///
-						|| method(ols) || method(lassoic) || method(rf), ///
+pystacked lpsa $xvars || method(ols) || method(lassoic) || method(rf) || if _n<50 , ///
 						 type(regress) pyseed(243) ///
 						 methods(ols lassoic rf)
 pystacked, graph holdout
