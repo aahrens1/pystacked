@@ -168,7 +168,7 @@ version 16.0
 					folds(int 5) ///
 					///
 					///
-					pyseed(integer 0) ///
+					pyseed(integer -1) ///
 					printopt ///
 					NOSAVEPred ///
 					NOSAVETransform ///
@@ -987,7 +987,7 @@ class SingleBest(BaseEstimator):
 		X = check_array(X, accept_sparse=True)
 		check_is_fitted(self, 'is_fitted_')
 		return X[:,self.best]
-		
+
 class LinearRegressionClassifier(LinearRegression):
 	_estimator_type="classifier"
 	def predict_proba(self, X):

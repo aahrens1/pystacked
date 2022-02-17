@@ -1,7 +1,7 @@
 {smcl}
-{* *! version 22Jan2022}{...}
+{* *! version 17feb2022}{...}
 {hline}
-{cmd:help pystacked}{right: v0.3.0}
+{cmd:help pystacked}{right: v0.4}
 {hline}
 
 {title:Title}
@@ -17,10 +17,10 @@
 {browse "https://scikit-learn.org/stable/index.html":scikit-learn}'s 
 {browse "https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.StackingRegressor.html":sklearn.ensemble.StackingRegressor} and 
 {browse "https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.StackingClassifier.html":sklearn.ensemble.StackingClassifier}. 
-Stacking is a way of combining predictions from multiple supervised
-machine learners (the "base learners") into
-a final prediction to improve performance.
-The currently-supported base learners are linear regression, 
+Stacking is a way of combining multiple supervised
+machine learners (the "base" or "level-0" learners) into
+a meta learner.
+The currently supported base learners are linear regression, 
 logit, lasso, ridge, elastic net, (linear) support
 vector machines, gradient 
 boosting, and neural nets (MLP).
@@ -50,7 +50,7 @@ for how to set up Python for Stata on your system.
 	{helpb pystacked##base_learners_opt:Base learners: Options}
 	{helpb pystacked##pipelines:Pipelines}
 	{helpb pystacked##predictors:Learner-specific predictors}
-	{helpb pystacked##example_prostate:Example Stacking Regression}
+	{helpb pystacked##example_boston:Example Stacking Regression}
 	{helpb pystacked##example_spam:Example Stacking Classification}
 	{helpb pystacked##installation:Installation}
 	{helpb pystacked##misc:Misc (references, contact, etc.)}
@@ -85,7 +85,6 @@ The {ul:second syntax} is:
 {p 8 14 2}
 {cmd:pystacked}
 {it:depvar} {it:predictors} 
-[{cmd:if} {it:exp}] [{cmd:in} {it:range}]
 || {opt m:ethod(string)}
 {opt opt(string)} 
 {opt pipe:line(string)} 
@@ -96,6 +95,8 @@ The {ul:second syntax} is:
 {opt xvars(varlist)} 
 ||
 {opt ...}
+||
+[{cmd:if} {it:exp}] [{cmd:in} {it:range}]
 {bind:[{cmd:,}}
 {helpb pystacked##otheropts:{it:otheropts}}
 ]
@@ -110,8 +111,7 @@ That is, up to
 they appear in {opt methods(string)} (see {helpb pystacked##base_learners_opt:Command options}).
 Likewise, the {opt pipe*(string)} option can be used 
 for pre-processing predictors within Python on the fly (see {helpb pystacked##pipelines:Pipelines}).
-Furthermore, {opt xvars*(varlist)} can be used to subset the predictors used for a specific
-learner.
+Furthermore, {opt xvars*(varlist)} allows to specify a learner-specific varlist of predictors.
 
 {pstd}
 The second syntax imposes no limit on the number of base learners (aside from the increasing
@@ -137,9 +137,9 @@ options passed to the base learners, see {helpb pystacked##base_learners_opt:Com
 pipelines passed to the base learners, see {helpb pystacked##pipelines:Pipelines}.
 {p_end}
 {synopt:{opt xvars*(varlist)}}
-only a subset of predictors is used for the base learner.
-The {it:varlist} must be a subset of {it:predictors}. That is, 
-you can only remove predictors for a specific learner, but not add.
+overwrites the default list of predictors.
+That is, 
+you can specify learner-specific lists of predictors.
 See {helpb pystacked##predictors:here}.
 {p_end}
 {synoptline}
@@ -164,9 +164,9 @@ options, see {helpb pystacked##base_learners_opt:Command options}.
 pipelines applied to the predictors, see {helpb pystacked##pipelines:Pipelines}.
 {p_end}
 {synopt:{opt xvars(varlist)}}
-only a subset of predictors is used for the base learner.
-The {it:varlist} must be a subset of {it:predictors}. That is, 
-you can only remove predictors for a specific learner, but not add.
+overwrites the default list of predictors.
+That is, 
+you can specify learner-specific lists of predictors.
 See {helpb pystacked##predictors:here}.
 {p_end}
 {synoptline}
@@ -183,8 +183,9 @@ or {it:class(ify)} for classification problems.
 {p_end}
 {synopt:{opt final:est(string)}}
 final estimator used to combine base learners. 
-This can be
-{it:nnls} (non-negative least squares, the default),
+The default is non-negative least squares ({it:nnls}). 
+Alternatives are {it:singlebest}
+(use base learner with minimum MSE),
 {it:ols} (ordinary least squares) or
 {it:ridge} for (logistic) ridge, which is the
 sklearn default. For more information, 
@@ -219,12 +220,13 @@ use the sparse pipeline to use sparse matrices for some learners, but not for ot
 {synopt:{opt pyseed(int)}} 
 set the Python seed. Note that since {cmd:pystacked} uses
 Python, we also need to set the Python seed to ensure replicability.
-You have two options: {opt pyseed(-1)} draws a number 
+Three options: 1) {opt pyseed(-1)} draws a number 
 between 0 and 10^8 in Stata which is then used as a Python seed.
-This way, you only need to deal with the Stata seed ({helpb "set seed 42"})--the Python seed
-is generated automatically. Alternatively, setting {opt pyseed(x)} 
+This way, you only need to deal with the Stata seed. For example, {opt set seed 42} is
+sufficient, as the Python seed is generated automatically. 2) Setting {opt pyseed(x)} 
 with any positive integer {it:x} allows to control the Python seed 
-directly.  
+directly. 3) {opt pyseed(0)} sets the seed to None in Python.
+The default is {opt pyseed(-1)}.
 {p_end}
 {synoptline}
 
@@ -365,26 +367,28 @@ and {cmd:predict} call. If changes to the data set are made,
 
 {pstd}
 Stacking is a way of combining cross-validated 
-predictions from multiple base learners into
-a final prediction. A final estimator is used to combine the base predictions. 
+predictions from multiple base ("level-0") learners into
+a final prediction. A final estimator ("level-1") is used to combine the base predictions. 
 
 {pstd}
 The default final predictor for stacking
 regession is non-negative
 least squares (NNLS) without an intercept. 
-The NNLS coefficients are standardized to sum to one.
+The NNLS coefficients are standardized to sum to one after estimation.
 Note that in this respect we deviate from 
 the scikit-learn default and follow the 
-recommendation in Hastie et al. ({helpb pystacked##Hastie2009:2009}, p. 290).
+recommendation in Breiman (1996)
+and Hastie et al. ({helpb pystacked##Hastie2009:2009}, p. 290).
 The scikit-learn defaults for the final estimator
-are {browse "https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.RidgeCV.html#sklearn.linear_model.RidgeCV":ridge regression} 
-for stacking regression and 
-{browse: "https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html#sklearn.linear_model.LogisticRegression":logistic ridge}
+are ridge regression 
+for stacking regression and logistic ridge
 for classification tasks. 
 To use the scikit-learn default, 
 use {opt final:est(ridge)}. 
 {cmd:pystacked} also supports ordinary (unconstrained)
-least squares as the final estimator ({opt final:est(ols)}).
+least squares as the final estimator ({opt final:est(ols)}). 
+Finally, {it:singlebest} uses the single base learner that 
+exhibits the smallest cross-validated mean squared error. 
 
 {pstd}
 An alternative to stacking is voting. Voting regression uses the weighted 
@@ -393,7 +397,7 @@ the unweighted average is used, but the user can specify weights using
 {opt votew:eights(numlist)}. Voting classifier uses a
 majority rule by default (hard voting). An alternative is soft
 voting where the (weighted) probabilities are used to 
-form the final prediction.
+form the final prediction. 
 
 {marker base_learners}{...}
 {title:Supported base learners}
@@ -780,11 +784,9 @@ sets of predictors:
 1) Pipelines, discussed in the next section, can be used to create polynomials on the fly. 
 
 {pstd}
-2) The {opt xvars*(varlist)} option allows to only use a subset of predictors for a specific learner. 
-The {it:varlist} must be a subset of {it:predictors}. That is, you can only remove predictors
-for a specific learner, but not add. This is no restriction in practice: the
-idea is simply to include all predictors in the varlist {it:predictors} and then 
-subset for each learner. 
+2) The {opt xvars*(varlist)} option allows to specify predictors for a specific learner. 
+If {opt xvars*(varlist)} is missing for a specific learner, 
+the default predictor list is used. 
 
 {marker pipelines}{...}
 {title:Pipelines}
@@ -816,7 +818,7 @@ Pipelines can be passed to the base learners via {opt pipe*(string)}
 {pstd}
 {it:stdscaler0} is intended for sparse matrices, since {it:stdscaler} will make a sparse matrix dense.
 
-{marker example_prostate}{...}
+{marker example_boston}{...}
 {title:Example using Boston Housing data (Harrison et al., {helpb pystacked##Harrison1978:1978})}
 
 {marker examples_data}{...}
@@ -887,7 +889,7 @@ Graph predicted vs actual for the holdout sample:{p_end}
 {phang2}. {stata "pystacked, graph holdout"}{p_end}
 
 {pstd}
-Getting the predicted values:{p_end}
+Storing the predicted values:{p_end}
 {phang2}. {stata "predict double yhat, xb"}{p_end}
 
 {pstd}
