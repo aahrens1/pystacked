@@ -385,7 +385,7 @@ version 16.0
 		local xvars`i' `tlist'
 		** remove collinear predictors for OLS only
 		if "`method`i''"=="ols" { 
-			_rmcoll `xvars`i'' if `touse'
+			_rmcoll `xvars`i'' if `touse', forcedrop
 			local xvars`i'  `r(varlist)'
 		}
 		local xvars_all_t `xvars_all_t' `xvars`i''
