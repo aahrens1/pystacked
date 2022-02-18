@@ -23,6 +23,30 @@ python: sklearn.__version__
 global xvars lcavol lweight age lbph svi lcp gleason pgg45
 
 *******************************************************************************
+*** check stdscaler default with regularized linear learners		 		***
+*******************************************************************************
+
+insheet using "/Users/kahrens/Dropbox (PP)/ddml/Data/housing.csv", ///
+	clear comma
+
+pystacked medv $xuse, method(gradboost lassocv)   
+di "`e(pipe2)'"
+assert "`e(pipe2)'"=="stdscaler"
+
+pystacked medv $xuse, method(gradboost lassocv) pipe2(nostdscaler)
+di "`e(pipe2)'"
+assert "`e(pipe2)'"=="passthrough"
+	
+pystacked medv $xuse || m(gradboost) || m(lassocv)   
+di "`e(pipe2)'"
+assert "`e(pipe2)'"=="stdscaler"
+
+pystacked medv $xuse || m(gradboost) || m(lassocv) pipe(nostdscaler)
+di "`e(pipe2)'"
+assert "`e(pipe2)'"=="passthrough"
+
+
+*******************************************************************************
 *** xvar option 													 		***
 *******************************************************************************
 

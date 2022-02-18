@@ -1,9 +1,9 @@
-*! pystacked v0.4
+*! pystacked v0.4.1
 *! last edited: 17feb2022
 *! authors: aa/ms
 
 program _pyparse 
-	syntax [anything] , type(string) method(string) [ debug *]
+	syntax [anything] , type(string) method(string) [ sklearn1(real 1) sklearn2(real 0) print debug *]
 
 	if ("`method'"!="") {
 
@@ -14,27 +14,29 @@ program _pyparse
 			local type class
 		}
 
+		local options `options' sklearn1(`sklearn1') sklearn2(`sklearn2') `print'
+
 		if "`type'"=="reg" {
 			if "`method'"=="ols" {
 				parse_LinearRegression , `options'
 			}
 			else if "`method'"=="lassoic" {
-				parse_LassoIC , `options'
+				parse_LassoIC , `options' 
 			}
 			else if "`method'"=="lassocv" {
-				parse_ElasticCV , `options' l1_ratio(1)
+				parse_ElasticCV , `options' l1_ratio(1) 
 			}
 			else if "`method'"=="ridgecv" {
-				parse_ElasticCV , `options' l1_ratio(0)
+				parse_ElasticCV , `options' l1_ratio(0) 
 			}
 			else if "`method'"=="elasticcv" {
-				parse_ElasticCV , `options'
+				parse_ElasticCV , `options' 
 			}
 			else if "`method'"=="svm" {
-				parse_SVR , `options'
+				parse_SVR , `options' 
 			}
 			else if "`method'"=="gradboost" {
-				parse_gradboostReg , `options'
+				parse_gradboostReg , `options' 
 			}
 			else if "`method'"=="rf" {
 				parse_rfReg , `options'
@@ -43,7 +45,7 @@ program _pyparse
 				parse_LinearSVR , `options'
 			}
 			else if "`method'"=="nnet" {
-				parse_MLPReg , `options'
+				parse_MLPReg , `options' 
 			}
 			else {
 				di as err "method(`method') unknown"
@@ -53,17 +55,17 @@ program _pyparse
 		}
 		else if "`type'"=="class" {
 			if "`method'"=="logit" {
-				parse_Logit , `options'  
+				parse_Logit , `options'   
 			}
 			else if "`method'"=="lassocv" {
 				parse_LassoLogitCV , `options' penalty(l1) solver(saga)
 			}
 			else if "`method'"=="lassoic" {
-				di as err "warning: lassoic not supported with type(class); ignored."
+				di as err "warning: lassoic not supported with type(class)."
 				exit 198
 			}
 			else if "`method'"=="elasticcv" {
-				parse_LassoLogitCV , `options' penalty(elasticnet) solver(saga) l1_ratios(0 .5 1)
+				parse_LassoLogitCV , `options' penalty(elasticnet) solver(saga) 
 			}
 			else if "`method'"=="ridgecv" {
 				parse_LassoLogitCV , `options' penalty(l2)
@@ -78,7 +80,8 @@ program _pyparse
 				parse_rfClass , `options'
 			}
 			else if "`method'"=="linsvm" {
-				parse_LinearSVC , `options'
+				di as err "warning: linsvm not supported with type(class)."
+				exit 198
 			}
 			else if "`method'"=="nnet" {
 				parse_MLPClass , `options'
@@ -93,14 +96,16 @@ program _pyparse
 	else {
 		return_nothing
 	}
-	if "`debug'"!="" di "`optstr'"
+	if "`debug'"!="" _print_tool `optstr'
 end
 
 program define parse_LinearRegression, rclass
-	syntax [anything], [ ///
+	syntax [anything], sklearn1(real) sklearn2(real) ///
+					[ ///
 					NOCONStant ///
-					NONormalize ///
+					NORMalize ///
 					POSitive ///
+					print /// 
 					]
 	local optstr 
 
@@ -111,11 +116,8 @@ program define parse_LinearRegression, rclass
 	else {
 		local optstr `optstr' 'fit_intercept':True,
 	}
-	** normalize
-	if ("`nonormalize'"!="") {
-		local optstr `optstr' 'normalize':False,
-	}
-	else {
+	** normalize (discontinued from sklearn 1.2)
+	if ("`normalize'"!="") {
 		local optstr `optstr' 'normalize':True,
 	}
 	** positive
@@ -128,16 +130,16 @@ program define parse_LinearRegression, rclass
 	local optstr {`optstr'}
 	local optstr = subinstr("`optstr'",",}","}",.)
 	local optstr = subinstr("`optstr'"," ","",.)
+	if "`print'"!="" _print_tool `optstr'
 	return local optstr `optstr'
 end 
 
-/* class sklearn.linear_model.LogisticRegression(penalty='l2', *, dual=False, 
-tol=0.0001, C=1.0, fit_intercept=True, intercept_scaling=1, class_weight=None, 
-random_state=None, solver='lbfgs', max_iter=100, multi_class='auto', verbose=0,
- warm_start=False, n_jobs=None, l1_ratio=None)[source]¶ */
+/* class sklearn.linear_model.LogisticRegression()[source]¶ */
 program define parse_Logit, rclass
-	syntax [anything], [ ///
+	syntax [anything], sklearn1(real) sklearn2(real) ///
+					[ ///
 					NOCONStant /// 
+					print /// 
 					]
 	local optstr 
 	
@@ -153,19 +155,16 @@ program define parse_Logit, rclass
 	local optstr {`optstr'}
 	local optstr = subinstr("`optstr'",",}","}",.)
 	local optstr = subinstr("`optstr'"," ","",.)
+	if "`print'"!="" _print_tool `optstr'
 	return local optstr `optstr'
 end 
 
 /*
- class sklearn.linear_model.LogisticRegressionCV(*, Cs=10, 
- fit_intercept=True, cv=None, dual=False, penalty='l2', 
- scoring=None, solver='lbfgs', tol=0.0001, max_iter=100, 
- class_weight=None, n_jobs=None, verbose=0, refit=True, 
- intercept_scaling=1.0, multi_class='auto', random_state=None,
-  l1_ratios=None)[source]¶
+ class sklearn.linear_model.LogisticRegressionCV()[source]¶
   */
 program define parse_LassoLogitCV, rclass
-	syntax [anything], [ ///
+	syntax [anything], sklearn1(real) sklearn2(real) ///
+					[ ///
 					l1_ratios(numlist) ///
 					Cs(integer 10) ///
 					NOCONStant /// 
@@ -178,6 +177,7 @@ program define parse_LassoLogitCV, rclass
 					norefit ///
 					intercept_scaling(real 1) ///
 					random_state(integer -1) ///
+					print ///
 					]
 	local optstr 
 	
@@ -245,6 +245,7 @@ program define parse_LassoLogitCV, rclass
 	}
 	** l1 ratios
 	if "`penalty'"=="elasticnet" {
+		if "`l1_ratios'"=="" local l1_ratios 0 .5 1
 		local l1_ratios_list
 		foreach i of numlist `l1_ratios' {
 			local l1_ratios_list `l1_ratios_list'`i',
@@ -254,6 +255,7 @@ program define parse_LassoLogitCV, rclass
 	local optstr {`optstr'}
 	local optstr = subinstr("`optstr'",",}","}",.)
 	local optstr = subinstr("`optstr'"," ","",.)
+	if "`print'"!="" _print_tool `optstr'
 	return local optstr `optstr'
 end 
 
@@ -265,14 +267,14 @@ copy_X=True, verbose=0, n_jobs=None, positive=False,
 random_state=None, selection='cyclic')
 */
 program define parse_ElasticCV, rclass
-	syntax [anything], [ ///
+	syntax [anything], sklearn1(real) sklearn2(real) ///
+					[ ///
 					l1_ratio(real .5) ///
 					eps(real 1e-3) ///
 					n_alphas(integer 100) ///	
 					alphas(numlist >0) ///			
 					NOCONStant ///
-					NONormalize ///
-					eps(real 1e-3) ///
+					NORMalize ///
 					max_iter(integer 1000) ///
 					tol(real 1e-4) ///
 					cv(integer 5) ///
@@ -280,6 +282,7 @@ program define parse_ElasticCV, rclass
 					POSitive ///
 					random_state(integer -1) ///
 					selection(string) ///
+					print ///
 					]
 	local optstr 
 
@@ -316,11 +319,8 @@ program define parse_ElasticCV, rclass
 	else {
 		local optstr `optstr' 'fit_intercept':True,
 	}
-	** normalize
-	if ("`nonormalize'"!="") {
-		local optstr `optstr' 'normalize':False,
-	}
-	else {
+	** normalize (discontinues from sklearn 1.2)
+	if ("`normalize'"!="") {
 		local optstr `optstr' 'normalize':True,
 	}
 	** max iterations
@@ -369,19 +369,20 @@ program define parse_ElasticCV, rclass
 	local optstr {`optstr'}
 	local optstr = subinstr("`optstr'",",}","}",.)
 	local optstr = subinstr("`optstr'"," ","",.)
+	if "`print'"!="" _print_tool `optstr'
 	return local optstr `optstr'
 end 
 
 /*
- class sklearn.linear_model.LassoLarsIC(criterion='aic', *, 
- fit_intercept=True, verbose=False, normalize=True, precompute='auto', 
- max_iter=500, eps=2.220446049250313e-16, copy_X=True, positive=False) 
+ class sklearn.linear_model.LassoLarsIC() 
  */
 program define parse_LassoIC, rclass
-	syntax [anything], [criterion(string) ///
+	syntax [anything], sklearn1(real) sklearn2(real) ///
+					[criterion(string) ///
 					NOCONStant ///
 					max_iter(integer 500) ///
 					eps(real -1) ///
+					print ///
 					positive ]
 	local optstr 
 	
@@ -417,20 +418,18 @@ program define parse_LassoIC, rclass
 	local optstr {`optstr'}
 	local optstr = subinstr("`optstr'",",}","}",.)
 	local optstr = subinstr("`optstr'"," ","",.)
+	if "`print'"!="" _print_tool `optstr'
 	return local optstr `optstr'
 end 
 
 ** sklearn.ensemble.RandomForestRegressor
 /*
- class sklearn.ensemble.RandomForestRegressor(n_estimators=100, *, 
- criterion='mse', max_depth=None, min_samples_split=2, min_samples_leaf=1, 
- min_weight_fraction_leaf=0.0, max_features='auto', max_leaf_nodes=None, 
- min_impurity_decrease=0.0, min_impurity_split=None, bootstrap=True, 
- oob_score=False, n_jobs=None, random_state=None, verbose=0, warm_start=False, 
- ccp_alpha=0.0, max_samples=None)[source]¶
+ class sklearn.ensemble.RandomForestRegressor()[source]¶
  */
 program define parse_rfReg, rclass
-	syntax [anything] , [ ///
+	syntax [anything] , ///
+					sklearn1(real) sklearn2(real) ///
+					[ ///
 					n_estimators(integer 100) ///
 					criterion(string) ///
 					max_depth(integer -1) ///  
@@ -440,13 +439,14 @@ program define parse_rfReg, rclass
 					max_features(string) ///
 					max_leaf_nodes(integer -1) ///
 					min_impurity_decrease(real 0) ///
-					NOBOOTStrap  ///
+					bootstrap(string)  ///
 					oob_score  ///
 					n_jobs(integer 0) ///
 					random_state(integer -1) ///
 					warm_start ///
 					ccp_alpha(real 0) ///
 					max_samples(real -1) ///  
+					print ///
 					]
 
 	local optstr 
@@ -456,12 +456,16 @@ program define parse_rfReg, rclass
 		local optstr `optstr' 'n_estimators':`n_estimators',
 	}
 	** criterion
-	if "`criterion'"=="mae"|"`criterion'"=="mse"|"`criterion'"=="squared_error"|"`criterion'"=="absolute_error" {
+	if strpos("mae mse squared_error absolute_error poisson","`criterion'")!=0 & "`criterion'"!="" {
 		local optstr `optstr' 'criterion':'`criterion'',		
 	}
-	else if "`criterion'"=="" {
+	else if "`criterion'"=="" & `sklearn1'<1 {
 		// use default
 		local optstr `optstr' 'criterion':'mse',	
+	}
+	else if "`criterion'"=="" & `sklearn1'>=1 {
+		// use default
+		local optstr `optstr' 'criterion':'squared_error',	
 	}
 	else {
 		di as err "criterion(`criterion') not allowed"
@@ -508,8 +512,8 @@ program define parse_rfReg, rclass
 		local optstr `optstr' 'min_impurity_decrease':`min_impurity_decrease',
 	}
 	** bootstrap
-	if "`nobootstrap'"!="" {
-		local optstr `optstr' 'bootstrap':False,
+	if "`bootstrap'"!="" {
+		local optstr `optstr' 'bootstrap':`bootstrap',
 	}
 	else {
 		local optstr `optstr' 'bootstrap':True,
@@ -556,21 +560,18 @@ program define parse_rfReg, rclass
 	local optstr {`optstr'}
 	local optstr = subinstr("`optstr'",",}","}",.)
 	local optstr = subinstr("`optstr'"," ","",.)
+	if "`print'"!="" _print_tool `optstr'
 	return local optstr `optstr'
 end 
 
 ** sklearn.ensemble.RandomForestClassifier
 /*
- class sklearn.ensemble.RandomForestClassifier(n_estimators=100, *, 
- criterion='gini', max_depth=None, min_samples_split=2,
-  min_samples_leaf=1, min_weight_fraction_leaf=0.0, max_features='auto',
-   max_leaf_nodes=None, min_impurity_decrease=0.0, min_impurity_split=None,
-    bootstrap=True, oob_score=False, n_jobs=None, random_state=None,
-     verbose=0, warm_start=False, class_weight=None, ccp_alpha=0.0,
-      max_samples=None)[source]¶
+ class sklearn.ensemble.RandomForestClassifier()[source]¶
  */
 program define parse_rfClass, rclass
-	syntax [anything] , [ ///
+	syntax [anything] , ///
+					sklearn1(real) sklearn2(real) ///
+					[ ///
 					n_estimators(integer 100) ///
 					criterion(string) ///
 					max_depth(integer -1) ///  
@@ -580,7 +581,7 @@ program define parse_rfClass, rclass
 					max_features(string) ///
 					max_leaf_nodes(integer -1) ///
 					min_impurity_decrease(real 0) ///
-					NOBOOTStrap  ///
+					bootstrap(string)  ///
 					///class_weight(string) ///
 					oob_score  ///
 					n_jobs(integer 0) ///
@@ -588,6 +589,7 @@ program define parse_rfClass, rclass
 					warm_start ///
 					ccp_alpha(real 0) ///
 					max_samples(integer -1) /// only int supported
+					print ///
 					]
 
 	local optstr 
@@ -648,8 +650,8 @@ program define parse_rfClass, rclass
 		local optstr `optstr' 'min_impurity_decrease':`min_impurity_decrease',
 	}
 	** bootstrap
-	if "`nobootstrap'"!="" {
-		local optstr `optstr' 'bootstrap':False,
+	if "`bootstrap'"!="" {
+		local optstr `optstr' 'bootstrap':`bootstrap',
 	}
 	else {
 		local optstr `optstr' 'bootstrap':True,
@@ -703,20 +705,17 @@ program define parse_rfClass, rclass
 	local optstr {`optstr'}
 	local optstr = subinstr("`optstr'",",}","}",.)
 	local optstr = subinstr("`optstr'"," ","",.)
+	if "`print'"!="" _print_tool `optstr'
 	return local optstr `optstr'
 end 
 
 ** sklearn.ensemble.GradientBoostingRegressor
-/* class sklearn.ensemble.GradientBoostingRegressor(*, loss='ls', 
-    learning_rate=0.1, n_estimators=100, subsample=1.0, criterion='friedman_mse',
-    min_samples_split=2, min_samples_leaf=1, min_weight_fraction_leaf=0.0, 
-    max_depth=3, min_impurity_decrease=0.0, min_impurity_split=None, init=None,
-    random_state=None, max_features=None, alpha=0.9, verbose=0, max_leaf_nodes=None, 
-    warm_start=False, validation_fraction=0.1, n_iter_no_change=None, tol=0.0001, 
-    ccp_alpha=0.0)
+/* class sklearn.ensemble.GradientBoostingRegressor()
 */
 program define parse_gradboostReg, rclass
-	syntax [anything] , [ ///
+	syntax [anything] , ///
+					sklearn1(real) sklearn2(real) ///
+					[ ///
 					loss(string) ///
 					criterion(string) ///
 					learning_rate(real 0.1) ///
@@ -737,16 +736,20 @@ program define parse_gradboostReg, rclass
 					n_iter_no_change(integer -1) ///
 					tol(real 1e-4) ///
 					ccp_alpha(real 0) ///
+					print ///
 					]
 
 	local optstr 
 
 	** loss
-	if "`loss'"=="absolute_error"|"`loss'"=="squared_error"|"`loss'"=="ls"|"`loss'"=="lad"|"`loss'"=="huber"|"`loss'"=="quantile" {
+	if strpos("absolute_error squared_error ls lad huber quantile","`loss'")!=0 & "`loss'"!="" {
 		local optstr `optstr' 'loss':'`loss'',
 	} 
-	else if "`loss'"=="" {
+	else if "`loss'"=="" & `sklearn1'<1 {
 		local optstr `optstr' 'loss':'ls',
+	}
+	else if "`loss'"=="" & `sklearn1'>=1 {
+		local optstr `optstr' 'loss':'squared_error',
 	}
 	else {
 		di as err "loss(`loss') not supported"
@@ -765,7 +768,7 @@ program define parse_gradboostReg, rclass
 		local optstr `optstr' 'subsample':`subsample',
 	}
 	** criterion
-	if "`criterion'"=="friedman_mse"|"`criterion'"=="squared_error"|"`criterion'"=="mse"|"`criterion'"=="mae" {
+	if strpos("friedman_mse squared_error mse mae","`criterion'")!=0 & "`criterion'"!="" {
 		local optstr `optstr' 'criterion':'`criterion'',		
 	}
 	else if "`criterion'"=="" {
@@ -861,19 +864,16 @@ program define parse_gradboostReg, rclass
 	local optstr {`optstr'}
 	local optstr = subinstr("`optstr'",",}","}",.)
 	local optstr = subinstr("`optstr'"," ","",.)
+	if "`print'"!="" _print_tool `optstr'
 	return local optstr `optstr'
 end 
 
 ** sklearn.ensemble.GradientClassifier
-/*  class sklearn.ensemble.GradientBoostingClassifier(*, loss='deviance',
- 	learning_rate=0.1, n_estimators=100, subsample=1.0, criterion='friedman_mse',
-  	min_samples_split=2, min_samples_leaf=1, min_weight_fraction_leaf=0.0, 
-  	max_depth=3, min_impurity_decrease=0.0, min_impurity_split=None, init=None,
-   	random_state=None, max_features=None, verbose=0, max_leaf_nodes=None,
-    warm_start=False, validation_fraction=0.1, n_iter_no_change=None, 
-    tol=0.0001, ccp_alpha=0.0) */
+/*  class sklearn.ensemble.GradientBoostingClassifier() */
 program define parse_gradboostClass, rclass
-	syntax [anything] , [ ///
+	syntax [anything] , ///
+					sklearn1(real) sklearn2(real) ///
+					[ ///
 					loss(string) ///
 					learning_rate(real 0.1) ///
 					n_estimators(integer 100) ///
@@ -893,6 +893,7 @@ program define parse_gradboostClass, rclass
 					n_iter_no_change(integer -1) ///
 					tol(real 1e-4) ///
 					ccp_alpha(real 0) ///
+					print ///
 					]
 	local optstr 
 	** loss
@@ -913,6 +914,18 @@ program define parse_gradboostClass, rclass
 	** number of trees in the forest
 	if `n_estimators'>0 {
 		local optstr `optstr' 'n_estimators':`n_estimators',
+	}
+	** criterion
+	if strpos("friedman_mse squared_error mse mae","`criterion'")!=0 & "`criterion'"!="" {
+		local optstr `optstr' 'criterion':'`criterion'',		
+	}
+	else if "`criterion'"=="" {
+		// use default
+		local optstr `optstr' 'criterion':'friedman_mse',	
+	}
+	else {
+		di as err "criterion(`criterion') not allowed"
+		error 197
 	}
 	** subsample
 	if `subsample'>=0 {
@@ -999,16 +1012,17 @@ program define parse_gradboostClass, rclass
 	local optstr {`optstr'}
 	local optstr = subinstr("`optstr'",",}","}",.)
 	local optstr = subinstr("`optstr'"," ","",.)
+	if "`print'"!="" _print_tool `optstr'
 	return local optstr `optstr'
 end 
 
 /*
- class sklearn.svm.SVR(*, kernel='rbf', degree=3, gamma='scale', coef0=0.0, 
- tol=0.001, C=1.0, epsilon=0.1, shrinking=True, cache_size=200, verbose=False,
- max_iter=- 1)[source]¶
+ class sklearn.svm.SVR()[source]¶
  */
 program define parse_SVR, rclass
-	syntax [anything] , [ ///
+	syntax [anything] , ///
+					sklearn1(real) sklearn2(real) ///
+					[ ///
 					KERnel(string) ///
 					degree(integer 3) ///
 					GAMma(string) ///
@@ -1016,16 +1030,17 @@ program define parse_SVR, rclass
 					tol(real 1e-3) ///
 					C(real 1) ///
 					epsilon(real 0.1) ///
-					NOSHRinking ///
+					SHRinking(string) ///
 					cache_size(real 200) ///
 					max_iter(integer -1) ///
+					print ///
 					]
 
 	local optstr 
 
 	** kernel
 	if "`kernel'"=="linear"|"`kernel'"=="poly"|"`kernel'"=="rbf"|"`kernel'"=="sigmoid"|"`kernel'"=="precomputed" {
-		local optstr `optstr' 'kernel':`kernel',
+		local optstr `optstr' 'kernel':'`kernel'',
 	}
 	else {
 		local optstr `optstr' 'kernel':'rbf',
@@ -1036,7 +1051,7 @@ program define parse_SVR, rclass
 	}
 	** gamma
 	if "`gamma'"=="scale"|"`gamma'"=="auto" {
-		local optstr `optstr' 'gamma':`gamma',
+		local optstr `optstr' 'gamma':'`gamma'',
 	}
 	else {
 		local optstr `optstr' 'gamma':'scale',
@@ -1062,8 +1077,8 @@ program define parse_SVR, rclass
 		local optstr `optstr' 'max_iter':`max_iter',
 	}
 	** shrinking
-	if "`noshrinking'"!="" {
-		local optstr `optstr' 'shrinking':False,
+	if "`shrinking'"!="" {
+		local optstr `optstr' 'shrinking':`shrinking',
 	}
 	else {
 		local optstr `optstr' 'shrinking':True,
@@ -1080,25 +1095,27 @@ program define parse_SVR, rclass
 	local optstr {`optstr'}
 	local optstr = subinstr("`optstr'",",}","}",.)
 	local optstr = subinstr("`optstr'"," ","",.)
+	if "`print'"!="" _print_tool `optstr'
 	return local optstr `optstr'
 end
 
 /*
- class sklearn.svm.LinearSVR(*, epsilon=0.0, tol=0.0001, C=1.0, 
- loss='epsilon_insensitive', fit_intercept=True, intercept_scaling=1.0, 
- dual=True, verbose=0, random_state=None, max_iter=1000)[source]
+ class sklearn.svm.LinearSVR()[source]
  */
 program define parse_LinearSVR, rclass
-	syntax [anything] , [ ///
+	syntax [anything] , ///
+					sklearn1(real) sklearn2(real) ///
+					[ ///
 					epsilon(real 0) /// OK
 					tol(real 1e-4) /// OK  
 					C(real 1) /// OK  
 					loss(string) /// OK
 					NOCONStant /// fit_intercept OK
 					intercept_scaling(real 1) /// OK
-					primal /// dual OK
+					dual(string) /// dual OK
 					random_state(integer -1) /// OK
 					max_iter(integer 1000) /// OK
+					print ///
 					]
 
 	local optstr 
@@ -1117,7 +1134,7 @@ program define parse_LinearSVR, rclass
 	}
 	** loss
 	if "`loss'"=="epsilon_insensitive"|"`loss'"=="squared_epsilon_insensitive" {
-		local optstr `optstr' 'loss':`loss',
+		local optstr `optstr' 'loss':'`loss'',
 	}
 	else {
 		local optstr `optstr' 'loss':'epsilon_insensitive',
@@ -1132,8 +1149,8 @@ program define parse_LinearSVR, rclass
 	** intercept scaling
 	local optstr `optstr' 'intercept_scaling':`intercept_scaling',
 	** dual/primal 
-	if "`primal'"!="" {
-		local optstr `optstr' 'dual':False,
+	if "`dual'"!="" {
+		local optstr `optstr' 'dual':`dual',
 	}
 	else {
 		local optstr `optstr' 'dual':True,
@@ -1153,31 +1170,32 @@ program define parse_LinearSVR, rclass
 	local optstr {`optstr'}
 	local optstr = subinstr("`optstr'",",}","}",.)
 	local optstr = subinstr("`optstr'"," ","",.)
+	if "`print'"!="" _print_tool `optstr'
 	return local optstr `optstr'
 end
 
 /*
- class sklearn.svm.SVC(*, C=1.0, kernel='rbf', degree=3, gamma='scale', 
- coef0=0.0, shrinking=True, probability=False, tol=0.001, cache_size=200,
-  class_weight=None, verbose=False, max_iter=- 1, decision_function_shape='ovr',
-   break_ties=False, random_state=None)[source]¶
+ class sklearn.svm.SVC()[source]¶
  */
 program define parse_SVC, rclass
-	syntax [anything] , [ ///
+	syntax [anything] , ///
+					sklearn1(real) sklearn2(real) ///
+					[ ///
 					C(real 1) ///
 					KERnel(string) ///
 					degree(integer 3) ///
 					GAMma(string) ///
 					coef0(real 0) ///
-					probability ///
+					probability(string) ///
 					tol(real 1e-3) ///
 					epsilon(real 0.1) ///
-					NOSHRinking ///
+					SHRinking(string) ///
 					cache_size(real 200) ///
 					max_iter(integer -1) ///
 					decision_function_shape(string) ///
 					break_ties ///
 					random_state(integer -1) ///
+					print ///
 					]
 
 	local optstr 
@@ -1188,7 +1206,7 @@ program define parse_SVC, rclass
 	}
 	** kernel
 	if "`kernel'"=="linear"|"`kernel'"=="poly"|"`kernel'"=="rbf"|"`kernel'"=="sigmoid"|"`kernel'"=="precomputed" {
-		local optstr `optstr' 'kernel':`kernel',
+		local optstr `optstr' 'kernel':'`kernel'',
 	}
 	else {
 		local optstr `optstr' 'kernel':'rbf',
@@ -1199,7 +1217,7 @@ program define parse_SVC, rclass
 	}
 	** gamma
 	if "`gamma'"=="scale"|"`gamma'"=="auto" {
-		local optstr `optstr' 'gamma':`gamma',
+		local optstr `optstr' 'gamma':'`gamma'',
 	}
 	else {
 		local optstr `optstr' 'gamma':'scale',
@@ -1209,18 +1227,18 @@ program define parse_SVC, rclass
 		local optstr `optstr' 'coef0':`coef0',
 	}
 	** shrinking
-	if "`noshrinking'"!="" {
-		local optstr `optstr' 'shrinking':False,
+	if "`shrinking'"!="" {
+		local optstr `optstr' 'shrinking':`shrinking',
 	}
 	else {
 		local optstr `optstr' 'shrinking':True,
 	}
 	** probability estimates
 	if "`probability'"!="" {
-		local optstr `optstr' 'probability':True,
+		local optstr `optstr' 'probability':`probability',
 	}
 	else {
-		local optstr `optstr' 'probability':False,
+		local optstr `optstr' 'probability':True,
 	}
 	** tol 
 	if `tol'>=0 {
@@ -1256,16 +1274,17 @@ program define parse_SVC, rclass
 	local optstr {`optstr'}
 	local optstr = subinstr("`optstr'",",}","}",.)
 	local optstr = subinstr("`optstr'"," ","",.)
+	if "`print'"!="" _print_tool `optstr'
 	return local optstr `optstr'
 end
 
 /*
-class sklearn.svm.LinearSVC(penalty='l2', loss='squared_hinge', *, dual=True,
- tol=0.0001, C=1.0, multi_class='ovr', fit_intercept=True, intercept_scaling=1,
-  class_weight=None, verbose=0, random_state=None, max_iter=1000)
+class sklearn.svm.LinearSVC()
 */
 program define parse_LinearSVC, rclass
-	syntax [anything] , [ ///
+	syntax [anything] , ///
+					sklearn1(real) sklearn2(real) ///
+					[ ///
 					penalty(string) ///
 					loss(string) ///
 					primal /// dual
@@ -1275,6 +1294,7 @@ program define parse_LinearSVC, rclass
 					intercept_scaling(real 1) ///
 					random_state(integer -1) ///
 					max_iter(integer 1000) ///
+					print ///
 					]
 
 	local optstr
@@ -1329,18 +1349,17 @@ program define parse_LinearSVC, rclass
 	local optstr {`optstr'}
 	local optstr = subinstr("`optstr'",",}","}",.)
 	local optstr = subinstr("`optstr'"," ","",.)
+	if "`print'"!="" _print_tool `optstr'
 	return local optstr `optstr'
 end
 
 /*
- class sklearn.neural_network.MLPRegressor(hidden_layer_sizes=100, activation='relu', *, solver='adam', alpha=0.0001,
-  batch_size='auto', learning_rate='constant', learning_rate_init=0.001, power_t=0.5, max_iter=200, shuffle=True,
-   random_state=None, tol=0.0001, verbose=False, warm_start=False, momentum=0.9, nesterovs_momentum=True, 
-   early_stopping=False, validation_fraction=0.1, beta_1=0.9, beta_2=0.999, epsilon=1e-08, n_iter_no_change=10,
-   max_fun=15000)[source]
+ class sklearn.neural_network.MLPRegressor()[source]
  */
 program define parse_MLPReg, rclass
-	syntax [anything] , [ ///
+	syntax [anything] , ///
+						sklearn1(real) sklearn2(real) ///
+						[ ///
 						hidden_layer_sizes(numlist >0 integer) ///
 						activation(string) ///
 						solver(string) ///
@@ -1350,7 +1369,7 @@ program define parse_MLPReg, rclass
 						learning_rate_init(real -1) ///
 						power_t(real -1) ///
 						max_iter(integer -1) ///
-						NOSHuffle ///
+						shuffle(string) ///
 						random_state(integer -1) ///
 						tol(real -1) ///
 						verbose ///
@@ -1364,6 +1383,7 @@ program define parse_MLPReg, rclass
 						epsilon(real -1) ///
 						n_iter_no_change(integer -1) ///
 						max_fun(integer -1) ///
+						print ///
 					]
 
 	local optstr
@@ -1394,7 +1414,7 @@ program define parse_MLPReg, rclass
 	}
 	*** solver
 	if `alpha'>0 {
-		local optstr `optstr' 'alpha':'`alpha'',
+		local optstr `optstr' 'alpha':`alpha',
 	} 
 	else {
 		local optstr `optstr' 'alpha':0.0001,
@@ -1435,8 +1455,8 @@ program define parse_MLPReg, rclass
 		local optstr `optstr' 'max_iter':200,
 	}
 	*** shuffle
-	if "`noshuffle'"!="" {
-		local optstr `optstr' 'shuffle':False,
+	if "`shuffle'"!="" {
+		local optstr `optstr' 'shuffle':`shuffle',
 	}
 	else {
 		local optstr `optstr' 'shuffle':True,
@@ -1536,18 +1556,17 @@ program define parse_MLPReg, rclass
 	local optstr {`optstr'}
 	local optstr = subinstr("`optstr'",",}","}",.)
 	local optstr = subinstr("`optstr'"," ","",.)
+	if "`print'"!="" _print_tool `optstr'
 	return local optstr `optstr'
 end
 
 /*
- class sklearn.neural_network.MLPClassifier(hidden_layer_sizes=100, activation='relu', *, solver='adam', 
- alpha=0.0001, batch_size='auto', learning_rate='constant', learning_rate_init=0.001, power_t=0.5, 
- max_iter=200, shuffle=True, random_state=None, tol=0.0001, verbose=False, warm_start=False,
-  momentum=0.9, nesterovs_momentum=True, early_stopping=False, validation_fraction=0.1, 
-  beta_1=0.9, beta_2=0.999, epsilon=1e-08, n_iter_no_change=10, max_fun=15000)[source]¶
+ class sklearn.neural_network.MLPClassifier()[source]¶
  */
 program define parse_MLPClass, rclass
-	syntax [anything] , [ ///
+	syntax [anything] , ///
+						sklearn1(real) sklearn2(real) ///
+						[ ///
 						hidden_layer_sizes(numlist >0 integer) ///
 						activation(string) ///
 						solver(string) ///
@@ -1557,7 +1576,7 @@ program define parse_MLPClass, rclass
 						learning_rate_init(real -1) ///
 						power_t(real -1) ///
 						max_iter(integer -1) ///
-						NOSHuffle ///
+						shuffle(string) ///
 						random_state(integer -1) ///
 						tol(real -1) ///
 						verbose ///
@@ -1571,6 +1590,7 @@ program define parse_MLPClass, rclass
 						epsilon(real -1) ///
 						n_iter_no_change(integer -1) ///
 						max_fun(integer -1) ///
+						print ///
 					]
 
 	local optstr
@@ -1601,7 +1621,7 @@ program define parse_MLPClass, rclass
 	}
 	*** solver
 	if `alpha'>0 {
-		local optstr `optstr' 'alpha':'`alpha'',
+		local optstr `optstr' 'alpha':`alpha',
 	} 
 	else {
 		local optstr `optstr' 'alpha':0.0001,
@@ -1629,7 +1649,7 @@ program define parse_MLPClass, rclass
 	}
 	*** power t
 	if `power_t'>0 {
-		local optstr `optstr' 'power':`power_t',
+		local optstr `optstr' 'power_t':`power_t',
 	}
 	else {
 		local optstr `optstr' 'power_t':0.5,
@@ -1642,8 +1662,8 @@ program define parse_MLPClass, rclass
 		local optstr `optstr' 'max_iter':200,
 	}
 	*** shuffle
-	if "`noshuffle'"!="" {
-		local optstr `optstr' 'shuffle':False,
+	if "`shuffle'"!="" {
+		local optstr `optstr' 'shuffle':`shuffle',
 	}
 	else {
 		local optstr `optstr' 'shuffle':True,
@@ -1743,5 +1763,21 @@ program define parse_MLPClass, rclass
 	local optstr {`optstr'}
 	local optstr = subinstr("`optstr'",",}","}",.)
 	local optstr = subinstr("`optstr'"," ","",.)
+	if "`print'"!="" _print_tool `optstr'
 	return local optstr `optstr'
+end
+
+program _print_tool 
+	local str `0'
+	local str = subinstr("`str'","':","(",.)
+	local str = subinstr("`str'",",'",") ",.)
+	local str = subinstr("`str'","'","",.)
+	local str = subinstr("`str'","{","",.)
+	local str = subinstr("`str'","}",")",.)
+	local str = subinstr("`str'","[","",.)
+	local str = subinstr("`str'","]","",.)
+	local str = subinstr("`str'",","," ",.)
+	local str = subinstr("`str'"," ))",")",.)
+	local str = subinstr("`str'","((","(",.)
+	di as text "`str'"
 end

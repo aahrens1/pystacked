@@ -53,7 +53,6 @@ local m2 logit lassocv rf nnet
 local m3 logit ridgecv gradboost nnet
 local m4 logit elasticcv gradboost nnet
 local m5 logit elasticcv gradboost svm
-local m6 logit elasticcv gradboost linsvm
 
 foreach m in "`m1'" "`m2'" "`m3'" "`m4'" "`m5'" "`m6'" {
 	di "`m'"

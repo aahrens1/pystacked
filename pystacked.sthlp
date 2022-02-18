@@ -1,7 +1,7 @@
 {smcl}
-{* *! version 17feb2022}{...}
+{* *! version 18feb2022}{...}
 {hline}
-{cmd:help pystacked}{right: v0.4}
+{cmd:help pystacked}{right: v0.4.1}
 {hline}
 
 {title:Title}
@@ -135,6 +135,9 @@ options passed to the base learners, see {helpb pystacked##base_learners_opt:Com
 {p_end}
 {synopt:{opt pipe*(string)}}
 pipelines passed to the base learners, see {helpb pystacked##pipelines:Pipelines}.
+Regularized linear learners use the {it:stdscaler} pipeline by default, which
+standardizes the predictors. To suppress this, use {it:nostdscaler}.
+For other learners, there is no default pipeline.
 {p_end}
 {synopt:{opt xvars*(varlist)}}
 overwrites the default list of predictors.
@@ -162,6 +165,10 @@ options, see {helpb pystacked##base_learners_opt:Command options}.
 {p_end}
 {synopt:{opt pipe:line(string)}}
 pipelines applied to the predictors, see {helpb pystacked##pipelines:Pipelines}.
+pipelines passed to the base learners, see {helpb pystacked##pipelines:Pipelines}.
+Regularized linear learners use the {it:stdscaler} pipeline by default, which
+standardizes the predictors. To suppress this, use {it:nostdscaler}.
+For other learners, there is no default pipeline.
 {p_end}
 {synopt:{opt xvars(varlist)}}
 overwrites the default list of predictors.
@@ -432,18 +439,21 @@ Please see links in the next section for more information on each method.
 {title:Base learners: Options}
 
 {pstd}
-This section lists the options of each base learners supported by {cmd:pystacked}.
 Options can be passed to the base learners via {opt cmdopt*(string)} 
 (Syntax 1) or {opt opt(string)} (Syntax 2).
-The defaults are adopted from scikit-learn, with some 
-modifications highlighted below.
+The defaults are adopted from scikit-learn.
 
 {pstd}
-For the sake of brevity, the base learners options are
-not discussed here in detail.
-Please see the scikit-learn documentations linked below.
+To see the default options of each base learners, simply click on 
+the "Show options" links below. To see which alternative
+settings are allowed, please see the scikit-learn 
+documentations linked below.
 We {it:strongly recommend} that you read the scikit-learn 
 documentation carefully.
+
+{pstd}
+The option {opt showopt:ions} shows the options passed on to Python. 
+We recommend to verify that options have been passed to Python as intended. 
 
 {pstd}
 {ul:Linear regression} {break}
@@ -451,10 +461,8 @@ Methods {it:ols} {break}
 {it:Type:} {it:reg} {break}
 {it:Documentation:} {browse "https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html":linear_model.LinearRegression}
 
-{p 8 8 2}
-{opt nocons:tant}
-{opt non:ormalize}
-{opt pos:itive}
+{pstd}
+{stata "_pyparse, type(reg) method(ols) print":Show options}
 
 {pstd}
 {ul:Logistic regression} {break}
@@ -462,8 +470,8 @@ Methods: {it:logit} {break}
 Type: {it:class} {break}
 Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html":linear_model.LogisticRegression}
 
-{p 8 8 2}
-{opt nocons:tant}
+{pstd}
+{stata "_pyparse, type(class) method(logit) print":Show options}
 
 {pstd}
 {ul:Penalized regression with information criteria} {break}
@@ -471,12 +479,8 @@ Methods {it:lassoic} {break}
 Type: {it:reg} {break}
 Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LassoLarsIC.html":linear_model.LassoLarsIC}
 
-{p 8 8 2}
-{opt criterion(aic|bic)}
-{opt nocons:tant}
-{opt max_iter(int 500)}
-{opt eps(real)}
-{opt positive}
+{pstd}
+{stata "_pyparse, type(reg) method(lassoic) print":Show options}
 
 {pstd}
 {ul:Penalized regression with cross-validation} 
@@ -486,25 +490,10 @@ Methods: {it:lassocv}, {it:ridgecv} and {it:elasticv} {break}
 Type: {it:regress} {break}
 Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.ElasticNetCV.html":linear_model.ElasticNetCV}  
 
-{p 8 8 2}
-{opt l1_ratio(real 0.5)}
-{opt eps(real 1e-3)}
-{opt n_alphas(integer 100)}
-{opt alphas(numlist)}
-{opt nocons:tant}
-{opt non:ormalize}
-{opt max_iter(integer 1000)}
-{opt tol(real 1e-4)}
-{opt cv(integer 5)}
-{opt n_jobs(integer 1)}
-{opt positive}
-{opt random_state(integer)}
-{opt selection(cyclic|random)}
-
 {pstd}
-Note: {it:lassocv} uses {opt l1_ratio(1)}, {it:ridgecv} uses {opt l1_ratio(0)},
-{it:elasticcv} uses {opt l1_ratio(.5)};  
-other options are the same.
+{stata "_pyparse, type(reg) method(lassocv) print":Show lasso options} {break}
+{stata "_pyparse, type(reg) method(ridgecv) print":Show ridge options} {break}
+{stata "_pyparse, type(reg) method(elasticcv) print":Show elastic net options}
 
 {pstd}
 {ul:Penalized logistic regression with cross-validation} {break}
@@ -512,24 +501,10 @@ Methods: {it:lassocv}, {it:ridgecv} and {it:elasticv} {break}
 Type: {it:class} {break}
 Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegressionCV.html":linear_model.LogisticRegressionCV}
 
-{p 8 8 2}
-{opt l1_ratios(numlist)}
-{opt c:s(integer 10)}
-{opt nocons:tant}
-{opt cv(integer 5)}
-{opt penalty(l1|l2|elasticnet)}
-{opt solver(string)}
-{opt tol(real 1e-4)}
-{opt max_iter(integer 100)}
-{opt n_jobs(integer 1)}
-{opt norefit}
-{opt intercept_scaling(real 1)}
-{opt random_state(integer)}
-
 {pstd}
-Note: {it:lassocv} uses {opt penalty(l1)}, {it:ridgecv} uses {opt penalty(l2)},
-{it:elasticcv} uses {opt penalty(elasticnet) l1_ratios(0 .5 1)};
-other options are the same.
+{stata "_pyparse, type(class) method(lassocv) print":Show lasso options} {break}
+{stata "_pyparse, type(class) method(ridgecv) print":Show ridge options} {break}
+{stata "_pyparse, type(class) method(elasticcv) print":Show elastic options}
 
 {pstd}
 {ul:Random forest classifier} {break}
@@ -537,23 +512,8 @@ Method: {it:rf} {break}
 Type: {it:class} {break}
 Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html":ensemble.RandomForestClassifier}
 
-{p 8 8 2}
-{opt n_estimators(int 100)}
-{opt criterion(string)}
-{opt max_depth(int)}  
-{opt min_samples_split(integer 2)}
-{opt min_samples_leaf(integer 1)}
-{opt min_weight_fraction_leaf(real 0)}
-{opt max_features(string)}
-{opt max_leaf_nodes(int)}
-{opt min_impurity_decrease(real 0)}
-{opt noboots:trap}
-{opt oob_score}
-{opt n_jobs(int)}
-{opt random_state(integer)}
-{opt warm_start}
-{opt ccp_alpha(real 0)}
-{opt max_samples(integer)}
+{pstd}
+{stata "_pyparse, type(class) method(rf) print":Show options}
 
 {pstd}
 {ul:Random forest regressor} {break}
@@ -561,50 +521,8 @@ Method: {it:rf} {break}
 Type: {it:reg} {break}
 Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestRegressor.html":ensemble.RandomForestRegressor}
 
-{p 8 8 2}
-{opt n_estimators(int 100)}
-{opt criterion(string)}
-{opt max_depth(int)} 
-{opt min_samples_split(integer)}
-{opt min_samples_leaf(integer)}
-{opt min_weight_fraction_leaf(real 0)}
-{opt max_features(string)}
-{opt max_leaf_nodes(integer)}
-{opt min_impurity_decrease(real 0)}
-{opt noboots:trap}
-{opt oob_score}
-{opt n_jobs(integer 1)}
-{opt random_state(integer)}
-{opt warm_start}
-{opt ccp_alpha(real 0)}
-{opt max_samples(integer)} 
-
 {pstd}
-{ul:Gradient boosted classification trees} {break}
-Method: {it:gradboost} {break}
-Type: {it:class} {break}
-Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingClassifier.html":ensemble.GradientBoostingClassifier}
-
-{p 8 8 2}
-{opt loss(deviance|exponential)}
-{opt learning_rate(real 0.1)}
-{opt n_estimators(integer 100)}
-{opt subsample(real 1)}
-{opt criterion(string)}
-{opt min_samples_split(integer 2)}
-{opt min_samples_leaf(integer 1)}
-{opt min_weight_fraction_leaf(real 0)}
-{opt max_depth(integer 3)}
-{opt min_impurity_decrease(real 0)}
-{opt init(string)}
-{opt random_state(integer)}
-{opt max_features(auto|sqrt|log2)}
-{opt max_leaf_nodes(integer)}
-{opt warm_start}
-{opt validation_fraction(real 0.1)}
-{opt n_iter_no_change(integer)}
-{opt tol(real 1e-4)}
-{opt ccp_alpha(real 0)}
+{stata "_pyparse, type(reg) method(rf) print":Show options}
 
 {pstd}
 {ul:Gradient boosted regression trees} {break}
@@ -612,44 +530,8 @@ Method: {it:gradboost} {break}
 Type: {it:reg} {break}
 Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingRegressor.html":ensemble.GradientBoostingRegressor}
 
-{p 8 8 2}
-{opt loss(string)}
-{opt learning_rate(real 0.1)}
-{opt n_estimators(integer 100)}
-{opt subsample(real 1)}
-{opt criterion(string)}
-{opt min_samples_split(integer 2)}
-{opt min_samples_leaf(integer 1)}
-{opt min_weight_fraction_leaf(real 0)}
-{opt max_depth(integer 3)}  
-{opt min_impurity_decrease(real 0)}
-{opt init(string)}
-{opt random_state(integer)}
-{opt max_features(string)}
-{opt alpha(real 0.9)}
-{opt max_leaf_nodes(integer)}
-{opt warm_start}
-{opt validation_fraction(real 0.1)}
-{opt n_iter_no_change(integer)}
-{opt tol(real 1e-4)}
-{opt ccp_alpha(real 0)}
-
 {pstd}
-{ul:Linear SVM (SVC)} {break}
-Method: {it:linsvm} {break}
-Type: {it:class} {break} 
-Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.svm.LinearSVC.html":svm.LinearSVC}
-
-{p 8 8 2}
-{opt penalty(string)}
-{opt loss(string)}
-{opt primal}
-{opt tol(real 1e-4)}
-{opt c(real 1)}
-{opt nocons:tant}
-{opt intercept_scaling(real 1)}
-{opt random_state(integer -1)}
-{opt max_iter(integer 1000)}
+{stata "_pyparse, type(reg) method(gradboost) print":Show options}
 
 {pstd}
 {ul:Linear SVM (SVR)} {break}
@@ -657,16 +539,8 @@ Method: {it:linsvm} {break}
 Type: {it:reg} {break} 
 Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.svm.LinearSVR.html":svm.LinearSVR}
 
-{p 8 8 2}
-{opt epsilon(real 0)}
-{opt tol(real 1e-4)} 
-{opt c(real 1)} 
-{opt loss(string)}
-{opt nocons:tant}
-{opt intercept_scaling(real 1)}
-{opt primal}
-{opt random_state(integer -1)}
-{opt max_iter(integer 1000)}
+{pstd}
+{stata "_pyparse, type(reg) method(linsvm) print":Show options}
 
 {pstd}
 {ul:SVM (SVR)} {break}
@@ -674,17 +548,8 @@ Method: {it:svm} {break}
 Type: {it:class} {break}
 Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVR.html":svm.SVR}
 
-{p 8 8 2}
-{opt ker:nel(linear|poly|rbf|sigmoid)}
-{opt degree(integer 3)}
-{opt gam:ma(scale|auto)}
-{opt coef0(real 0)}
-{opt tol(real 1e-3)}
-{opt c(real 1)}
-{opt epsilon(real 0.1)}
-{opt noshr:inking}
-{opt cache_size(real 200)}
-{opt max_iter(integer -1)}
+{pstd}
+{stata "_pyparse, type(reg) method(svm) print":Show options}
 
 {pstd}
 {ul:SVM (SVC)} {break}
@@ -692,21 +557,8 @@ Method: {it:svm} {break}
 Type: {it:reg} {break}
 Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html":svm.SVC}
 
-{p 8 8 2}
-{opt c(real 1)}
-{opt ker:nel(linear|poly|rbf|sigmoid)}
-{opt degree(integer 3)}
-{opt gam:ma(scale|auto)}
-{opt coef0(real 0)}
-{opt probability}
-{opt tol(real 1e-3)}
-{opt epsilon(real 0.1)}
-{opt noshr:inking}
-{opt cache_size(real 200)}
-{opt max_iter(integer -1)}
-{opt decision_function_shape(ovr|ovo)}
-{opt break_ties}
-{opt random_state(integer -1)}
+{pstd}
+{stata "_pyparse, type(class) method(svm) print":Show options}
 
 {pstd}
 {ul:Neural net classifier (Multi-layer Perceptron)} {break}
@@ -714,30 +566,8 @@ Method: {it:nnet} {break}
 Type: {it:class} {break}
 Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.neural_network.MLPClassifier.html":sklearn.neural_network.MLPClassifier}
 
-{p 8 8 2}
-{opt hidden_layer_sizes(numlist >0 integer)}
-{opt activation(identity|logistic|tanh|relu)}
-{opt solver(lbfgs|sgd|adam)}
-{opt alpha(real 0.0001)}
-{opt batch_size(integer)}
-{opt learning_rate(constant|invscaling|adaptive)}
-{opt learning_rate_init(real -1)}
-{opt power_t(real .5)}
-{opt max_iter(integer 200)}
-{opt nosh:uffle}
-{opt random_state(integer)}
-{opt tol(real 1e-4)}
-{opt verbose}
-{opt warm_start}
-{opt momentum(real .9)}
-{opt nonest:erovs_momentum}
-{opt early_stopping}
-{opt validation_fraction(real .1)}
-{opt beta_1(real .9)}
-{opt beta_2(real .999)}
-{opt epsilon(real 1e-8)}
-{opt n_iter_no_change(integer 10)}
-{opt max_fun(integer 15000)}
+{pstd}
+{stata "_pyparse, type(class) method(nnet) print":Show options}
 
 {pstd}
 {ul:Neural net regressor (Multi-layer Perceptron)} {break}
@@ -745,31 +575,8 @@ Method: {it:nnet} {break}
 Type: {it:reg} {break}
 Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.neural_network.MLPRegressor.html":sklearn.neural_network.MLPRegressor}
 
-{p 8 8 2}
-{opt hidden_layer_sizes(numlist >0 integer)}
-{opt activation(identity|logistic|tanh|relu)}
-{opt solver(lbfgs|sgd|adam)}
-{opt alpha(real 0.0001)}
-{opt batch_size(integer)}
-{opt learning_rate(constant|invscaling|adaptive)}
-{opt learning_rate_init(real 0.001)}
-{opt power_t(real .5)}
-{opt max_iter(integer 200)}
-{opt nosh:uffle}
-{opt random_state(integer)}
-{opt tol(real 1e-4)}
-{opt verbose}
-{opt warm_start}
-{opt momentum(real .9)}
-{opt NONESTerovs_momentum}
-{opt early_stopping}
-{opt validation_fraction(real .1)}
-{opt beta_1(real .9)}
-{opt beta_2(real .999)}
-{opt epsilon(real 1e-8)}
-{opt n_iter_no_change(integer 10)}
-{opt max_fun(integer 15000)}
-
+{pstd}
+{stata "_pyparse, type(reg) method(nnet) print":Show options}
 
 {marker predictors}{...}
 {title:Learner-specific predictors}

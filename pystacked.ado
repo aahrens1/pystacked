@@ -1,5 +1,5 @@
-*! pystacked v0.4
-*! last edited: 17feb2022
+*! pystacked v0.4.1
+*! last edited: 18feb2022
 *! authors: aa/ms
 
 // parent program
@@ -211,7 +211,7 @@ version 16.0
                     xvars9(varlist fv) ///
                     xvars10(varlist fv) ///
                     ///
-                    showpywarnings ///
+                    SHOWPywarnings ///
                     backend(string) ///
                     ///
                     /// options for graphing; ignore here
@@ -300,6 +300,16 @@ version 16.0
         }
     }
 
+    // get sklearn version
+    python: import sklearn
+    python: sfi.Macro.setLocal("sklearn_ver1",format(sklearn.__version__).split(".")[0])
+    python: sfi.Macro.setLocal("sklearn_ver2",format(sklearn.__version__).split(".")[1])
+    if (`sklearn_ver2'<24 & `sklearn_ver1'<1) {
+        di as err "pystacked requires sklearn 0.24.0 or higher. Please update sklearn."
+        di as err "See instructions on https://scikit-learn.org/stable/install.html, and in the help file."
+        exit 198
+    }
+
     // mark sample 
     marksample touse
     markout `touse' `varlist'
@@ -310,7 +320,7 @@ version 16.0
 
     if `doublebarsyntax' {
         // Syntax 2
-        syntax_parse `beforeifinweight' , type(`type') touse(`touse')
+        syntax_parse `beforeifinweight' , type(`type') touse(`touse') sklearn1(`sklearn_ver1') sklearn2(`sklearn_ver2')
         local allmethods `r(allmethods)'
         local allpyopt `r(allpyopt)'
         local mcount = `r(mcount)'
@@ -333,7 +343,7 @@ version 16.0
             local method : word `i' of `allmethods'
             if "`method'"!="" {
                 local mcount = `i'
-                _pyparse , `cmdopt`i'' type(`type') method(`method')  
+                _pyparse , `cmdopt`i'' type(`type') method(`method') sklearn1(`sklearn_ver1') sklearn2(`sklearn_ver2')
                 if `i'==1 {
                     local allpyopt [`r(optstr)'
                 }
@@ -343,6 +353,11 @@ version 16.0
                 local opt`i' `cmdopt`i'' 
                 local method`i' `method'
                 local pyopt`i' `r(optstr)'
+                if strpos("`pipe`i''","stdscaler")==0 & strpos("lassoic lassocv ridgecv elasticcv","`method'")!=0 {
+                    * stdscaler is added by default for linear regularized estimators
+                    local pipe`i' `pipe`i'' stdscaler
+                }
+                local pipe`i' = subinstr("`pipe`i''","nostdscaler","",.)
                 if "`pipe`i''"=="" local pipe`i' passthrough
                 local allpipe `allpipe' '`pipe`i''', 
             }            
@@ -351,7 +366,7 @@ version 16.0
         local allpipe `allpipe')
     }
 
-    ******** parsing end ****************************************************** 
+    ******** dealing with varlists ******************************************** 
 
     * Split varlists called yvar and xvars
     ** xvars is the default predictor set.
@@ -420,6 +435,8 @@ version 16.0
         sum `yvar_t' `xvars_all_t' if `touse'
     }
 
+    ******** dealing with varlists END ***************************************** 
+
     // create esample variable for posting (disappears from memory after posting)
     tempvar esample
     qui gen byte `esample' = `touse'
@@ -458,6 +475,7 @@ version 16.0
     ereturn local type        `type'
 
     forvalues i = 1(1)`mcount' {
+        local opt`i' = stritrim("`opt`i''")
         ereturn local opt`i' `opt`i'' 
         ereturn local method`i' `method`i''
         ereturn local pyopt`i' `pyopt`i''    
@@ -471,7 +489,7 @@ end
 // parses Syntax 2
 program define syntax_parse, rclass
 
-    syntax [anything(everything)] , type(string) touse(varname)
+    syntax [anything(everything)] , type(string) touse(varname) sklearn1(real) sklearn2(real)
 
     // save y x and if/in    
     tokenize `anything', parse("|")
@@ -495,8 +513,13 @@ program define syntax_parse, rclass
         local allmethods `allmethods' `method'
         return local method`i' `method'
         return local opt`i' `options'
+        if strpos("`pipeline'","stdscaler")==0 & strpos("lassoic lassocv ridgecv elasticcv","`method'")!=0 {
+            * stdscaler is added by default for linear regularized estimators
+            local pipeline `pipeline' stdscaler
+        }
+        local pipeline = subinstr("`pipeline'","nostdscaler","",.)
         if "`pipeline'"=="" local pipeline passthrough
-        _pyparse , `options' type(`type') method(`method') 
+        _pyparse , `options' type(`type') method(`method') sklearn1(`sklearn1') sklearn2(`sklearn2')
         return local pyopt`i' `r(optstr)'
         return local pipe`i' `pipeline'
         return local xvars`i' `xvars'
@@ -966,6 +989,7 @@ import scipy
 import sys
 import sklearn
 import __main__
+import warnings
 
 ### Define required Python functions/classes
 
@@ -1088,11 +1112,12 @@ def run_stacked(type, # regression or classification
         rng=np.random.RandomState(seed)
     else: 
         rng=None
-
+    
     if showpywarnings=="":
-        import warnings
-        warnings.filterwarnings('ignore') 
-
+        warnings.filterwarnings('ignore')
+    #else:
+    #    warnings.filterwarnings('default')
+    
     if njobs==0: 
         nj = None 
     else: 

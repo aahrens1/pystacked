@@ -1,8 +1,8 @@
------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------
       name:  <unnamed>
        log:  /Users/kahrens/MyProjects/pystacked/cert/log_cs_pystacked_class.txt
   log type:  text
- opened on:  17 Feb 2022, 17:58:26
+ opened on:  18 Feb 2022, 14:37:39
 
 . 
 . clear all
@@ -30,8 +30,8 @@
 
 . which pystacked 
 /Users/kahrens/MyProjects/pystacked/pystacked.ado
-*! pystacked v0.4
-*! last edited: 17feb2022
+*! pystacked v0.4.1
+*! last edited: 18feb2022
 *! authors: aa/ms
 
 . python: import sklearn
@@ -57,12 +57,12 @@
 . gen train2 = u<.75
 
 . save `testdata'
-file /var/folders/hj/47q1qh7d7g12z31w_539my0w0000gs/T//S_97337.000001 saved
+file /var/folders/hj/47q1qh7d7g12z31w_539my0w0000gs/T//S_23998.000001 saved
 
 . 
 . *******************************************************************************
-. *** try voting                                                                                                 
->                          ***
+. *** try voting                                                                                                    
+>                       ***
 . *******************************************************************************
 . 
 . use `testdata', clear
@@ -73,6 +73,7 @@ file /var/folders/hj/47q1qh7d7g12z31w_539my0w0000gs/T//S_97337.000001 saved
 >                                                         njobs(4) pipe1(poly2) ///
 >                                                         voting voteweights(0.1 .4) ///
 >                                                         votetype(soft)
+Stacking weights:
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
@@ -83,8 +84,8 @@ file /var/folders/hj/47q1qh7d7g12z31w_539my0w0000gs/T//S_97337.000001 saved
 .                         
 . 
 . *******************************************************************************
-. *** try other estimators                                                                                       
->                  ***
+. *** try other estimators                                                                                          
+>               ***
 . *******************************************************************************
 . 
 . use `testdata', clear
@@ -100,8 +101,6 @@ file /var/folders/hj/47q1qh7d7g12z31w_539my0w0000gs/T//S_97337.000001 saved
 
 . local m5 logit elasticcv gradboost svm
 
-. local m6 logit elasticcv gradboost linsvm
-
 . 
 . foreach m in "`m1'" "`m2'" "`m3'" "`m4'" "`m5'" "`m6'" {
   2.         di "`m'"
@@ -110,53 +109,58 @@ file /var/folders/hj/47q1qh7d7g12z31w_539my0w0000gs/T//S_97337.000001 saved
 >                                                         njobs(4)
   4. }
 logit lassocv gradboost nnet
+Stacking weights:
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
   logit          |      0.0000000
   lassocv        |      0.0000000
-  gradboost      |      0.5998200
-  nnet           |      0.4001800
+  gradboost      |      0.3711264
+  nnet           |      0.6288736
 logit lassocv rf nnet
+Stacking weights:
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  logit          |      0.0647179
+  logit          |      0.0000000
   lassocv        |      0.0000000
-  rf             |      0.5599447
-  nnet           |      0.3753375
+  rf             |      0.4820447
+  nnet           |      0.5179553
 logit ridgecv gradboost nnet
+Stacking weights:
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
   logit          |      0.0000000
   ridgecv        |      0.0000000
-  gradboost      |      0.5998200
-  nnet           |      0.4001800
+  gradboost      |      0.3711264
+  nnet           |      0.6288736
 logit elasticcv gradboost nnet
+Stacking weights:
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
   logit          |      0.0000000
   elasticcv      |      0.0000000
-  gradboost      |      0.5998200
-  nnet           |      0.4001800
+  gradboost      |      0.3711264
+  nnet           |      0.6288736
 logit elasticcv gradboost svm
+Stacking weights:
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  logit          |      0.1114366
+  logit          |      0.0995764
   elasticcv      |      0.0000000
-  gradboost      |      0.8788682
-  svm            |      0.0096952
-logit elasticcv gradboost linsvm
+  gradboost      |      0.7546517
+  svm            |      0.1457719
+
+Stacking weights:
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  logit          |      0.1139734
-  elasticcv      |      0.0000000
-  gradboost      |      0.8846829
-  linsvm         |      0.0013437
+  logit          |      0.1673696
+  lassocv        |      0.0000000
+  gradboost      |      0.8326304
 
 . 
 . *******************************************************************************
@@ -167,12 +171,13 @@ logit elasticcv gradboost linsvm
 
 . 
 . pystacked $model, type(class) pyseed(123)
+Stacking weights:
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  logit          |      0.1203255
+  logit          |      0.1673647
   lassocv        |      0.0000000
-  gradboost      |      0.8796745
+  gradboost      |      0.8326353
 
 . 
 . predict double yhat, pr
@@ -182,16 +187,16 @@ logit elasticcv gradboost linsvm
       +-----------+
       |      yhat |
       |-----------|
-   1. | .12440336 |
-   2. | .09654456 |
-   3. | .01708139 |
-   4. | .97441519 |
-   5. | .67854875 |
+   1. | .43349238 |
+   2. | .76472662 |
+   3. | .98266781 |
+   4. | .70136324 |
+   5. | .33060945 |
       |-----------|
-   6. | .91155256 |
-   7. |  .0312939 |
-   8. | .10774842 |
-   9. | .99692457 |
+   6. | .86920261 |
+   7. | .05238366 |
+   8. | .97237024 |
+   9. | .11488798 |
       +-----------+
 
 . 
@@ -208,8 +213,8 @@ logit elasticcv gradboost linsvm
 . 
 . 
 . *******************************************************************************
-. *** check table option                                                                                         
->                  ***
+. *** check table option                                                                                            
+>               ***
 . *******************************************************************************
 . 
 . use `testdata', clear
@@ -223,12 +228,13 @@ logit elasticcv gradboost linsvm
 . 
 . // full sample
 . pystacked $model, type(class) pyseed(123) methods(logit rf gradboost)
+Stacking weights:
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  logit          |      0.0877159
-  rf             |      0.4804884
-  gradboost      |      0.4317957
+  logit          |      0.1166825
+  rf             |      0.6261173
+  gradboost      |      0.2572003
 
 . pystacked, table
 
@@ -237,114 +243,116 @@ Confusion matrix: In-Sample and Out-of-Sample
   Method         | Weight      In-Sample       Out-of-Sample
                  |             0       1         0       1  
 -----------------+------------------------------------------
-  STACKING     0 |    .      1375      15         .       .
-  STACKING     1 |    .        54     857         .       .
-  logit        0 | 0.088     1318      72         .       .
-  logit        1 | 0.088      160     751         .       .
-  rf           0 | 0.480     1390       0         .       .
-  rf           1 | 0.480       19     892         .       .
-  gradboost    0 | 0.432     1342      48         .       .
-  gradboost    1 | 0.432       81     830         .       .
+  STACKING     0 |    .      1355      10         .       .
+  STACKING     1 |    .        36     900         .       .
+  logit        0 | 0.117     1280      85         .       .
+  logit        1 | 0.117      157     779         .       .
+  rf           0 | 0.626     1365       0         .       .
+  rf           1 | 0.626       20     916         .       .
+  gradboost    0 | 0.257     1312      53         .       .
+  gradboost    1 | 0.257       85     851         .       .
 
 . 
 . // with holdout sample
 . pystacked $model if train, type(class) pyseed(123) methods(logit rf gradboost)
+Stacking weights:
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  logit          |      0.2517107
-  rf             |      0.2483638
-  gradboost      |      0.4999255
+  logit          |      0.2048669
+  rf             |      0.5685456
+  gradboost      |      0.2265875
 
 . // default holdout - all available obs
 . pystacked, table holdout
-Number of holdout observations: 1143
+Number of holdout observations: 1155
 
 Confusion matrix: In-Sample and Out-of-Sample
 ------------------------------------------------------------
   Method         | Weight      In-Sample       Out-of-Sample
                  |             0       1         0       1  
 -----------------+------------------------------------------
-  STACKING     0 |    .       684      18       646      42
-  STACKING     1 |    .        31     425        56     399
-  logit        0 | 0.252      665      37       638      50
-  logit        1 | 0.252       73     383        86     369
-  rf           0 | 0.248      702       0       647      41
-  rf           1 | 0.248        8     448        60     395
-  gradboost    0 | 0.500      682      20       640      48
-  gradboost    1 | 0.500       30     426        63     392
+  STACKING     0 |    .       676       4       640      45
+  STACKING     1 |    .        17     449        57     413
+  logit        0 | 0.205      647      33       636      49
+  logit        1 | 0.205       73     393        76     394
+  rf           0 | 0.569      679       1       635      50
+  rf           1 | 0.569        9     457        61     409
+  gradboost    0 | 0.227      663      17       633      52
+  gradboost    1 | 0.227       35     431        65     405
 
 . // specified holdout sample
 . pystacked, table holdout(h1)
-Number of holdout observations:  550
+Number of holdout observations:  549
 
 Confusion matrix: In-Sample and Out-of-Sample
 ------------------------------------------------------------
   Method         | Weight      In-Sample       Out-of-Sample
                  |             0       1         0       1  
 -----------------+------------------------------------------
-  STACKING     0 |    .       684      18       311      23
-  STACKING     1 |    .        31     425        29     187
-  logit        0 | 0.252      665      37       308      26
-  logit        1 | 0.252       73     383        45     171
-  rf           0 | 0.248      702       0       311      23
-  rf           1 | 0.248        8     448        27     189
-  gradboost    0 | 0.500      682      20       308      26
-  gradboost    1 | 0.500       30     426        31     185
+  STACKING     0 |    .       676       4       295      23
+  STACKING     1 |    .        17     449        29     202
+  logit        0 | 0.205      647      33       293      25
+  logit        1 | 0.205       73     393        38     193
+  rf           0 | 0.569      679       1       291      27
+  rf           1 | 0.569        9     457        32     199
+  gradboost    0 | 0.227      663      17       290      28
+  gradboost    1 | 0.227       35     431        36     195
 
 . 
 . // as pystacked option
 . pystacked $model if train, type(class) pyseed(123) ///
 >         methods(logit rf gradboost) table holdout
-Number of holdout observations: 1143
+Number of holdout observations: 1155
 
 Confusion matrix: In-Sample and Out-of-Sample
 ------------------------------------------------------------
   Method         | Weight      In-Sample       Out-of-Sample
                  |             0       1         0       1  
 -----------------+------------------------------------------
-  STACKING     0 |    .       684      18       646      42
-  STACKING     1 |    .        31     425        56     399
-  logit        0 | 0.252      665      37       638      50
-  logit        1 | 0.252       73     383        86     369
-  rf           0 | 0.248      702       0       647      41
-  rf           1 | 0.248        8     448        60     395
-  gradboost    0 | 0.500      682      20       640      48
-  gradboost    1 | 0.500       30     426        63     392
+  STACKING     0 |    .       676       4       640      45
+  STACKING     1 |    .        17     449        57     413
+  logit        0 | 0.205      647      33       636      49
+  logit        1 | 0.205       73     393        76     394
+  rf           0 | 0.569      679       1       635      50
+  rf           1 | 0.569        9     457        61     409
+  gradboost    0 | 0.227      663      17       633      52
+  gradboost    1 | 0.227       35     431        65     405
 
 . 
 . // syntax 2
 . pystacked $model || method(logit) || method(rf) || method(gradboost) || if train, ///
 >         type(class) pyseed(123)
+Stacking weights:
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  logit          |      0.2517107
-  rf             |      0.2483638
-  gradboost      |      0.4999255
+  logit          |      0.2048669
+  rf             |      0.5685456
+  gradboost      |      0.2265875
 
 . pystacked, table holdout
-Number of holdout observations: 1143
+Number of holdout observations: 1155
 
 Confusion matrix: In-Sample and Out-of-Sample
 ------------------------------------------------------------
   Method         | Weight      In-Sample       Out-of-Sample
                  |             0       1         0       1  
 -----------------+------------------------------------------
-  STACKING     0 |    .       684      18       646      42
-  STACKING     1 |    .        31     425        56     399
-  logit        0 | 0.252      665      37       638      50
-  logit        1 | 0.252       73     383        86     369
-  rf           0 | 0.248      702       0       647      41
-  rf           1 | 0.248        8     448        60     395
-  gradboost    0 | 0.500      682      20       640      48
-  gradboost    1 | 0.500       30     426        63     392
+  STACKING     0 |    .       676       4       640      45
+  STACKING     1 |    .        17     449        57     413
+  logit        0 | 0.205      647      33       636      49
+  logit        1 | 0.205       73     393        76     394
+  rf           0 | 0.569      679       1       635      50
+  rf           1 | 0.569        9     457        61     409
+  gradboost    0 | 0.227      663      17       633      52
+  gradboost    1 | 0.227       35     431        65     405
 
 . 
 . 
 . *******************************************************************************
-. *** check graph option                                                                                         
->                  ***
+. *** check graph option                                                                                            
+>               ***
 . *******************************************************************************
 . 
 . use `testdata', clear
@@ -358,64 +366,67 @@ Confusion matrix: In-Sample and Out-of-Sample
 . 
 . // full sample
 . pystacked $model, type(class) pyseed(123) methods(logit rf gradboost)
+Stacking weights:
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  logit          |      0.0877159
-  rf             |      0.4804884
-  gradboost      |      0.4317957
+  logit          |      0.1166825
+  rf             |      0.6261173
+  gradboost      |      0.2572003
 
 . pystacked, graph
 
 . 
 . // with holdout sample
 . pystacked $model if train, type(class) pyseed(123) methods(logit rf gradboost)
+Stacking weights:
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  logit          |      0.2517107
-  rf             |      0.2483638
-  gradboost      |      0.4999255
+  logit          |      0.2048669
+  rf             |      0.5685456
+  gradboost      |      0.2265875
 
 . // default holdout - all available obs
 . pystacked, graph holdout
-Number of holdout observations: 1143
+Number of holdout observations: 1155
 
 . // specified holdout sample
 . pystacked, graph holdout(h1)
-Number of holdout observations:  550
+Number of holdout observations:  549
 
 . // histogram option
 . pystacked, graph hist holdout
-Number of holdout observations: 1143
+Number of holdout observations: 1155
 
 . // graphing options - combined graph
 . pystacked, graph(subtitle("subtitle goes here")) holdout
-Number of holdout observations: 1143
+Number of holdout observations: 1155
 
 . // graphing options - learner graphs
 . pystacked, lgraph(percent) hist holdout
-Number of holdout observations: 1143
+Number of holdout observations: 1155
 
 . 
 . // as pystacked option
 . pystacked $model if train, type(class) pyseed(123) ///
 >         methods(logit rf gradboost) graph holdout
-Number of holdout observations: 1143
+Number of holdout observations: 1155
 
 . 
 . // syntax 2
 . pystacked $model || method(logit) || method(rf) || method(gradboost) || if train, ///
 >         type(class) pyseed(123)
+Stacking weights:
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  logit          |      0.2517107
-  rf             |      0.2483638
-  gradboost      |      0.4999255
+  logit          |      0.2048669
+  rf             |      0.5685456
+  gradboost      |      0.2265875
 
 . pystacked, graph holdout
-Number of holdout observations: 1143
+Number of holdout observations: 1155
 
 . 
 . 
@@ -423,5 +434,5 @@ Number of holdout observations: 1143
       name:  <unnamed>
        log:  /Users/kahrens/MyProjects/pystacked/cert/log_cs_pystacked_class.txt
   log type:  text
- closed on:  17 Feb 2022, 18:05:55
------------------------------------------------------------------------------------------------------------------
+ closed on:  18 Feb 2022, 14:42:05
+--------------------------------------------------------------------------------------------------------------------
