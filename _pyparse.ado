@@ -434,8 +434,8 @@ program define parse_rfReg, rclass
 					n_estimators(integer 100) ///
 					criterion(string) ///
 					max_depth(integer -1) ///  
-					min_samples_split(integer 2) ///
-					min_samples_leaf(integer 1) /// only integer supported
+					min_samples_split(real 2) ///
+					min_samples_leaf(real 1) /// 
 					min_weight_fraction_leaf(real 0) ///
 					max_features(string) ///
 					max_leaf_nodes(integer -1) ///
@@ -475,11 +475,11 @@ program define parse_rfReg, rclass
 		local optstr `optstr' 'max_depth':None,
 	}
 	** min sample split
-	if `min_samples_split'>=1 {
+	if `min_samples_split'>0 {
 		local optstr `optstr' 'min_samples_split':`min_samples_split',
 	}
 	** min samples leaf
-	if `min_samples_leaf'>=1 {
+	if `min_samples_leaf'>0 {
 		local optstr `optstr' 'min_samples_leaf':`min_samples_leaf',
 	}
 	** min weight fraction leaf
@@ -574,8 +574,8 @@ program define parse_rfClass, rclass
 					n_estimators(integer 100) ///
 					criterion(string) ///
 					max_depth(integer -1) ///  
-					min_samples_split(integer 2) /// only int supported
-					min_samples_leaf(integer 1) /// only int supported
+					min_samples_split(real 2) /// only int supported
+					min_samples_leaf(real 1) /// 
 					min_weight_fraction_leaf(real 0) ///
 					max_features(string) ///
 					max_leaf_nodes(integer -1) ///
@@ -722,8 +722,8 @@ program define parse_gradboostReg, rclass
 					learning_rate(real 0.1) ///
 					n_estimators(integer 100) ///
 					subsample(real 1) ///
-					min_samples_split(integer 2) /// only int supported
-					min_samples_leaf(integer 1) /// only int supported
+					min_samples_split(real 2) /// only int supported
+					min_samples_leaf(real 1) /// only int supported
 					min_weight_fraction_leaf(real 0) ///
 					max_depth(integer 3) ///  
 					min_impurity_decrease(real 0) ///
@@ -879,8 +879,8 @@ program define parse_gradboostClass, rclass
 					n_estimators(integer 100) ///
 					subsample(real 1) ///
 					criterion(string) ///
-					min_samples_split(integer 2) /// only int supported
-					min_samples_leaf(integer 1) /// only int supported
+					min_samples_split(real 2) /// only int supported
+					min_samples_leaf(real 1) /// only int supported
 					min_weight_fraction_leaf(real 0) ///
 					max_depth(integer 3) ///  
 					min_impurity_decrease(real 0) ///
