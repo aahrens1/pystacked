@@ -629,3 +629,11 @@ Stacking weights:
 . 
 end of do-file
 
+. do "/var/folders/hj/47q1qh7d7g12z31w_539my0w0000gs/T//SD97337.000000"
+
+. cap cd "/Users/kahrens/MyProjects/pystacked/cert"
+
+. cap cd "/Users/ecomes/Documents/GitHub/pystacked/cert"
+
+. 
+. cap log close
