@@ -2,7 +2,7 @@
       name:  <unnamed>
        log:  /Users/kahrens/MyProjects/pystacked/cert/log_cs_pystacked_class.txt
   log type:  text
- opened on:  18 Feb 2022, 14:37:39
+ opened on:  21 Feb 2022, 12:02:58
 
 . 
 . clear all
@@ -57,7 +57,7 @@
 . gen train2 = u<.75
 
 . save `testdata'
-file /var/folders/hj/47q1qh7d7g12z31w_539my0w0000gs/T//S_23998.000001 saved
+file /var/folders/hj/47q1qh7d7g12z31w_539my0w0000gs/T//S_00680.000001 saved
 
 . 
 . *******************************************************************************
@@ -149,10 +149,10 @@ Stacking weights:
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  logit          |      0.0995764
+  logit          |      0.1002926
   elasticcv      |      0.0000000
-  gradboost      |      0.7546517
-  svm            |      0.1457719
+  gradboost      |      0.7558759
+  svm            |      0.1438315
 
 Stacking weights:
 ---------------------------------------
@@ -434,5 +434,5 @@ Number of holdout observations: 1155
       name:  <unnamed>
        log:  /Users/kahrens/MyProjects/pystacked/cert/log_cs_pystacked_class.txt
   log type:  text
- closed on:  18 Feb 2022, 14:42:05
+ closed on:  21 Feb 2022, 12:06:50
 --------------------------------------------------------------------------------------------------------------------

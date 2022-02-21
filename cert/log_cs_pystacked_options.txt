@@ -2,7 +2,7 @@
       name:  <unnamed>
        log:  /Users/kahrens/MyProjects/pystacked/cert/log_cs_pystacked_options.txt
   log type:  text
- opened on:  18 Feb 2022, 14:42:11
+ opened on:  21 Feb 2022, 11:34:40
 
 . 
 . clear all

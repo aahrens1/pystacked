@@ -6,143 +6,153 @@
 program define pystacked, eclass
     version 16.0
 
-    // no replay - must estimate
-    if ~replay() {
-        _pystacked `0'
-    }
+    // only print options
+    tokenize `"`0'"', parse(",")
+    local beforecomma `1'
+    macro shift
+    local restargs `*'
+    if (strpos("`restargs'","print"))==0 {
 
-    // save for display results
-    tempname weights_mat
-    mat `weights_mat'=e(weights)
-    local base_est `e(base_est)'
-    local nlearners    = e(mcount)
-
-    // parse and check for graph/table options
-    // code borrowed from _pstacked below - needed to accommodate syntax #2
-    if ~replay() {
-        tokenize "`0'", parse(",")
-        local beforecomma `1'
-        macro shift
-        local restargs `*'
-        local 0 `beforecomma'
-        syntax anything(name=beforeifinweight) [if] [in] [aweight fweight]
-        local ifinweight `if' `in' `weight' `exp'
-        tokenize `beforeifinweight', parse("|")
-        local mainargs `1'
-        local 0 `mainargs' `ifinweight' `restargs'
-    }
-    syntax [anything]  [if] [in] [aweight fweight] ,     ///
-                [                                        ///
-                    GRAPH1                                /// vanilla option, abbreviates to "graph"
-                    HISTogram                            /// report histogram instead of default ROC
-                    graph(string asis)                    /// for passing options to graph combine
-                    lgraph(string asis)                    /// for passing options to the graphs of the learners
-                    TABle                                /// 
-                    HOLDOUT1                            /// vanilla option, abbreviates to "holdout"
-                    holdout(varname)                    ///
-                    *                                    ///
-                ]
-    
-    // display results
-    if `"`graph'`graph1'`lgraph'`histogram'`table'"' == "" {
-
-        di as res "Stacking weights:"
-        di as text "{hline 17}{c TT}{hline 21}"
-        di as text "  Method" _c
-        di as text _col(18) "{c |}      Weight"
-        di as text "{hline 17}{c +}{hline 21}"
-
-        forvalues j=1/`nlearners' {
-            local b : word `j' of `base_est'
-            di as text "  `b'" _c
-            di as text _col(18) "{c |}" _c
-            di as res %15.7f el(`weights_mat',`j',1)
-        }
-    }
-
-    // graph/table block
-    if `"`graph'`graph1'`lgraph'`histogram'`table'"' ~= "" {
-        pystacked_graph_table,                            ///
-            `holdout1' holdout(`holdout')                ///
-            `graph1'                                    ///
-            `histogram'                                    ///
-            goptions(`graph') lgoptions(`lgraph')        ///
-            `table'
-    }
-    
-    // print MSPE table for regression problem
-    if "`table'" ~= "" & "`e(type)'"=="reg" {
-        tempname m w
-        mat `m' = r(m)
-        
-        di
-        di as text "MSPE: In-Sample and Out-of-Sample"
-        di as text "{hline 17}{c TT}{hline 35}"
-        di as text "  Method" _c
-        di as text _col(18) "{c |} Weight   In-Sample   Out-of-Sample"
-        di as text "{hline 17}{c +}{hline 35}"
-        
-        di as text "  STACKING" _c
-        di as text _col(18) "{c |}" _c
-        di as text "    .  " _c
-        di as res  _col(30) %7.3f el(`m',1,1) _col(44) %7.3f el(`m',1,2)
-        
-        forvalues j=1/`nlearners' {
-            local b : word `j' of `base_est'
-            di as text "  `b'" _c
-            di as text _col(18) "{c |}" _c
-            di as res _col(20) %5.3f el(`weights_mat',`j',1) _c
-            di as res _col(30) %7.3f el(`m',`j'+1,1) _col(44) %7.3f el(`m',`j'+1,2)
+        // no replay - must estimate
+        if ~replay() {
+            _pystacked `0'
         }
 
-        // add to estimation macros
-        ereturn mat mspe = `m'
-    }
-    
-    // print confusion matrix for classification problem
-    if "`table'" ~= "" & "`e(type)'"=="class" {
-        tempname m w
-        mat `m' = r(m)
+        // save for display results
+        tempname weights_mat
+        mat `weights_mat'=e(weights)
+        local base_est `e(base_est)'
+        local nlearners    = e(mcount)
+
+        // parse and check for graph/table options
+        // code borrowed from _pstacked below - needed to accommodate syntax #2
+        if ~replay() {
+            tokenize "`0'", parse(",")
+            local beforecomma `1'
+            macro shift
+            local restargs `*'
+            local 0 `beforecomma'
+            syntax anything(name=beforeifinweight) [if] [in] [aweight fweight]
+            local ifinweight `if' `in' `weight' `exp'
+            tokenize `beforeifinweight', parse("|")
+            local mainargs `1'
+            local 0 `mainargs' `ifinweight' `restargs'
+        }
+        syntax [anything]  [if] [in] [aweight fweight] ,     ///
+                    [                                        ///
+                        GRAPH1                                /// vanilla option, abbreviates to "graph"
+                        HISTogram                            /// report histogram instead of default ROC
+                        graph(string asis)                    /// for passing options to graph combine
+                        lgraph(string asis)                    /// for passing options to the graphs of the learners
+                        TABle                                /// 
+                        HOLDOUT1                            /// vanilla option, abbreviates to "holdout"
+                        holdout(varname)                    ///
+                        *                                    ///
+                    ]
         
-        di
-        di as text "Confusion matrix: In-Sample and Out-of-Sample"
-        di as text "{hline 17}{c TT}{hline 42}"
-        di as text "  Method" _c
-        di as text _col(18) "{c |} Weight      In-Sample       Out-of-Sample"
-        di as text _col(18) "{c |}             0       1         0       1  "
-        di as text "{hline 17}{c +}{hline 42}"
+        // display results
+        if `"`graph'`graph1'`lgraph'`histogram'`table'"' == "" {
+
+            di as res "Stacking weights:"
+            di as text "{hline 17}{c TT}{hline 21}"
+            di as text "  Method" _c
+            di as text _col(18) "{c |}      Weight"
+            di as text "{hline 17}{c +}{hline 21}"
+
+            forvalues j=1/`nlearners' {
+                local b : word `j' of `base_est'
+                di as text "  `b'" _c
+                di as text _col(18) "{c |}" _c
+                di as res %15.7f el(`weights_mat',`j',1)
+            }
+        }
+
+        // graph/table block
+        if `"`graph'`graph1'`lgraph'`histogram'`table'"' ~= "" {
+            pystacked_graph_table,                            ///
+                `holdout1' holdout(`holdout')                ///
+                `graph1'                                    ///
+                `histogram'                                    ///
+                goptions(`graph') lgoptions(`lgraph')        ///
+                `table'
+        }
         
-        // di as text "  STACKING" _c
-        // di as text _col(16) "0 {c |}" _c
-        // di as text "    .  " _c
-        // di as res  _col(27) %7.0f 1234567 _col(35) %7.0f 1234567 _col(45) %7.0f 1234567 _col(53) %7.0f 1234567
-        di as text "  STACKING" _c
-        di as text _col(16) "0 {c |}" _c
-        di as text "    .  " _c
-        di as res  _col(27) %7.0f el(`m',1,1) _col(35) %7.0f el(`m',1,2) _col(45) %7.0f el(`m',1,3) _col(53) %7.0f el(`m',1,4)
-        di as text "  STACKING" _c
-        di as text _col(16) "1 {c |}" _c
-        di as text "    .  " _c
-        di as res  _col(27) %7.0f el(`m',2,1) _col(35) %7.0f el(`m',2,2) _col(45) %7.0f el(`m',2,3) _col(53) %7.0f el(`m',2,4)
+        // print MSPE table for regression problem
+        if "`table'" ~= "" & "`e(type)'"=="reg" {
+            tempname m w
+            mat `m' = r(m)
+            
+            di
+            di as text "MSPE: In-Sample and Out-of-Sample"
+            di as text "{hline 17}{c TT}{hline 35}"
+            di as text "  Method" _c
+            di as text _col(18) "{c |} Weight   In-Sample   Out-of-Sample"
+            di as text "{hline 17}{c +}{hline 35}"
+            
+            di as text "  STACKING" _c
+            di as text _col(18) "{c |}" _c
+            di as text "    .  " _c
+            di as res  _col(30) %7.3f el(`m',1,1) _col(44) %7.3f el(`m',1,2)
+            
+            forvalues j=1/`nlearners' {
+                local b : word `j' of `base_est'
+                di as text "  `b'" _c
+                di as text _col(18) "{c |}" _c
+                di as res _col(20) %5.3f el(`weights_mat',`j',1) _c
+                di as res _col(30) %7.3f el(`m',`j'+1,1) _col(44) %7.3f el(`m',`j'+1,2)
+            }
+
+            // add to estimation macros
+            ereturn mat mspe = `m'
+        }
         
-        forvalues j=1/`nlearners' {
-            local b : word `j' of `base_est'
-            di as text "  `b'" _c
+        // print confusion matrix for classification problem
+        if "`table'" ~= "" & "`e(type)'"=="class" {
+            tempname m w
+            mat `m' = r(m)
+            
+            di
+            di as text "Confusion matrix: In-Sample and Out-of-Sample"
+            di as text "{hline 17}{c TT}{hline 42}"
+            di as text "  Method" _c
+            di as text _col(18) "{c |} Weight      In-Sample       Out-of-Sample"
+            di as text _col(18) "{c |}             0       1         0       1  "
+            di as text "{hline 17}{c +}{hline 42}"
+            
+            // di as text "  STACKING" _c
+            // di as text _col(16) "0 {c |}" _c
+            // di as text "    .  " _c
+            // di as res  _col(27) %7.0f 1234567 _col(35) %7.0f 1234567 _col(45) %7.0f 1234567 _col(53) %7.0f 1234567
+            di as text "  STACKING" _c
             di as text _col(16) "0 {c |}" _c
-            di as res  _col(20) %5.3f el(`weights_mat',`j',1) _c
-            local r = 2*`j' + 1
-            di as res  _col(27) %7.0f el(`m',`r',1) _col(35) %7.0f el(`m',`r',2) _col(45) %7.0f el(`m',`r',3) _col(53) %7.0f el(`m',`r',4)
-            di as text "  `b'" _c
+            di as text "    .  " _c
+            di as res  _col(27) %7.0f el(`m',1,1) _col(35) %7.0f el(`m',1,2) _col(45) %7.0f el(`m',1,3) _col(53) %7.0f el(`m',1,4)
+            di as text "  STACKING" _c
             di as text _col(16) "1 {c |}" _c
-            di as res  _col(20) %5.3f el(`weights_mat',`j',1) _c
-            local r = 2*`j' + 2
-            di as res  _col(27) %7.0f el(`m',`r',1) _col(35) %7.0f el(`m',`r',2) _col(45) %7.0f el(`m',`r',3) _col(53) %7.0f el(`m',`r',4)
+            di as text "    .  " _c
+            di as res  _col(27) %7.0f el(`m',2,1) _col(35) %7.0f el(`m',2,2) _col(45) %7.0f el(`m',2,3) _col(53) %7.0f el(`m',2,4)
+            
+            forvalues j=1/`nlearners' {
+                local b : word `j' of `base_est'
+                di as text "  `b'" _c
+                di as text _col(16) "0 {c |}" _c
+                di as res  _col(20) %5.3f el(`weights_mat',`j',1) _c
+                local r = 2*`j' + 1
+                di as res  _col(27) %7.0f el(`m',`r',1) _col(35) %7.0f el(`m',`r',2) _col(45) %7.0f el(`m',`r',3) _col(53) %7.0f el(`m',`r',4)
+                di as text "  `b'" _c
+                di as text _col(16) "1 {c |}" _c
+                di as res  _col(20) %5.3f el(`weights_mat',`j',1) _c
+                local r = 2*`j' + 2
+                di as res  _col(27) %7.0f el(`m',`r',1) _col(35) %7.0f el(`m',`r',2) _col(45) %7.0f el(`m',`r',3) _col(53) %7.0f el(`m',`r',4)
+            }
+            
+            // add to estimation macros
+            ereturn mat confusion = `m'
         }
-        
-        // add to estimation macros
-        ereturn mat confusion = `m'
     }
-    
+    else {
+        _pyparse `0'
+    }
 end
 
 
@@ -170,7 +180,7 @@ version 16.0
                     ///
                     ///
                     pyseed(integer -1) ///
-                    printopt ///
+                    PRINTopt ///
                     NOSAVEPred ///
                     NOSAVETransform ///
                     ///

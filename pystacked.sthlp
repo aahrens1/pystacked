@@ -187,6 +187,7 @@ See {helpb pystacked##predictors:here}.
 {synopt:{opt type(string)}}
 {it:reg(ress)} for regression problems 
 or {it:class(ify)} for classification problems. 
+The default is regression.
 {p_end}
 {synopt:{opt final:est(string)}}
 final estimator used to combine base learners. 
@@ -206,7 +207,7 @@ of each base learner
 (do not use if {cmd:predict} with {opt transf:orm} is used after estimation)
 {p_end}
 {synopt:{opt njobs(int)}} 
-number of jobs for parallel computing. The default is 1 (no parallelization), 
+number of jobs for parallel computing. The default is 0 (no parallelization), 
 -1 uses all available CPUs, -2 uses all CPUs minus 1. 
 {p_end}
 {synopt:{opt backend(string)}} 

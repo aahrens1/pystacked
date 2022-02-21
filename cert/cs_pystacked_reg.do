@@ -20,7 +20,7 @@ which pystacked
 python: import sklearn
 python: sklearn.__version__
 
-global xvars lcavol lweight age lbph svi lcp gleason pgg45
+global xvars crim-lstat
 
 *******************************************************************************
 *** check stdscaler default with regularized linear learners		 		***
@@ -29,19 +29,19 @@ global xvars lcavol lweight age lbph svi lcp gleason pgg45
 insheet using "/Users/kahrens/Dropbox (PP)/ddml/Data/housing.csv", ///
 	clear comma
 
-pystacked medv $xuse, method(gradboost lassocv)   
+pystacked medv $xvars, method(gradboost lassocv)   
 di "`e(pipe2)'"
 assert "`e(pipe2)'"=="stdscaler"
 
-pystacked medv $xuse, method(gradboost lassocv) pipe2(nostdscaler)
+pystacked medv $xvars, method(gradboost lassocv) pipe2(nostdscaler)
 di "`e(pipe2)'"
 assert "`e(pipe2)'"=="passthrough"
 	
-pystacked medv $xuse || m(gradboost) || m(lassocv)   
+pystacked medv $xvars || m(gradboost) || m(lassocv)   
 di "`e(pipe2)'"
 assert "`e(pipe2)'"=="stdscaler"
 
-pystacked medv $xuse || m(gradboost) || m(lassocv) pipe(nostdscaler)
+pystacked medv $xvars || m(gradboost) || m(lassocv) pipe(nostdscaler)
 di "`e(pipe2)'"
 assert "`e(pipe2)'"=="passthrough"
 
@@ -106,7 +106,9 @@ assert reldif(xb1,xb2)<1e-5
 *******************************************************************************
 
 clear
-insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
+insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data, tab clear
+
+global xvars lcavol-pgg
 
 set seed 124345
 
@@ -130,6 +132,7 @@ assert _rc == 198
 
 clear
 insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
+global xvars lcavol-pgg
 
 set seed 124345
 
@@ -265,6 +268,7 @@ assert _rc != 0
 
 clear
 insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
+global xvars lcavol-pgg
 
 set seed 124345
 
@@ -316,6 +320,7 @@ pystacked, table holdout(h1)
 
 clear
 insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
+global xvars lcavol-pgg
 
 set seed 124345
 

@@ -2,7 +2,7 @@
       name:  <unnamed>
        log:  /Users/kahrens/MyProjects/pystacked/cert/log_cs_pystacked_reg.txt
   log type:  text
- opened on:  18 Feb 2022, 14:36:06
+ opened on:  21 Feb 2022, 11:47:11
 
 . 
 . clear all
@@ -40,7 +40,7 @@
 '1.0'
 
 . 
-. global xvars lcavol lweight age lbph svi lcp gleason pgg45
+. global xvars crim-lstat
 
 . 
 . *******************************************************************************
@@ -52,13 +52,13 @@
 (14 vars, 506 obs)
 
 . 
-. pystacked medv $xuse, method(gradboost lassocv)   
+. pystacked medv $xvars, method(gradboost lassocv)   
 Stacking weights:
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  gradboost      |      0.5360050
-  lassocv        |      0.4639950
+  gradboost      |      0.9578320
+  lassocv        |      0.0421680
 
 . di "`e(pipe2)'"
 stdscaler
@@ -66,13 +66,13 @@ stdscaler
 . assert "`e(pipe2)'"=="stdscaler"
 
 . 
-. pystacked medv $xuse, method(gradboost lassocv) pipe2(nostdscaler)
+. pystacked medv $xvars, method(gradboost lassocv) pipe2(nostdscaler)
 Stacking weights:
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  gradboost      |      0.4507506
-  lassocv        |      0.5492494
+  gradboost      |      1.0000000
+  lassocv        |      0.0000000
 
 . di "`e(pipe2)'"
 passthrough
@@ -80,13 +80,13 @@ passthrough
 . assert "`e(pipe2)'"=="passthrough"
 
 .         
-. pystacked medv $xuse || m(gradboost) || m(lassocv)   
+. pystacked medv $xvars || m(gradboost) || m(lassocv)   
 Stacking weights:
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  gradboost      |      0.5343656
-  lassocv        |      0.4656344
+  gradboost      |      0.9564118
+  lassocv        |      0.0435882
 
 . di "`e(pipe2)'"
 stdscaler
@@ -94,13 +94,13 @@ stdscaler
 . assert "`e(pipe2)'"=="stdscaler"
 
 . 
-. pystacked medv $xuse || m(gradboost) || m(lassocv) pipe(nostdscaler)
+. pystacked medv $xvars || m(gradboost) || m(lassocv) pipe(nostdscaler)
 Stacking weights:
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  gradboost      |      0.4550200
-  lassocv        |      0.5449800
+  gradboost      |      1.0000000
+  lassocv        |      0.0000000
 
 . di "`e(pipe2)'"
 passthrough
@@ -247,8 +247,11 @@ Stacking weights:
 . 
 . clear
 
-. insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
+. insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data, tab clear
 (11 vars, 97 obs)
+
+. 
+. global xvars lcavol-pgg
 
 . 
 . set seed 124345
@@ -287,6 +290,8 @@ Stacking weights:
 
 . insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
 (11 vars, 97 obs)
+
+. global xvars lcavol-pgg
 
 . 
 . set seed 124345
@@ -722,18 +727,18 @@ Stacking weights:
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  ols            |      0.0382265
-  elasticcv      |      0.3905607
+  ols            |      0.0232708
+  elasticcv      |      0.0000000
   gradboost      |      0.0000000
-  linsvm         |      0.5712128
+  linsvm         |      0.9767292
 Stacking weights:
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
   ols            |      0.0000000
-  elasticcv      |      0.0000000
+  elasticcv      |      1.0000000
   gradboost      |      0.0000000
-  linsvm         |      1.0000000
+  linsvm         |      0.0000000
 
 . 
 . *******************************************************************************
@@ -832,6 +837,8 @@ Stacking weights:
 
 . insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
 (11 vars, 97 obs)
+
+. global xvars lcavol-pgg
 
 . 
 . set seed 124345
@@ -974,6 +981,8 @@ MSPE: In-Sample and Out-of-Sample
 . insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
 (11 vars, 97 obs)
 
+. global xvars lcavol-pgg
+
 . 
 . set seed 124345
 
@@ -1071,5 +1080,5 @@ Number of holdout observations:   48
       name:  <unnamed>
        log:  /Users/kahrens/MyProjects/pystacked/cert/log_cs_pystacked_reg.txt
   log type:  text
- closed on:  18 Feb 2022, 14:37:33
+ closed on:  21 Feb 2022, 11:48:49
 --------------------------------------------------------------------------------------------------------------------

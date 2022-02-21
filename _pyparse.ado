@@ -3,9 +3,11 @@
 *! authors: aa/ms
 
 program _pyparse 
-	syntax [anything] , type(string) method(string) [ sklearn1(real 1) sklearn2(real 0) print debug *]
+	syntax [anything] , ///
+						type(string) Methods(string) ///
+						[ sklearn1(real 1) sklearn2(real 0) PRINTopt debug *]
 
-	if ("`method'"!="") {
+	if ("`methods'"!="") {
 
 		if substr("`type'",1,3)=="reg" {
 			local type reg
@@ -14,80 +16,80 @@ program _pyparse
 			local type class
 		}
 
-		local options `options' sklearn1(`sklearn1') sklearn2(`sklearn2') `print'
+		local options `options' sklearn1(`sklearn1') sklearn2(`sklearn2') `printopt'
 
 		if "`type'"=="reg" {
-			if "`method'"=="ols" {
+			if "`methods'"=="ols" {
 				parse_LinearRegression , `options'
 			}
-			else if "`method'"=="lassoic" {
+			else if "`methods'"=="lassoic" {
 				parse_LassoIC , `options' 
 			}
-			else if "`method'"=="lassocv" {
+			else if "`methods'"=="lassocv" {
 				parse_ElasticCV , `options' l1_ratio(1) 
 			}
-			else if "`method'"=="ridgecv" {
+			else if "`methods'"=="ridgecv" {
 				parse_ElasticCV , `options' l1_ratio(0) 
 			}
-			else if "`method'"=="elasticcv" {
+			else if "`methods'"=="elasticcv" {
 				parse_ElasticCV , `options' 
 			}
-			else if "`method'"=="svm" {
+			else if "`methods'"=="svm" {
 				parse_SVR , `options' 
 			}
-			else if "`method'"=="gradboost" {
+			else if "`methods'"=="gradboost" {
 				parse_gradboostReg , `options' 
 			}
-			else if "`method'"=="rf" {
+			else if "`methods'"=="rf" {
 				parse_rfReg , `options'
 			}
-			else if "`method'"=="linsvm" {
+			else if "`methods'"=="linsvm" {
 				parse_LinearSVR , `options'
 			}
-			else if "`method'"=="nnet" {
+			else if "`methods'"=="nnet" {
 				parse_MLPReg , `options' 
 			}
 			else {
-				di as err "method(`method') unknown"
+				di as err "methods(`methods') unknown"
 				exit 198
 			}
 			local optstr `r(optstr)'
 		}
 		else if "`type'"=="class" {
-			if "`method'"=="logit" {
+			if "`methods'"=="logit" {
 				parse_Logit , `options'   
 			}
-			else if "`method'"=="lassocv" {
+			else if "`methods'"=="lassocv" {
 				parse_LassoLogitCV , `options' penalty(l1) solver(saga)
 			}
-			else if "`method'"=="lassoic" {
+			else if "`methods'"=="lassoic" {
 				di as err "warning: lassoic not supported with type(class)."
 				exit 198
 			}
-			else if "`method'"=="elasticcv" {
+			else if "`methods'"=="elasticcv" {
 				parse_LassoLogitCV , `options' penalty(elasticnet) solver(saga) 
 			}
-			else if "`method'"=="ridgecv" {
+			else if "`methods'"=="ridgecv" {
 				parse_LassoLogitCV , `options' penalty(l2)
 			}
-			else if "`method'"=="svm" {
+			else if "`methods'"=="svm" {
 				parse_SVC , `options'
 			}
-			else if "`method'"=="gradboost" {
+			else if "`methods'"=="gradboost" {
 				parse_gradboostClass , `options'
 			}
-			else if "`method'"=="rf" {
+			else if "`methods'"=="rf" {
 				parse_rfClass , `options'
 			}
-			else if "`method'"=="linsvm" {
+			else if "`methods'"=="linsvm" {
 				di as err "warning: linsvm not supported with type(class)."
 				exit 198
 			}
-			else if "`method'"=="nnet" {
+			else if "`methods'"=="nnet" {
 				parse_MLPClass , `options'
 			} 
 			else {
-				di as err "method(`method') unknown"
+				di as err "methods(`methods') unknown"
 				exit 198
 			}
 			local optstr `r(optstr)'
@@ -96,7 +98,7 @@ program _pyparse
 	else {
 		return_nothing
 	}
-	if "`debug'"!="" _print_tool `optstr'
+	if "`debug'"!="" _printopt_tool `optstr'
 end
 
 program define parse_LinearRegression, rclass
@@ -105,7 +107,7 @@ program define parse_LinearRegression, rclass
 					NOCONStant ///
 					NORMalize ///
 					POSitive ///
-					print /// 
+					PRINTopt /// 
 					]
 	local optstr 
 
@@ -130,7 +132,7 @@ program define parse_LinearRegression, rclass
 	local optstr {`optstr'}
 	local optstr = subinstr("`optstr'",",}","}",.)
 	local optstr = subinstr("`optstr'"," ","",.)
-	if "`print'"!="" _print_tool `optstr'
+	if "`printopt'"!="" _print_tool `optstr'
 	return local optstr `optstr'
 end 
 
@@ -139,7 +141,7 @@ program define parse_Logit, rclass
 	syntax [anything], sklearn1(real) sklearn2(real) ///
 					[ ///
 					NOCONStant /// 
-					print /// 
+					PRINTopt /// 
 					]
 	local optstr 
 	
@@ -155,7 +157,7 @@ program define parse_Logit, rclass
 	local optstr {`optstr'}
 	local optstr = subinstr("`optstr'",",}","}",.)
 	local optstr = subinstr("`optstr'"," ","",.)
-	if "`print'"!="" _print_tool `optstr'
+	if "`printopt'"!="" _print_tool `optstr'
 	return local optstr `optstr'
 end 
 
@@ -177,7 +179,7 @@ program define parse_LassoLogitCV, rclass
 					norefit ///
 					intercept_scaling(real 1) ///
 					random_state(integer -1) ///
-					print ///
+					PRINTopt ///
 					]
 	local optstr 
 	
@@ -255,7 +257,7 @@ program define parse_LassoLogitCV, rclass
 	local optstr {`optstr'}
 	local optstr = subinstr("`optstr'",",}","}",.)
 	local optstr = subinstr("`optstr'"," ","",.)
-	if "`print'"!="" _print_tool `optstr'
+	if "`printopt'"!="" _print_tool `optstr'
 	return local optstr `optstr'
 end 
 
@@ -282,7 +284,7 @@ program define parse_ElasticCV, rclass
 					POSitive ///
 					random_state(integer -1) ///
 					selection(string) ///
-					print ///
+					PRINTopt ///
 					]
 	local optstr 
 
@@ -369,7 +371,7 @@ program define parse_ElasticCV, rclass
 	local optstr {`optstr'}
 	local optstr = subinstr("`optstr'",",}","}",.)
 	local optstr = subinstr("`optstr'"," ","",.)
-	if "`print'"!="" _print_tool `optstr'
+	if "`printopt'"!="" _print_tool `optstr'
 	return local optstr `optstr'
 end 
 
@@ -382,7 +384,7 @@ program define parse_LassoIC, rclass
 					NOCONStant ///
 					max_iter(integer 500) ///
 					eps(real -1) ///
-					print ///
+					PRINTopt ///
 					positive ]
 	local optstr 
 	
@@ -418,7 +420,7 @@ program define parse_LassoIC, rclass
 	local optstr {`optstr'}
 	local optstr = subinstr("`optstr'",",}","}",.)
 	local optstr = subinstr("`optstr'"," ","",.)
-	if "`print'"!="" _print_tool `optstr'
+	if "`printopt'"!="" _print_tool `optstr'
 	return local optstr `optstr'
 end 
 
@@ -446,7 +448,7 @@ program define parse_rfReg, rclass
 					warm_start ///
 					ccp_alpha(real 0) ///
 					max_samples(real -1) ///  
-					print ///
+					PRINTopt ///
 					]
 
 	local optstr 
@@ -560,7 +562,7 @@ program define parse_rfReg, rclass
 	local optstr {`optstr'}
 	local optstr = subinstr("`optstr'",",}","}",.)
 	local optstr = subinstr("`optstr'"," ","",.)
-	if "`print'"!="" _print_tool `optstr'
+	if "`printopt'"!="" _print_tool `optstr'
 	return local optstr `optstr'
 end 
 
@@ -589,7 +591,7 @@ program define parse_rfClass, rclass
 					warm_start ///
 					ccp_alpha(real 0) ///
 					max_samples(integer -1) /// only int supported
-					print ///
+					PRINTopt ///
 					]
 
 	local optstr 
@@ -705,7 +707,7 @@ program define parse_rfClass, rclass
 	local optstr {`optstr'}
 	local optstr = subinstr("`optstr'",",}","}",.)
 	local optstr = subinstr("`optstr'"," ","",.)
-	if "`print'"!="" _print_tool `optstr'
+	if "`printopt'"!="" _print_tool `optstr'
 	return local optstr `optstr'
 end 
 
@@ -736,7 +738,7 @@ program define parse_gradboostReg, rclass
 					n_iter_no_change(integer -1) ///
 					tol(real 1e-4) ///
 					ccp_alpha(real 0) ///
-					print ///
+					PRINTopt ///
 					]
 
 	local optstr 
@@ -864,7 +866,7 @@ program define parse_gradboostReg, rclass
 	local optstr {`optstr'}
 	local optstr = subinstr("`optstr'",",}","}",.)
 	local optstr = subinstr("`optstr'"," ","",.)
-	if "`print'"!="" _print_tool `optstr'
+	if "`printopt'"!="" _print_tool `optstr'
 	return local optstr `optstr'
 end 
 
@@ -893,7 +895,7 @@ program define parse_gradboostClass, rclass
 					n_iter_no_change(integer -1) ///
 					tol(real 1e-4) ///
 					ccp_alpha(real 0) ///
-					print ///
+					PRINTopt ///
 					]
 	local optstr 
 	** loss
@@ -1012,7 +1014,7 @@ program define parse_gradboostClass, rclass
 	local optstr {`optstr'}
 	local optstr = subinstr("`optstr'",",}","}",.)
 	local optstr = subinstr("`optstr'"," ","",.)
-	if "`print'"!="" _print_tool `optstr'
+	if "`printopt'"!="" _print_tool `optstr'
 	return local optstr `optstr'
 end 
 
@@ -1033,7 +1035,7 @@ program define parse_SVR, rclass
 					SHRinking(string) ///
 					cache_size(real 200) ///
 					max_iter(integer -1) ///
-					print ///
+					PRINTopt ///
 					]
 
 	local optstr 
@@ -1095,7 +1097,7 @@ program define parse_SVR, rclass
 	local optstr {`optstr'}
 	local optstr = subinstr("`optstr'",",}","}",.)
 	local optstr = subinstr("`optstr'"," ","",.)
-	if "`print'"!="" _print_tool `optstr'
+	if "`printopt'"!="" _print_tool `optstr'
 	return local optstr `optstr'
 end
 
@@ -1115,7 +1117,7 @@ program define parse_LinearSVR, rclass
 					dual(string) /// dual OK
 					random_state(integer -1) /// OK
 					max_iter(integer 1000) /// OK
-					print ///
+					PRINTopt ///
 					]
 
 	local optstr 
@@ -1170,7 +1172,7 @@ program define parse_LinearSVR, rclass
 	local optstr {`optstr'}
 	local optstr = subinstr("`optstr'",",}","}",.)
 	local optstr = subinstr("`optstr'"," ","",.)
-	if "`print'"!="" _print_tool `optstr'
+	if "`printopt'"!="" _print_tool `optstr'
 	return local optstr `optstr'
 end
 
@@ -1195,7 +1197,7 @@ program define parse_SVC, rclass
 					decision_function_shape(string) ///
 					break_ties ///
 					random_state(integer -1) ///
-					print ///
+					PRINTopt ///
 					]
 
 	local optstr 
@@ -1274,7 +1276,7 @@ program define parse_SVC, rclass
 	local optstr {`optstr'}
 	local optstr = subinstr("`optstr'",",}","}",.)
 	local optstr = subinstr("`optstr'"," ","",.)
-	if "`print'"!="" _print_tool `optstr'
+	if "`printopt'"!="" _print_tool `optstr'
 	return local optstr `optstr'
 end
 
@@ -1294,7 +1296,7 @@ program define parse_LinearSVC, rclass
 					intercept_scaling(real 1) ///
 					random_state(integer -1) ///
 					max_iter(integer 1000) ///
-					print ///
+					PRINTopt ///
 					]
 
 	local optstr
@@ -1349,7 +1351,7 @@ program define parse_LinearSVC, rclass
 	local optstr {`optstr'}
 	local optstr = subinstr("`optstr'",",}","}",.)
 	local optstr = subinstr("`optstr'"," ","",.)
-	if "`print'"!="" _print_tool `optstr'
+	if "`printopt'"!="" _print_tool `optstr'
 	return local optstr `optstr'
 end
 
@@ -1383,7 +1385,7 @@ program define parse_MLPReg, rclass
 						epsilon(real -1) ///
 						n_iter_no_change(integer -1) ///
 						max_fun(integer -1) ///
-						print ///
+						PRINTopt ///
 					]
 
 	local optstr
@@ -1556,7 +1558,7 @@ program define parse_MLPReg, rclass
 	local optstr {`optstr'}
 	local optstr = subinstr("`optstr'",",}","}",.)
 	local optstr = subinstr("`optstr'"," ","",.)
-	if "`print'"!="" _print_tool `optstr'
+	if "`printopt'"!="" _print_tool `optstr'
 	return local optstr `optstr'
 end
 
@@ -1590,7 +1592,7 @@ program define parse_MLPClass, rclass
 						epsilon(real -1) ///
 						n_iter_no_change(integer -1) ///
 						max_fun(integer -1) ///
-						print ///
+						PRINTopt ///
 					]
 
 	local optstr
@@ -1763,11 +1765,12 @@ program define parse_MLPClass, rclass
 	local optstr {`optstr'}
 	local optstr = subinstr("`optstr'",",}","}",.)
 	local optstr = subinstr("`optstr'"," ","",.)
-	if "`print'"!="" _print_tool `optstr'
+	if "`printopt'"!="" _print_tool `optstr'
 	return local optstr `optstr'
 end
 
 program _print_tool 
+    di "Default options: " 
 	local str `0'
 	local str = subinstr("`str'","':","(",.)
 	local str = subinstr("`str'",",'",") ",.)
@@ -1779,5 +1782,17 @@ program _print_tool
 	local str = subinstr("`str'",","," ",.)
 	local str = subinstr("`str'"," ))",")",.)
 	local str = subinstr("`str'","((","(",.)
-	di as text "`str'"
+	tokenize "`str'", parse(")")
+	local j = 1
+	local i = 1
+	while ("``j''"!="") {
+		if mod(`i',7)==0 {
+			di as text "``j'') "
+		}
+		else {
+			di as text "``j'') " _c
+		}
+		local i = `i'+1
+		local j = `j'+2
+	}
 end
