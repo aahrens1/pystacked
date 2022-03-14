@@ -53,6 +53,7 @@ program define pystacked, eclass
         // display results
         if `"`graph'`graph1'`lgraph'`histogram'`table'"' == "" {
 
+            di
             di as res "Stacking weights:"
             di as text "{hline 17}{c TT}{hline 21}"
             di as text "  Method" _c
