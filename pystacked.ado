@@ -1,5 +1,5 @@
-*! pystacked v0.4.1
-*! last edited: 18feb2022
+*! pystacked v0.4.2
+*! last edited: 3apr2022
 *! authors: aa/ms
 
 // parent program
@@ -787,15 +787,15 @@ program define pystacked_graph_table, rclass
             
             // stacking rows
             forvalues r=0/1 {
-                qui count if `y'==`r' & `stacking_c'==0 & e(sample)
+                qui count if `y'==0 & `stacking_c'==`r' & e(sample)
                 local in_0    = r(N)
-                qui count if `y'==`r' & `stacking_c'==1 & e(sample)
+                qui count if `y'==1 & `stacking_c'==`r' & e(sample)
                 local in_1    = r(N)
                 if "`holdout'`holdout1'"~="" {
                     // touse is the holdout indicator
-                    qui count if `y'==`r' & `stacking_c'==0 & `touse'
+                    qui count if `y'==0 & `stacking_c'==`r' & `touse'
                     local out_0    = r(N)
-                    qui count if `y'==`r' & `stacking_c'==1 & `touse'
+                    qui count if `y'==1 & `stacking_c'==`r' & `touse'
                     local out_1    = r(N)
                 }
                 else {
@@ -810,15 +810,15 @@ program define pystacked_graph_table, rclass
             forvalues i=1/`nlearners' {
             
                 forvalues r=0/1 {
-                    qui count if `y'==`r' & `stacking_c'`i'==0 & e(sample)
+                    qui count if `y'==0 & `stacking_c'`i'==`r' & e(sample)
                     local in_0    = r(N)
-                    qui count if `y'==`r' & `stacking_c'`i'==1 & e(sample)
+                    qui count if `y'==1 & `stacking_c'`i'==`r' & e(sample)
                     local in_1    = r(N)
                     if "`holdout'`holdout1'"~="" {
                         // touse is the holdout indicator
-                        qui count if `y'==`r' & `stacking_c'`i'==0 & `touse'
+                        qui count if `y'==0 & `stacking_c'`i'==`r' & `touse'
                         local out_0    = r(N)
-                        qui count if `y'==`r' & `stacking_c'`i'==1 & `touse'
+                        qui count if `y'==1 & `stacking_c'`i'==`r' & `touse'
                         local out_1    = r(N)
                     }
                     else {
@@ -844,7 +844,6 @@ program define pystacked_graph_table, rclass
     }
     
 end
-
 
 // Internal version of matchnames
 // Sample syntax:
