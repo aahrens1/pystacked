@@ -857,8 +857,12 @@ Specify number of bins for the individual learner graphs.{p_end}
 {pstd}
 {opt pystacked} requires at least Stata 16 (or higher),  
 a Python installation and scikit-learn (0.24 or higher).
-See {helpb python:help python} and {browse "https://blog.stata.com/2020/08/18/stata-python-integration-part-1-setting-up-stata-to-use-python/":the Stata blog} 
-for how to set up Python on your system.
+See 
+{helpb python:this help file}, {browse "https://blog.stata.com/2020/08/18/stata-python-integration-part-1-setting-up-stata-to-use-python/":this Stata blog entry}
+and 
+{browse "https://www.youtube.com/watch?v=4WxMAGNhcuE":this Youtube video}
+for how to set up
+Python on your system.
 Installing {browse "https://www.anaconda.com/":Anaconda} is 
 in most cases the easiest way of installing Python including
 all required packages.
