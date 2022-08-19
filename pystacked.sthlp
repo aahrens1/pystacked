@@ -127,7 +127,7 @@ using {opt method(string)} together with {opt opt(string)} and separated by
 {synopthdr:Option}
 {synoptline}
 {synopt:{opt methods(string)}}
-a list of base learners, defaults to "{it:ols lassoic gradboost}" for regression
+a list of base learners, defaults to "{it:ols lassocv gradboost}" for regression
 and "{it:logit lassocv gradboost}" for classification;
 see {helpb pystacked##base_learners:Base learners}.
 {p_end}
@@ -433,7 +433,7 @@ The following base learners are supported:
 
 {pstd}
 The base learners can be chosen using the  
-{opt methods(lassoic gradboost nnet)}  
+{opt methods(lassocv gradboost nnet)}  
 (Syntax 1) or {opt m:ethod(string)}
 options (Syntax 2).
 
@@ -674,7 +674,7 @@ by town{p_end}
 {pstd}
 Stacking regression with lasso, random forest and gradient boosting.
 {p_end}
-{phang2}. {stata "pystacked medv crim-lstat, type(regress) pyseed(123) methods(lassoic rf gradboost)"}{p_end}
+{phang2}. {stata "pystacked medv crim-lstat, type(regress) pyseed(123) methods(lassocv rf gradboost)"}{p_end}
 
 {pstd}
 The weights determine how much each base learner contributes
@@ -688,7 +688,7 @@ Request the MSPE table (in-sample only):{p_end}
 Re-estimate using the first 400 observations, and
 request the MSPE table. Both in-sample and
 the default holdout sample (all unused observations) are reported.:{p_end}
-{phang2}. {stata "pystacked medv crim-lstat if _n<=400, type(regress) pyseed(123) methods(lassoic rf gradboost)"}{p_end}
+{phang2}. {stata "pystacked medv crim-lstat if _n<=400, type(regress) pyseed(123) methods(lassocv rf gradboost)"}{p_end}
 {phang2}. {stata "pystacked, table holdout"}{p_end}
 
 {pstd}
@@ -713,12 +713,12 @@ linear estimators might perform better if interactions are
 provided as inputs. Here, we use interactions and 2nd-order polynomials
 for the lasso, but not for the other base learners. 
 {p_end}
-{phang2}. {stata "pystacked medv crim-lstat, type(regress) pyseed(123) methods(ols lassoic rf) xvars2(c.(crim-lstat)# #c.(crim-lstat))"}{p_end}
+{phang2}. {stata "pystacked medv crim-lstat, type(regress) pyseed(123) methods(ols lassocv rf) xvars2(c.(crim-lstat)# #c.(crim-lstat))"}{p_end}
 
 {pstd}
 The same can be achieved using pipelines which create polynomials on-the-fly in Python. 
 {p_end}
-{phang2}. {stata "pystacked medv crim-lstat, type(regress) pyseed(123) methods(ols lassoic rf) pipe2(poly2)"}{p_end}
+{phang2}. {stata "pystacked medv crim-lstat, type(regress) pyseed(123) methods(ols lassocv rf) pipe2(poly2)"}{p_end}
 
 {pstd}
 {ul:Learner-specific predictors (Syntax 2)}
@@ -726,19 +726,19 @@ The same can be achieved using pipelines which create polynomials on-the-fly in 
 {pstd}
 We demonstrate the same using the alternative syntax, which is often more handy:
 
-{phang2}. {stata "pystacked medv crim-lstat || m(ols) || m(lassoic) xvars(c.(crim-lstat)# #c.(crim-lstat)) || m(rf) || , type(regress) pyseed(123)"}{p_end}
-{phang2}. {stata "pystacked medv crim-lstat || m(ols) || m(lassoic) pipe(poly2) || m(rf) || , type(regress) pyseed(123)"}{p_end}
+{phang2}. {stata "pystacked medv crim-lstat || m(ols) || m(lassocv) xvars(c.(crim-lstat)# #c.(crim-lstat)) || m(rf) || , type(regress) pyseed(123)"}{p_end}
+{phang2}. {stata "pystacked medv crim-lstat || m(ols) || m(lassocv) pipe(poly2) || m(rf) || , type(regress) pyseed(123)"}{p_end}
 
 {pstd}
 {ul:Options of base learners (Syntax 1)}
 
 {pstd}
-We can pass options to the base learners using {cmdopt*(string)}. In this example, 
+We can pass options to the base learners using {opt cmdopt*(string)}. In this example, 
 we change the maximum tree depth for the random forest. Since random forest is
 the third base learner, we use {opt cmdopt3(max_depth(3))}.
 {p_end}
 
-{phang2}. {stata "pystacked medv crim-lstat, type(regress) pyseed(123) methods(ols lassoic rf) pipe1(poly2) pipe2(poly2) cmdopt3(max_depth(3))"}{p_end}
+{phang2}. {stata "pystacked medv crim-lstat, type(regress) pyseed(123) methods(ols lassocv rf) pipe1(poly2) pipe2(poly2) cmdopt3(max_depth(3))"}{p_end}
 
 {pstd}
 You can verify that the option has been passed to Python correctly:
@@ -753,7 +753,7 @@ The same results as above can be achieved using the alternative syntax, which
 imposes no limit on the number of base learners.
 {p_end}
 
-{phang2}. {stata "pystacked medv crim-lstat || m(ols) pipe(poly2) || m(lassoic) pipe(poly2) || m(rf) opt(max_depth(3)) , type(regress) pyseed(123)"}{p_end}
+{phang2}. {stata "pystacked medv crim-lstat || m(ols) pipe(poly2) || m(lassocv) pipe(poly2) || m(rf) opt(max_depth(3)) , type(regress) pyseed(123)"}{p_end}
 
 {pstd}
 {ul:Single base learners}
@@ -772,7 +772,7 @@ In this example, we are using a conventional random forest:
 You can also use pre-defined weights. Here, we assign weights of 0.5 to OLS, 
 .1 to the lasso and, implicitly, .4 to the random foreset.
 {p_end}
-{phang2}. {stata "pystacked medv crim-lstat, type(regress) pyseed(123) methods(ols lassoic rf) pipe1(poly2) pipe2(poly2) voting voteweights(.5 .1)"}{p_end}
+{phang2}. {stata "pystacked medv crim-lstat, type(regress) pyseed(123) methods(ols lassocv rf) pipe1(poly2) pipe2(poly2) voting voteweights(.5 .1)"}{p_end}
 
 {marker example_spam}{...}
 {title:Classification Example using Spam data}

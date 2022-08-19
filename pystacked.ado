@@ -297,7 +297,7 @@ version 16.0
 
     if (`doublebarsyntax'==0)&("`methods'"=="") {
         if ("`type'"=="reg") {
-            local methods ols lassoic gradboost
+            local methods ols lassocv gradboost
         }
         else {
             local methods logit lassocv gradboost
