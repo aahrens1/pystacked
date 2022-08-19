@@ -385,8 +385,8 @@ a final prediction. A final estimator ("level-1") is used to combine the base pr
 {pstd}
 The default final predictor for stacking
 regession is non-negative
-least squares (NNLS) without an intercept. 
-The NNLS coefficients are standardized to sum to one after estimation.
+least squares (NNLS) without an intercept and with the constraint
+that weights sum to one.
 Note that in this respect we deviate from 
 the scikit-learn default and follow the 
 recommendation in Breiman (1996)
