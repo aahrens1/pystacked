@@ -1,21 +1,4 @@
-cap cd "/Users/kahrens/MyProjects/pystacked/cert"
-cap cd "/Users/ecomes/Documents/GitHub/pystacked/cert"
 
-cap log close
-log using "log_cs_pystacked_reg.txt", text replace
-
-clear all
- 
-if "`c(username)'"=="kahrens" {
-	adopath + "/Users/kahrens/MyProjects/pystacked"
-}
-else if "`c(username)'"=="ecomes" {
-	adopath + "/Users/ecomes/Documents/GitHub/pystacked/cert"
-}
-else {
-	net install pystacked, ///
-		from(https://raw.githubusercontent.com/aahrens1/pystacked/main) replace
-}
 which pystacked 
 python: import sklearn
 python: sklearn.__version__
@@ -134,20 +117,21 @@ clear
 insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
 global xvars lcavol-pgg
 
-set seed 124345
-
 
 pystacked lpsa $xvars, ///
 						 type(regress) pyseed(243) ///
-						 methods(ols lassoic rf) ///
-						 pipe1(poly2) pipe2(poly2) 
+						 methods(ols lassoic rf ) ///
+						 pipe1(poly2) pipe2(poly2 nostdscaler) pipe3(poly2)  
+ereturn list
 predict a, transf
-			 
+
+ 
 pystacked lpsa c.($xvars)##c.($xvars), ///
 						 type(regress) pyseed(243) ///
-						 methods(ols lassoic )  					 
+						 methods(ols lassoic  rf ) pipe2(nostdscaler)
+ereturn list
 predict b, transf
-list lpsa a* b*
+list lpsa a* b* if _n <= 10
 
 assert reldif(a1,b1)<1e-5
 assert reldif(a2,b2)<1e-5
@@ -284,14 +268,14 @@ gen h2 = _n>40
 // full sample
 pystacked lpsa $xvars, ///
 						 type(regress) pyseed(243) ///
-						 methods(ols lassoic rf) ///
+						 methods(ols lassocv rf) ///
 						 pipe1(poly2) pipe2(poly2)
 pystacked, table
 
 // with holdout sample
 pystacked lpsa $xvars if _n<50, ///
 						 type(regress) pyseed(243) ///
-						 methods(ols lassoic rf) ///
+						 methods(ols lassocv rf) ///
 						 pipe1(poly2) pipe2(poly2)
 // default holdout - all available obs
 pystacked, table holdout
@@ -304,12 +288,12 @@ assert _rc != 0
 // as pystacked option
 pystacked lpsa $xvars if _n<50, ///
 						 type(regress) pyseed(243) ///
-						 methods(ols lassoic rf) ///
+						 methods(ols lassocv rf) ///
 						 pipe1(poly2) pipe2(poly2) ///
 						 table holdout
 
 // syntax 2
-pystacked lpsa $xvars || method(ols) || method(lassoic) || method(rf) ||  if _n<50, ///
+pystacked lpsa $xvars || method(ols) || method(lassocv) || method(rf) ||  if _n<50, ///
 						 type(regress) pyseed(243) ///
 						 methods(ols lassoic rf)
 pystacked, table holdout(h1)
@@ -336,7 +320,7 @@ gen h2 = _n>40
 // full sample
 pystacked lpsa $xvars, ///
 						 type(regress) pyseed(243) ///
-						 methods(ols lassoic rf) ///
+						 methods(ols lassocv rf) ///
 						 pipe1(poly2) pipe2(poly2)
 // in-sample predictions
 pystacked, graph
@@ -344,7 +328,7 @@ pystacked, graph
 // with holdout sample
 pystacked lpsa $xvars if _n<50, ///
 						 type(regress) pyseed(243) ///
-						 methods(ols lassoic rf) ///
+						 methods(ols lassocv rf) ///
 						 pipe1(poly2) pipe2(poly2)
 // in-sample predictions
 pystacked, graph
@@ -360,15 +344,13 @@ pystacked, lgraph(ytitle("ytitle goes here")) holdout
 // as pystacked option
 pystacked lpsa $xvars if _n<50, ///
 						 type(regress) pyseed(243) ///
-						 methods(ols lassoic rf) ///
+						 methods(ols lassocv rf) ///
 						 pipe1(poly2) pipe2(poly2) ///
 						 graph holdout
 
 // syntax 2
-pystacked lpsa $xvars || method(ols) || method(lassoic) || method(rf) || if _n<50 , ///
+pystacked lpsa $xvars || method(ols) || method(lassocv) || method(rf) || if _n<50 , ///
 						 type(regress) pyseed(243) ///
 						 methods(ols lassoic rf)
 pystacked, graph holdout
-
-
-log close
+ 

@@ -1,5 +1,5 @@
-*! pystacked v0.4.2
-*! last edited: 3apr2022
+*! pystacked v0.4.3
+*! last edited: 18Aug2022
 *! authors: aa/ms
 
 // parent program
@@ -263,7 +263,7 @@ version 16.0
 
     * defaults
     if "`finalest'"=="" {
-        local finalest nnls
+        local finalest nnls1
     }
 
     if "`backend'"=="" {
@@ -312,14 +312,16 @@ version 16.0
     }
 
     // get sklearn version
-    python: import sklearn
-    python: sfi.Macro.setLocal("sklearn_ver1",format(sklearn.__version__).split(".")[0])
-    python: sfi.Macro.setLocal("sklearn_ver2",format(sklearn.__version__).split(".")[1])
+    python: from sklearn import __version__ as sklearn_version
+    python: sfi.Macro.setLocal("sklearn_ver1",format(sklearn_version).split(".")[0])
+    python: sfi.Macro.setLocal("sklearn_ver2",format(sklearn_version).split(".")[1])
+    cap python: sfi.Macro.setLocal("sklearn_ver3",format(sklearn_version).split(".")[2])
     if (`sklearn_ver2'<24 & `sklearn_ver1'<1) {
         di as err "pystacked requires sklearn 0.24.0 or higher. Please update sklearn."
         di as err "See instructions on https://scikit-learn.org/stable/install.html, and in the help file."
         exit 198
     }
+    if ("`sklearn_ver3'"=="") local sklearn_ver3 = 0
 
     // mark sample 
     marksample touse
@@ -331,7 +333,7 @@ version 16.0
 
     if `doublebarsyntax' {
         // Syntax 2
-        syntax_parse `beforeifinweight' , type(`type') touse(`touse') sklearn1(`sklearn_ver1') sklearn2(`sklearn_ver2')
+        syntax_parse `beforeifinweight' , type(`type') touse(`touse') sklearn1(`sklearn_ver1') sklearn2(`sklearn_ver2') sklearn3(`sklearn_ver3')
         local allmethods `r(allmethods)'
         local allpyopt `r(allpyopt)'
         local mcount = `r(mcount)'
@@ -354,7 +356,7 @@ version 16.0
             local method : word `i' of `allmethods'
             if "`method'"!="" {
                 local mcount = `i'
-                _pyparse , `cmdopt`i'' type(`type') method(`method') sklearn1(`sklearn_ver1') sklearn2(`sklearn_ver2')
+                _pyparse , `cmdopt`i'' type(`type') method(`method') sklearn1(`sklearn_ver1') sklearn2(`sklearn_ver2') sklearn3(`sklearn_ver3')
                 if `i'==1 {
                     local allpyopt [`r(optstr)'
                 }
@@ -500,7 +502,7 @@ end
 // parses Syntax 2
 program define syntax_parse, rclass
 
-    syntax [anything(everything)] , type(string) touse(varname) sklearn1(real) sklearn2(real)
+    syntax [anything(everything)] , type(string) touse(varname) sklearn1(real) sklearn2(real) sklearn3(real)
 
     // save y x and if/in    
     tokenize `anything', parse("|")
@@ -978,6 +980,9 @@ python:
 
 ### Import required Python modules
 import sfi
+import numpy as np
+import __main__
+import warnings
 from sklearn.pipeline import make_pipeline,Pipeline
 from sklearn.neural_network import MLPRegressor,MLPClassifier
 from sklearn.preprocessing import StandardScaler,PolynomialFeatures,OneHotEncoder
@@ -991,15 +996,16 @@ from sklearn.ensemble import RandomForestRegressor,RandomForestClassifier
 from sklearn.ensemble import GradientBoostingRegressor,GradientBoostingClassifier
 from sklearn.base import TransformerMixin,BaseEstimator
 from sklearn.svm import LinearSVR,LinearSVC,SVC,SVR
-from scipy.sparse import coo_matrix,csr_matrix,issparse
 from sklearn.utils import check_X_y,check_array
 from sklearn.utils.validation import check_is_fitted
-import numpy as np
-import scipy 
-import sys
-import sklearn
-import __main__
-import warnings
+from scipy.sparse import coo_matrix,csr_matrix,issparse
+from scipy.optimize import minimize 
+from scipy.optimize import nnls 
+from sklearn import __version__ as sklearn_version
+from scipy import __version__ as scipy_version
+from numpy import __version__ as numpy_version
+from sys import version as sys_version
+from sklearn.utils import parallel_backend
 
 ### Define required Python functions/classes
 
@@ -1025,10 +1031,44 @@ class SingleBest(BaseEstimator):
         check_is_fitted(self, 'is_fitted_')
         return X[:,self.best]
 
+class ConstrLS(BaseEstimator):
+    _estimator_type="regressor"
+    def fit(self, X, y):
+
+        X,y = check_X_y(X,y, accept_sparse=True)
+        xdim = X.shape[1]
+
+        #Use nnls to get initial guess
+        coef0, rnorm = nnls(X,y)
+
+        #Define minimisation function
+        def fn(coef, X, y):
+            return np.linalg.norm(X.dot(coef) - y)
+
+        #Constraints and bounds
+        cons = {'type': 'eq', 'fun': lambda coef: np.sum(coef)-1}
+        bounds = [[0.0,None] for i in range(xdim)] 
+
+        #Do minimisation
+        fit = minimize(fn,coef0,args=(X, y),method='SLSQP',bounds=bounds,constraints=cons)
+        self.coef_ = fit.x
+        self.is_fitted_ = True
+        return self
+        
+    def predict(self, X):
+        X = check_array(X, accept_sparse=True)
+        check_is_fitted(self, 'is_fitted_')
+        return np.matmul(X,self.coef_)
+
+class ConstrLSClassifier(ConstrLS):
+    _estimator_type="classifier"
+    def predict_proba(self, X):
+        return self.predict(X)
+
 class LinearRegressionClassifier(LinearRegression):
     _estimator_type="classifier"
     def predict_proba(self, X):
-        return self._decision_function(X)
+        return self.predict(X)
 
 class SparseTransformer(TransformerMixin):
     def fit(self, X, y=None, **fit_params):
@@ -1112,7 +1152,7 @@ def run_stacked(type, # regression or classification
     showopt #
     ):
     
-    if int(format(sklearn.__version__).split(".")[1])<24 and int(format(sklearn.__version__).split(".")[0])<1:
+    if int(format(sklearn_version).split(".")[1])<24 and int(format(sklearn_version).split(".")[0])<1:
         sfi.SFIToolkit.stata('di as err "pystacked requires sklearn 0.24.0 or higher. Please update sklearn."')
         sfi.SFIToolkit.stata('di as err "See instructions on https://scikit-learn.org/stable/install.html, and in the help file."')
         sfi.SFIToolkit.error(198)
@@ -1125,8 +1165,6 @@ def run_stacked(type, # regression or classification
     
     if showpywarnings=="":
         warnings.filterwarnings('ignore')
-    #else:
-    #    warnings.filterwarnings('default')
     
     if njobs==0: 
         nj = None 
@@ -1257,12 +1295,20 @@ def run_stacked(type, # regression or classification
             sfi.SFIToolkit.error()
         est_list.append((methods[m]+str(m),Pipeline(newmethod)))
 
-    if finalest == "nnls" and type == "class": 
+    if finalest == "nnls0" and type == "class": 
         fin_est = LinearRegressionClassifier(fit_intercept=False,positive=True)
+    elif finalest == "nnls_sk" and type == "class": 
+        fin_est = LinearRegressionClassifier(fit_intercept=False,positive=True)
+    elif finalest == "nnls1" and type == "class": 
+        fin_est = ConstrLSClassifier()
     elif finalest == "ridge" and type == "class": 
         fin_est = LogisticRegression()
-    elif finalest == "nnls" and type == "reg": 
+    elif finalest == "nnls0" and type == "reg": 
         fin_est = LinearRegression(fit_intercept=False,positive=True)
+    elif finalest == "nnls_sk" and type == "reg": 
+        fin_est = LinearRegression(fit_intercept=False,positive=True)
+    elif finalest == "nnls1" and type == "reg": 
+        fin_est = ConstrLS()
     elif finalest == "ridge" and type == "reg": 
         fin_est = RidgeCV()
     elif finalest == "singlebest" and type == "reg": 
@@ -1335,13 +1381,11 @@ def run_stacked(type, # regression or classification
     # Train model on training data
     if type=="class":
         y=y!=0
-    with sklearn.utils.parallel_backend(parbackend):
+    with parallel_backend(parbackend):
         model = model.fit(x,y)
 
     # for NNLS: standardize coefficients to sum to one
     if voting=="":
-        if finalest == "nnls":
-            model.final_estimator_.coef_ = model.final_estimator_.coef_ / model.final_estimator_.coef_.sum()
         w = model.final_estimator_.coef_
         if len(w.shape)==1:
             sfi.Matrix.store("e(weights)",w)
@@ -1370,7 +1414,7 @@ def run_stacked(type, # regression or classification
         __main__.model_methods = methods
 
     if nosavepred == "":
-        if type=="class" and finalest=="nnls":
+        if type=="class" and finalest[0:4]=="nnls":
             pred = model.predict_proba(x_0)>0.5
         else:
             pred = model.predict(x_0)
@@ -1393,9 +1437,9 @@ def run_stacked(type, # regression or classification
         __main__.transform = transf
 
     # save versions of Python and packages
-    sfi.Macro.setGlobal("e(sklearn_ver)",format(sklearn.__version__))
-    sfi.Macro.setGlobal("e(numpy_ver)",format(np.__version__))
-    sfi.Macro.setGlobal("e(scipy_ver)",format(scipy.__version__))
-    sfi.Macro.setGlobal("e(python_ver)",format(sys.version))
+    sfi.Macro.setGlobal("e(sklearn_ver)",format(sklearn_version))
+    sfi.Macro.setGlobal("e(numpy_ver)",format(numpy_version))
+    sfi.Macro.setGlobal("e(scipy_ver)",format(scipy_version))
+    sfi.Macro.setGlobal("e(python_ver)",format(sys_version))
 
 end

@@ -1,11 +1,11 @@
-*! pystacked v0.4.1
-*! last edited: 17feb2022
+*! pystacked v0.4.3
+*! last edited: 18Aug2022
 *! authors: aa/ms
 
 program _pyparse 
 	syntax [anything] , ///
 						type(string) Methods(string) ///
-						[ sklearn1(real 1) sklearn2(real 0) PRINTopt debug *]
+						[ sklearn1(real 1) sklearn2(real 0) sklearn3(real 0) PRINTopt debug *]
 
 	if ("`methods'"!="") {
 
@@ -16,7 +16,9 @@ program _pyparse
 			local type class
 		}
 
-		local options `options' sklearn1(`sklearn1') sklearn2(`sklearn2') `printopt'
+		** v 1.1.2 becomes 101.2
+		local sklearn_ver = `sklearn1'*100+`sklearn2'+`sklearn3'/10
+		local options `options' sklearn_ver(`sklearn_ver') `printopt'
 
 		if "`type'"=="reg" {
 			if "`methods'"=="ols" {
@@ -102,7 +104,7 @@ program _pyparse
 end
 
 program define parse_LinearRegression, rclass
-	syntax [anything], sklearn1(real) sklearn2(real) ///
+	syntax [anything],  sklearn_ver(real) ///
 					[ ///
 					NOCONStant ///
 					NORMalize ///
@@ -138,7 +140,7 @@ end
 
 /* class sklearn.linear_model.LogisticRegression()[source]¶ */
 program define parse_Logit, rclass
-	syntax [anything], sklearn1(real) sklearn2(real) ///
+	syntax [anything],  sklearn_ver(real) ///
 					[ ///
 					NOCONStant /// 
 					PRINTopt /// 
@@ -165,7 +167,7 @@ end
  class sklearn.linear_model.LogisticRegressionCV()[source]¶
   */
 program define parse_LassoLogitCV, rclass
-	syntax [anything], sklearn1(real) sklearn2(real) ///
+	syntax [anything],  sklearn_ver(real) ///
 					[ ///
 					l1_ratios(numlist) ///
 					Cs(integer 10) ///
@@ -269,7 +271,7 @@ copy_X=True, verbose=0, n_jobs=None, positive=False,
 random_state=None, selection='cyclic')
 */
 program define parse_ElasticCV, rclass
-	syntax [anything], sklearn1(real) sklearn2(real) ///
+	syntax [anything],  sklearn_ver(real) ///
 					[ ///
 					l1_ratio(real .5) ///
 					eps(real 1e-3) ///
@@ -379,7 +381,7 @@ end
  class sklearn.linear_model.LassoLarsIC() 
  */
 program define parse_LassoIC, rclass
-	syntax [anything], sklearn1(real) sklearn2(real) ///
+	syntax [anything],  sklearn_ver(real) ///
 					[criterion(string) ///
 					NOCONStant ///
 					max_iter(integer 500) ///
@@ -430,7 +432,7 @@ end
  */
 program define parse_rfReg, rclass
 	syntax [anything] , ///
-					sklearn1(real) sklearn2(real) ///
+					 sklearn_ver(real) ///
 					[ ///
 					n_estimators(integer 100) ///
 					criterion(string) ///
@@ -461,11 +463,11 @@ program define parse_rfReg, rclass
 	if strpos("mae mse squared_error absolute_error poisson","`criterion'")!=0 & "`criterion'"!="" {
 		local optstr `optstr' 'criterion':'`criterion'',		
 	}
-	else if "`criterion'"=="" & `sklearn1'<1 {
+	else if "`criterion'"=="" & `sklearn_ver'<100 {
 		// use default
 		local optstr `optstr' 'criterion':'mse',	
 	}
-	else if "`criterion'"=="" & `sklearn1'>=1 {
+	else if "`criterion'"=="" & `sklearn_ver'>=100 {
 		// use default
 		local optstr `optstr' 'criterion':'squared_error',	
 	}
@@ -497,7 +499,12 @@ program define parse_rfReg, rclass
 		local optstr `optstr' 'max_features':'`max_features'',
 	} 
 	else if "`max_features'"=="" {
-		local optstr `optstr' 'max_features':'auto',
+		if (`sklearn_ver'>=101) {
+			local optstr `optstr' 'max_features':1.0,
+		}
+		else {
+			local optstr `optstr' 'max_features':'auto',
+		}
 	} 
 	else {
 		local optstr `optstr' 'max_features':`max_features',
@@ -572,7 +579,7 @@ end
  */
 program define parse_rfClass, rclass
 	syntax [anything] , ///
-					sklearn1(real) sklearn2(real) ///
+					 sklearn_ver(real) ///
 					[ ///
 					n_estimators(integer 100) ///
 					criterion(string) ///
@@ -635,7 +642,12 @@ program define parse_rfClass, rclass
 		local optstr `optstr' 'max_features':'`max_features'',
 	} 
 	else if "`max_features'"=="" {
-		local optstr `optstr' 'max_features':'auto',
+		if (`sklearn_ver'>=101) {
+			local optstr `optstr' 'max_features':1.0,
+		}
+		else {
+			local optstr `optstr' 'max_features':'auto',
+		}
 	}
 	else {
 		local optstr `optstr' 'max_features':`max_features',
@@ -716,7 +728,7 @@ end
 */
 program define parse_gradboostReg, rclass
 	syntax [anything] , ///
-					sklearn1(real) sklearn2(real) ///
+					 sklearn_ver(real) ///
 					[ ///
 					loss(string) ///
 					criterion(string) ///
@@ -747,10 +759,10 @@ program define parse_gradboostReg, rclass
 	if strpos("absolute_error squared_error ls lad huber quantile","`loss'")!=0 & "`loss'"!="" {
 		local optstr `optstr' 'loss':'`loss'',
 	} 
-	else if "`loss'"=="" & `sklearn1'<1 {
+	else if "`loss'"=="" & `sklearn_ver'<100 {
 		local optstr `optstr' 'loss':'ls',
 	}
-	else if "`loss'"=="" & `sklearn1'>=1 {
+	else if "`loss'"=="" & `sklearn_ver'>=100 {
 		local optstr `optstr' 'loss':'squared_error',
 	}
 	else {
@@ -874,7 +886,7 @@ end
 /*  class sklearn.ensemble.GradientBoostingClassifier() */
 program define parse_gradboostClass, rclass
 	syntax [anything] , ///
-					sklearn1(real) sklearn2(real) ///
+					 sklearn_ver(real) ///
 					[ ///
 					loss(string) ///
 					learning_rate(real 0.1) ///
@@ -899,11 +911,16 @@ program define parse_gradboostClass, rclass
 					]
 	local optstr 
 	** loss
-	if "`loss'"=="deviance"|"`loss'"=="exponential" {
+	if "`loss'"=="deviance"|"`loss'"=="exponential"|"`loss'"=="log_loss" {
 		local optstr `optstr' 'loss':'`loss'',
 	} 
 	else if "`loss'"=="" {
-		local optstr `optstr' 'loss':'deviance',
+		if (`sklearn_ver'<110) {
+			local optstr `optstr' 'loss':'deviance',
+		}
+		else {
+			local optstr `optstr' 'loss':'log_loss',
+		}
 	}
 	else {
 		di as err "loss(`loss') not supported"
@@ -1023,7 +1040,7 @@ end
  */
 program define parse_SVR, rclass
 	syntax [anything] , ///
-					sklearn1(real) sklearn2(real) ///
+					 sklearn_ver(real) ///
 					[ ///
 					KERnel(string) ///
 					degree(integer 3) ///
@@ -1106,7 +1123,7 @@ end
  */
 program define parse_LinearSVR, rclass
 	syntax [anything] , ///
-					sklearn1(real) sklearn2(real) ///
+					 sklearn_ver(real) ///
 					[ ///
 					epsilon(real 0) /// OK
 					tol(real 1e-4) /// OK  
@@ -1181,7 +1198,7 @@ end
  */
 program define parse_SVC, rclass
 	syntax [anything] , ///
-					sklearn1(real) sklearn2(real) ///
+					 sklearn_ver(real) ///
 					[ ///
 					C(real 1) ///
 					KERnel(string) ///
@@ -1285,7 +1302,7 @@ class sklearn.svm.LinearSVC()
 */
 program define parse_LinearSVC, rclass
 	syntax [anything] , ///
-					sklearn1(real) sklearn2(real) ///
+					 sklearn_ver(real) ///
 					[ ///
 					penalty(string) ///
 					loss(string) ///
@@ -1360,7 +1377,7 @@ end
  */
 program define parse_MLPReg, rclass
 	syntax [anything] , ///
-						sklearn1(real) sklearn2(real) ///
+						 sklearn_ver(real) ///
 						[ ///
 						hidden_layer_sizes(numlist >0 integer) ///
 						activation(string) ///
@@ -1567,7 +1584,7 @@ end
  */
 program define parse_MLPClass, rclass
 	syntax [anything] , ///
-						sklearn1(real) sklearn2(real) ///
+						 sklearn_ver(real) ///
 						[ ///
 						hidden_layer_sizes(numlist >0 integer) ///
 						activation(string) ///

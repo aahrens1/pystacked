@@ -1,13 +1,13 @@
-*! pystacked v0.4.2
-*! last edited: 3apr2022
+*! pystacked v0.4.3
+*! last edited: 18Aug2022
 *! authors: aa/ms
 
 program define pystacked_p, rclass
 	version 16.0
 	syntax namelist(min=1 max=2) [if] [in], [ ///
 															pr /// 
-															xb /// default
-															///Resid /// not implemented yet
+															xb /// 
+															Resid /// 
 															class /// 
 															TRANSForm ///
 															force ///
@@ -22,6 +22,8 @@ program define pystacked_p, rclass
 			exit 198
 		}
 	} 
+
+	if ("`resid'"!="") local xb xb
 
 	local command=e(cmd)
 	if ("`command'"~="pystacked") {
@@ -61,6 +63,7 @@ python:
 
 # Import SFI, always with stata 16
 from sfi import Data,Matrix,Scalar,Macro
+from sfi import SFIToolkit
 import numpy as np
 
 def post_prediction(pred_var,transform,var_type,touse,pred_type):
@@ -84,13 +87,19 @@ def post_prediction(pred_var,transform,var_type,touse,pred_type):
 	if type=="class" and pred_type=="":
 		pred_type="pr"
 	elif type=="class" and pred_type=="xb":
-		sfi.SFIToolkit.stata('di as err "pr not supported with classification"')
+		SFIToolkit.stata('di as err "xb/resid not supported with classification"')
 		#"
-		sfi.SFIToolkit.error(198)
+		SFIToolkit.error(198)
 
 	if transform=="":
 		if type=="class" and pred_type == "pr":
 			from __main__ import predict_proba as pred
+			if pred.ndim>1:
+				pred=pred[:,1]
+		elif type=="class" and (pred_type == "" or pred_type == "class"):
+			from __main__ import predict as pred
+			if pred.ndim>1:
+				pred=pred[:,1]
 		else: 
 			from __main__ import predict as pred
 		pred[touse==0] = np.nan

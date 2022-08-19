@@ -1,33 +1,53 @@
-cap cd "/Users/kahrens/MyProjects/pystacked/cert"
-cap cd "/Users/ecomes/Documents/GitHub/pystacked/cert"
 
-cap log close
-log using "log_cs_pystacked_class.txt", text replace
 
-clear all
-
-if "`c(username)'"=="kahrens" {
-	adopath + "/Users/kahrens/MyProjects/pystacked"
-}
-else if "`c(username)'"=="ecomes" {
-	adopath + "/Users/ecomes/Documents/GitHub/pystacked/cert"
-}
-else {
-	net install pystacked, ///
-		from(https://raw.githubusercontent.com/aahrens1/pystacked/main) replace
-}
 which pystacked 
 python: import sklearn
 python: sklearn.__version__
 
 tempfile testdata
+set seed 765
 global model v58 v1-v30
 insheet using https://archive.ics.uci.edu/ml/machine-learning-databases/spambase/spambase.data, clear comma
-sample 50
+sample 15
 gen u = runiform()
 gen train = u<0.5
 gen train2 = u<.75
 save `testdata'
+
+*******************************************************************************
+*** check that predicted value = weighted avg of transform variables 		***
+*******************************************************************************
+						 
+use `testdata', clear
+
+pystacked $model, type(class) pyseed(123)
+
+predict double yhat, pr
+list yhat if _n < 10
+
+predict double t, transform  
+
+mat W = e(weights)
+gen myhat = t1*el(W,1,1)+t2*el(W,2,1)+t3*el(W,3,1)
+
+assert reldif(yhat,myhat)<0.0001
+
+
+
+*******************************************************************************
+*** predicted values/classes										 		***
+*******************************************************************************
+
+cap drop yhat*
+
+pystacked $model, type(class) methods(logit)
+predict yhat , class
+predict yhat2  
+predict yhat3 , pr
+assert yhat>0 if yhat3>0.5
+assert yhat<1 if yhat3<0.5
+assert yhat2>0 if yhat3>0.5
+assert yhat2<1 if yhat3<0.5
 
 *******************************************************************************
 *** try voting 														 		***
@@ -60,24 +80,6 @@ foreach m in "`m1'" "`m2'" "`m3'" "`m4'" "`m5'" "`m6'" {
 							methods(`m') /// 
 							njobs(4)
 }
-
-*******************************************************************************
-*** check that predicted value = weighted avg of transform variables 		***
-*******************************************************************************
-						 
-use `testdata', clear
-
-pystacked $model, type(class) pyseed(123)
-
-predict double yhat, pr
-list yhat if _n < 10
-
-predict double t, transform  
-
-mat W = e(weights)
-gen myhat = t1*el(W,1,1)+t2*el(W,2,1)+t3*el(W,3,1)
-
-assert reldif(yhat,myhat)<0.0001
 
 
 *******************************************************************************
@@ -147,5 +149,3 @@ pystacked $model || method(logit) || method(rf) || method(gradboost) || if train
 	type(class) pyseed(123)
 pystacked, graph holdout
 
-
-log close

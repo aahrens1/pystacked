@@ -1,7 +1,7 @@
 {smcl}
-{* *! version 18feb2022}{...}
+{* *! version 18Aug2022}{...}
 {hline}
-{cmd:help pystacked}{right: v0.4.1}
+{cmd:help pystacked}{right: v0.4.3}
 {hline}
 
 {title:Title}
@@ -33,7 +33,8 @@ algorithms.
 
 {pstd}
 {opt pystacked} requires at least Stata 16 (or higher),  
-a Python installation and scikit-learn (0.24 or higher).
+a Python installation and scikit-learn (0.24 or higher). {opt pystacked}
+has been tested with scikit-learn 0.24, 1.0, 1.1.0, 1.1.1 and 1.1.2.
 See {helpb python:here} and {browse "https://blog.stata.com/2020/08/18/stata-python-integration-part-1-setting-up-stata-to-use-python/":here} 
 for how to set up Python for Stata on your system.
 
@@ -191,7 +192,10 @@ The default is regression.
 {p_end}
 {synopt:{opt final:est(string)}}
 final estimator used to combine base learners. 
-The default is non-negative least squares ({it:nnls}). 
+The default is non-negative least squares without an intercept 
+and the additional constraint that weights sum to 1 ({it:nnls1}). 
+Alternatives are {it:nnls0} (non-negative least squares without intercept 
+without the sum-to-one constraint), 
 Alternatives are {it:singlebest}
 (use base learner with minimum MSE),
 {it:ols} (ordinary least squares) or
