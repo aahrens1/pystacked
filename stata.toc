@@ -1,2 +1,2 @@
 v 3
-d pystacked: Stacking regression in Stata
+d pystacked: pystacked: Stacking generalization and machine learning in Stata
