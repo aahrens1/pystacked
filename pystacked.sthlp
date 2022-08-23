@@ -940,9 +940,14 @@ Please also cite scikit-learn; see {browse "https://scikit-learn.org/stable/abou
 
 {title:Authors}
 
-	Achim Ahrens, Public Policy Group, ETH Zurich, Switzerland
-	achim.ahrens@gess.ethz.ch
+{pstd}
+Achim Ahrens, Public Policy Group, ETH Zurich, Switzerland {break}
+achim.ahrens@gess.ethz.ch
 
-	Christian B. Hansen, University of Chicago, USA
+{pstd}
+Christian B. Hansen, University of Chicago, USA {break}
+Christian.Hansen@chicagobooth.edu
 
-	Mark E. Schaffer, Heriot-Watt University, UK
+{pstd}
+Mark E Schaffer, Heriot-Watt University, UK {break}
+m.e.schaffer@hw.ac.uk	
