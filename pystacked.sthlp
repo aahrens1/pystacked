@@ -1,7 +1,7 @@
 {smcl}
-{* *! version 18Aug2022}{...}
+{* *! version 27Aug2022}{...}
 {hline}
-{cmd:help pystacked}{right: v0.4.3}
+{cmd:help pystacked}{right: v0.4.4}
 {hline}
 
 {title:Title}
