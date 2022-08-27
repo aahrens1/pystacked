@@ -3,12 +3,12 @@
 To install the latest version of pystacked:
 
 ```
-https://raw.githubusercontent.com/aahrens1/pystacked/main
+net install pystacked, from(https://raw.githubusercontent.com/aahrens1/pystacked/main) replace
 ```
 
 To install an old version: 
 
 ```
-https://raw.githubusercontent.com/aahrens1/pystacked/vXXX
+net install pystacked, from(https://raw.githubusercontent.com/aahrens1/pystacked/vXXX) replace)
 ```
 where `XXX` is replaced with one of the archived branches.
