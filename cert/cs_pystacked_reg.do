@@ -5,6 +5,21 @@ python: sklearn.__version__
 
 global xvars crim-lstat
 
+
+*******************************************************************************
+*** pystacked with one predictor									 		***
+*******************************************************************************
+
+sysuse auto 
+pystacked price mpg, type(reg) m(ols)
+predict double xhat1
+
+reg price mpg
+predict double xhat2 
+
+assert reldif(xhat1,xhat2)<10e-6
+
+
 *******************************************************************************
 *** check stdscaler default with regularized linear learners		 		***
 *******************************************************************************

@@ -978,7 +978,7 @@ end
 version 16.0
 python:
 
-### Import required Python modules
+# Import required Python modules
 import sfi
 import numpy as np
 import __main__
@@ -1179,7 +1179,10 @@ def run_stacked(type, # regression or classification
     x = np.array(sfi.Data.get(xvars,selectvar=touse))
     # If missings are present, need to specify they are NaNs.
     x_0 = np.array(sfi.Data.get(xvars,missingval=np.nan))
-
+    if x.ndim == 1:
+        x=np.reshape(x,(-1,1))
+    if x_0.ndim == 1:
+        x_0 = np.reshape(x_0,(-1,1))
     if sparse!="":
         x = coo_matrix(x).tocsc()
 

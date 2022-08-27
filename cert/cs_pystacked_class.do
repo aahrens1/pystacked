@@ -32,7 +32,17 @@ gen myhat = t1*el(W,1,1)+t2*el(W,2,1)+t3*el(W,3,1)
 
 assert reldif(yhat,myhat)<0.0001
 
+*******************************************************************************
+*** only one predictor 														***
+*******************************************************************************
 
+use `testdata', clear
+
+pystacked v58 v57, type(class) m(logit)
+predict double xhat1
+
+logit v58 v57
+predict double xhat2 
 
 *******************************************************************************
 *** predicted values/classes										 		***
