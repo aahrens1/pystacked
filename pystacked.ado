@@ -1,5 +1,5 @@
-*! pystacked v0.4.4
-*! last edited: 27Aug2022
+*! pystacked v0.4.5
+*! last edited: 25sep2022
 *! authors: aa/ms
 
 // parent program
@@ -175,7 +175,7 @@ version 16.0
     syntax varlist(min=2 fv) [if] [in] [aweight fweight], ///
                 [ ///
                     type(string) /// classification or regression
-                    finalest(string) ///
+                    FINALest(string) ///
                     njobs(int 0) ///
                     folds(int 5) ///
                     ///
@@ -1192,6 +1192,8 @@ def run_stacked(type, # regression or classification
 
     # convert strings to python objects
     methods = methods.split()
+    if "xgb" in methods:
+        import xgboost as xgb
     allopt = eval(allopt)
     allpipe = eval(allpipe)
     allxvar_sel = eval(allxvar_sel)
@@ -1252,6 +1254,10 @@ def run_stacked(type, # regression or classification
                 opt =allopt[m]
                 newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
                 newmethod.append(('mlp',MLPRegressor(**opt)))
+            if methods[m]=="xgb":    
+                opt =allopt[m]
+                newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
+                newmethod.append(('mlp',xgb.XGBRegressor(**opt)))
         elif type=="class":
             if methods[m]=="logit":
                 opt =allopt[m]
@@ -1292,6 +1298,10 @@ def run_stacked(type, # regression or classification
                 opt =allopt[m]
                 newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
                 newmethod.append(('mlp',MLPClassifier(**opt)))
+            if methods[m]=="xgb":    
+                opt =allopt[m]
+                newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
+                newmethod.append(('mlp',xgb.XGBClassifier(**opt)))
         else: 
             sfi.SFIToolkit.stata('di as err "method not known"') 
             #"

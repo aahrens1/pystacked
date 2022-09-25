@@ -1,5 +1,5 @@
-*! pystacked v0.4.4
-*! last edited: 27Aug2022
+*! pystacked v0.4.5
+*! last edited: 25sep2022
 *! authors: aa/ms
 
 program _pyparse 
@@ -51,6 +51,9 @@ program _pyparse
 			else if "`methods'"=="nnet" {
 				parse_MLPReg , `options' 
 			}
+			else if "`methods'"=="xgb" {
+				parse_XGB , `options' 
+			}
 			else {
 				di as err "methods(`methods') unknown"
 				exit 198
@@ -90,6 +93,9 @@ program _pyparse
 			else if "`methods'"=="nnet" {
 				parse_MLPClass , `options'
 			} 
+			else if "`methods'"=="xgb" {
+				parse_XGB , `options' 
+			}
 			else {
 				di as err "methods(`methods') unknown"
 				exit 198
@@ -1779,6 +1785,111 @@ program define parse_MLPClass, rclass
 		local optstr `optstr' 'max_fun':15000,						
 	}	
 	** return
+	local optstr {`optstr'}
+	local optstr = subinstr("`optstr'",",}","}",.)
+	local optstr = subinstr("`optstr'"," ","",.)
+	if "`printopt'"!="" _print_tool `optstr'
+	return local optstr `optstr'
+end
+
+/*
+ */
+program define parse_XGB, rclass
+	syntax [anything] , ///
+						 sklearn_ver(real) ///
+						[ /// 
+						/// integer
+						n_estimators(integer -1) ///
+						max_depth(integer -1) ///
+						max_leaves(integer -1) ///
+						max_bin(integer -1) ///
+						grow_policy(integer -1) ///
+						verbosity(integer -1) ///
+						n_jobs(integer -1) ///
+						random_state(integer -1) ///
+						max_cat_to_onehot(integer -1) ///  
+						early_stopping_rounds(integer -1) ///
+						num_parallel_tree(integer -1) ///
+						///
+						/// real
+						learning_rate(real -1) ///
+						gamma(real -1) ///
+						min_child_weight(real -1) ///
+						max_delta_step(real -1) ///
+						subsample(real -1) ///
+						colsample_bytree(real -1) ///
+						colsample_bylevel(real -1) ///
+						colsample_bynode(real -1) ///
+						reg_alpha(real -1) ///  
+						reg_lambda(real -1) ///
+						scale_pos_weight(real -1) ///
+						base_score(real -1) ///
+						///
+						/// string
+						objective(string) ///
+						booster(string) ///
+						subsample_method(string) ///
+ 						tree_method(string) ///
+						monotone_constraints(string) ///  
+						importance_type(string) ///
+						eval_metric(string) ///
+						/// 
+						/// numlist
+						interaction_constraints1(numlist integer)  ///
+						interaction_constraints2(numlist integer)  ///
+						interaction_constraints3(numlist integer)  ///
+					]
+	local optstr
+	*** integer
+	foreach l in n_estimators max_depth max_leaves max_bin grow_policy verbosity n_jobs random_state max_cat_to_onehot early_stopping_rounds num_parallel_tree {
+		if ``l''>0 {
+			local optstr `optstr' '`l'':``l'',
+		} 
+	}
+	*** real
+	foreach l in learning_rate gamma min_child_weight max_delta_step subsample colsample_bytree colsample_bylevel colsample_bynode reg_alpha reg_lambda scale_pos_weight base_score {
+		if ``l''>0 {
+			local optstr `optstr' '`l'':``l'',
+		} 
+	}
+	*** string
+	foreach l in objective booster subsample_method tree_method monotone_constraints importance_type eval_metric { 
+		if "``l''"!="" {
+			local optstr `optstr' '`l'':'``l''',
+		} 
+	}
+	*** interaction contrains
+	if "`interaction_constraints1'"!="" | "`interaction_constraints2'"!="" | "`interaction_constraints3'"!="" {
+		local constr [
+		if "`interaction_constraints1'"!="" {
+			local constr1 [
+			foreach j of numlist `interaction_constraints1' {
+				local i = `j'-1
+				local constr1 `constr1'`i',	
+			}
+			local constr1 `constr1'],
+		}
+		if "`interaction_constraints2'"!="" {
+			local constr2 [
+			foreach j of numlist `interaction_constraints2' {
+				local i = `j'-1
+				local constr2 `constr2'`i',	
+			}
+			local constr2 `constr2'],
+		}
+		if "`interaction_constraints3'"!="" {
+			local constr3 [
+			foreach j of numlist `interaction_constraints3' {
+				local i = `j'-1
+				local constr3 `constr3'`i',	
+			}
+			local constr3 `constr3'],
+		}
+		local constr [`constr1'`constr2'`constr3']
+		local optstr `optstr' 'interaction_constraints':'`constr'',
+	}
+	** return
+	di "optstr {`optstr'}"
 	local optstr {`optstr'}
 	local optstr = subinstr("`optstr'",",}","}",.)
 	local optstr = subinstr("`optstr'"," ","",.)
