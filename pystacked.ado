@@ -1,5 +1,5 @@
-*! pystacked v0.4.5
-*! last edited: 25sep2022
+*! pystacked v0.4.6
+*! last edited: 20nov2022
 *! authors: aa/ms
 
 // parent program
@@ -1044,10 +1044,10 @@ class ConstrLS(BaseEstimator):
         #Define minimisation function
         def fn(coef, X, y):
             return np.linalg.norm(X.dot(coef) - y)
-
+        
         #Constraints and bounds
         cons = {'type': 'eq', 'fun': lambda coef: np.sum(coef)-1}
-        bounds = [[0.0,None] for i in range(xdim)] 
+        bounds = [[0.0,1.0] for i in range(xdim)] 
 
         #Do minimisation
         fit = minimize(fn,coef0,args=(X, y),method='SLSQP',bounds=bounds,constraints=cons)
@@ -1397,7 +1397,7 @@ def run_stacked(type, # regression or classification
     with parallel_backend(parbackend):
         model = model.fit(x,y)
 
-    # for NNLS: standardize coefficients to sum to one
+    # store weights in e()
     if voting=="":
         w = model.final_estimator_.coef_
         if len(w.shape)==1:

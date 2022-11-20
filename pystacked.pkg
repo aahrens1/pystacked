@@ -1,5 +1,5 @@
 v 3
-d pystacked: pystacked: Stacking generalization and machine learning in Stat
+d pystacked: pystacked: Stacking generalization and machine learning in Stata
 f pystacked.ado
 f _pyparse.ado
 f pystacked_p.ado
