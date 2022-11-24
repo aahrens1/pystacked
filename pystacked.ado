@@ -178,6 +178,8 @@ version 16.0
                     FINALest(string) ///
                     njobs(int 0) ///
                     folds(int 5) ///
+                    foldvar(varname) ///
+                    NORANDOM ///
                     ///
                     ///
                     pyseed(integer -1) ///
@@ -329,6 +331,24 @@ version 16.0
     qui count if `touse'
     local N        = r(N)
 
+    // generate fold var
+    if "`foldvar'"=="" {
+        *** gen folds
+        tempvar uni cuni fid
+        if "`norandom'"~="" {
+            qui gen `uni' = _n
+        }
+        else {
+            qui gen double `uni' = runiform() if `touse'
+        }
+        qui cumul `uni' if `touse', gen(`cuni')
+        qui gen int `fid' = ceil(`folds'*`cuni') if `touse'
+    }
+    else {
+        tempvar fid
+        gen int `fid'=`foldvar'
+    }
+
     ******** parse options using _pyparse.ado ********************************* 
 
     if `doublebarsyntax' {
@@ -475,7 +495,7 @@ version 16.0
                     "`votetype'", ///
                     "`voteweights'", ///
                     `njobs' , ///
-                    `folds', ///
+                    "`fid'", ///
                     "`showpywarnings'", ///
                     "`backend'", ///
                     "`sparse'", ///
@@ -1006,6 +1026,7 @@ from scipy import __version__ as scipy_version
 from numpy import __version__ as numpy_version
 from sys import version as sys_version
 from sklearn.utils import parallel_backend
+from sklearn.model_selection import PredefinedSplit
 
 ### Define required Python functions/classes
 
@@ -1053,6 +1074,7 @@ class ConstrLS(BaseEstimator):
         fit = minimize(fn,coef0,args=(X, y),method='SLSQP',bounds=bounds,constraints=cons)
         self.coef_ = fit.x
         self.is_fitted_ = True
+        self.cvoos=X
         return self
         
     def predict(self, X):
@@ -1144,8 +1166,8 @@ def run_stacked(type, # regression or classification
     seed, # seed
     nosavepred,nosavetransform, # store predictions
     voting,votetype,voteweights, # voting
-    njobs, # number of jobs
-    nfolds, # number of folds
+    njobs, # number of cores
+    foldvar, # foldvar
     showpywarnings, # show warnings?
     parbackend, # backend
     sparse, # sparse predictor 
@@ -1177,6 +1199,7 @@ def run_stacked(type, # regression or classification
 
     y = np.array(sfi.Data.get(yvar,selectvar=touse))
     x = np.array(sfi.Data.get(xvars,selectvar=touse))
+    fid = np.array(sfi.Data.get(foldvar,selectvar=touse))
     # If missings are present, need to specify they are NaNs.
     x_0 = np.array(sfi.Data.get(xvars,missingval=np.nan))
     if x.ndim == 1:
@@ -1348,14 +1371,14 @@ def run_stacked(type, # regression or classification
                        estimators=est_list,
                        final_estimator=fin_est,
                        n_jobs=nj,
-                       cv=nfolds
+                       cv=PredefinedSplit(fid)
                 )
     elif voting=="" and type=="class":
         model = StackingClassifier(
                        estimators=est_list,
                        final_estimator=fin_est,
                        n_jobs=nj,
-                       cv=nfolds
+                       cv=PredefinedSplit(fid)
                 )
     elif voting!="":
         if voteweights!="":
@@ -1448,6 +1471,7 @@ def run_stacked(type, # regression or classification
         # Set any predictions that should be missing to missing (NaN)
         transf[x0_hasnan] = np.nan
         __main__.transform = transf
+        __main__.cvoos = model.final_estimator_.cvoos
 
     # save versions of Python and packages
     sfi.Macro.setGlobal("e(sklearn_ver)",format(sklearn_version))

@@ -11,6 +11,7 @@ program define pystacked_p, rclass
 															class /// 
 															TRANSForm ///
 															force ///
+															cvoos ///
 															]
 	
 	if ("`force'"=="") {
@@ -51,7 +52,7 @@ program define pystacked_p, rclass
 	}
 	
 	* Get predictions
-	python: post_prediction("`predictvar'","`transform'","`vtype'","`touse'","`pr'`xb'`class'")
+	python: post_prediction("`predictvar'","`transform'","`cvooos'","`vtype'","`touse'","`pr'`xb'`class'")
 	
 	if "`resid'"!="" {
 		replace `predictvar' = `depvar' - `predictvar' if `touse'
@@ -66,7 +67,7 @@ from sfi import Data,Matrix,Scalar,Macro
 from sfi import SFIToolkit
 import numpy as np
 
-def post_prediction(pred_var,transform,var_type,touse,pred_type):
+def post_prediction(pred_var,transform,cvoos,var_type,touse,pred_type):
 
 	# Start with a working flag
 	Scalar.setValue("r(import_success)", 1, vtype='visible')
@@ -91,7 +92,7 @@ def post_prediction(pred_var,transform,var_type,touse,pred_type):
 		#"
 		SFIToolkit.error(198)
 
-	if transform=="":
+	if transform=="" and cvoos=="":
 		if type=="class" and pred_type == "pr":
 			from __main__ import predict_proba as pred
 			if pred.ndim>1:
@@ -104,8 +105,11 @@ def post_prediction(pred_var,transform,var_type,touse,pred_type):
 			from __main__ import predict as pred
 		pred[touse==0] = np.nan
 		Data.store(var=pred_var,val=pred,obs=None)
-	else:
-		from __main__ import transform as transf
+	elif transform!="" or cvoos!="":
+		if transform!="":
+			from __main__ import transform as transf
+		else: 
+			from __main__ import cvoos as transf
 		ncol = transf.shape[1]
 		for j in range(ncol):
 			if var_type == "double":
@@ -118,5 +122,4 @@ def post_prediction(pred_var,transform,var_type,touse,pred_type):
 				Data.store(var=pred_var+str(j+1),val=transf[:,j]>0.5,obs=None)
 			else: 
 				Data.store(var=pred_var+str(j+1),val=transf[:,j],obs=None)
-
 end
