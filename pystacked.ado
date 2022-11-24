@@ -1471,7 +1471,8 @@ def run_stacked(type, # regression or classification
         # Set any predictions that should be missing to missing (NaN)
         transf[x0_hasnan] = np.nan
         __main__.transform = transf
-        __main__.cvoos = model.final_estimator_.cvoos
+        if voting=="":
+            __main__.cvoos = model.final_estimator_.cvoos
 
     # save versions of Python and packages
     sfi.Macro.setGlobal("e(sklearn_ver)",format(sklearn_version))

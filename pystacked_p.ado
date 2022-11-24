@@ -109,7 +109,11 @@ def post_prediction(pred_var,transform,cvoos,var_type,touse,pred_type):
 		if transform!="":
 			from __main__ import transform as transf
 		else: 
-			from __main__ import cvoos as transf
+			try: 
+				from __main__ import cvoos as transf
+			except ImportError:
+				print("Error: Could not find cross-val OOS predicted values.")
+				return
 		ncol = transf.shape[1]
 		for j in range(ncol):
 			if var_type == "double":
