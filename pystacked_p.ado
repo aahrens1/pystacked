@@ -11,7 +11,7 @@ program define pystacked_p, rclass
 															class /// 
 															TRANSForm ///
 															force ///
-															cvalid ///
+															CValid ///
 															]
 	
 	if ("`force'"=="") {
