@@ -24,7 +24,14 @@ program define pystacked_p, rclass
 		}
 	} 
 
-	if ("`resid'"!="") local xb xb
+	* default
+	if ("`resid'`pr'`xb'`class'`transform'`cvalid'"=="") local xb xb
+
+	* only 1 option max
+	local optcount : word count `resid' `pr' `xb' `class' `transform' `cvalid'
+	if `optcount'>1 {
+		di as err "only one of options 'pr xb resid class transform cvalid' allowed"
+	}
 
 	local command=e(cmd)
 	if ("`command'"~="pystacked") {
@@ -92,6 +99,14 @@ def post_prediction(pred_var,transform,cvalid,var_type,touse,pred_type):
 		SFIToolkit.stata('di as err "xb/resid not supported with classification"')
 		#"
 		SFIToolkit.error(198)
+	elif type=="reg" and pred_type=="class":
+		SFIToolkit.stata('di as err "class not supported with regression"')
+		#"
+		SFIToolkit.error(198)		
+	elif type=="reg" and pred_type=="pr":
+		SFIToolkit.stata('di as err "pr not supported with regression"')
+		#"
+		SFIToolkit.error(198)	
 
 	if transform=="" and cvalid=="":
 		if type=="class" and pred_type == "pr":
