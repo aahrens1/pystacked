@@ -1,5 +1,5 @@
 *! pystacked v0.4.6
-*! last edited: 20nov2022
+*! last edited: 25nov2022
 *! authors: aa/ms
 
 // parent program
@@ -47,6 +47,7 @@ program define pystacked, eclass
                         TABle                                /// 
                         HOLDOUT1                            /// vanilla option, abbreviates to "holdout"
                         holdout(varname)                    ///
+                        CValid								///
                         *                                    ///
                     ]
         
@@ -72,39 +73,40 @@ program define pystacked, eclass
         if `"`graph'`graph1'`lgraph'`histogram'`table'"' ~= "" {
             pystacked_graph_table,                            ///
                 `holdout1' holdout(`holdout')                ///
+                `cvalid'									///
                 `graph1'                                    ///
                 `histogram'                                    ///
                 goptions(`graph') lgoptions(`lgraph')        ///
                 `table'
         }
         
-        // print MSPE table for regression problem
+        // print RMSPE table for regression problem
         if "`table'" ~= "" & "`e(type)'"=="reg" {
             tempname m w
             mat `m' = r(m)
             
             di
-            di as text "MSPE: In-Sample and Out-of-Sample"
-            di as text "{hline 17}{c TT}{hline 35}"
-            di as text "  Method" _c
-            di as text _col(18) "{c |} Weight   In-Sample   Out-of-Sample"
-            di as text "{hline 17}{c +}{hline 35}"
-            
-            di as text "  STACKING" _c
-            di as text _col(18) "{c |}" _c
-            di as text "    .  " _c
-            di as res  _col(30) %7.3f el(`m',1,1) _col(44) %7.3f el(`m',1,2)
-            
-            forvalues j=1/`nlearners' {
-                local b : word `j' of `base_est'
-                di as text "  `b'" _c
-                di as text _col(18) "{c |}" _c
-                di as res _col(20) %5.3f el(`weights_mat',`j',1) _c
-                di as res _col(30) %7.3f el(`m',`j'+1,1) _col(44) %7.3f el(`m',`j'+1,2)
-            }
+            di as text "RMSPE: In-Sample, CV, Holdout"
+ 		di as text "{hline 17}{c TT}{hline 47}"
+		di as text "  Method" _c
+		di as text _col(18) "{c |} Weight   In-Sample        CV         Holdout"
+		di as text "{hline 17}{c +}{hline 47}"
+		
+		di as text "  STACKING" _c
+		di as text _col(18) "{c |}" _c
+		di as text "    .  " _c
+		di as res  _col(30) %7.3f el(`m',1,1) _col(43) %7.3f el(`m',1,2) _col(56) %7.3f el(`m',1,3)
+		
+		forvalues j=1/`nlearners' {
+			local b : word `j' of `base_est'
+			di as text "  `b'" _c
+			di as text _col(18) "{c |}" _c
+			di as res _col(20) %5.3f el(`weights_mat',`j',1) _c
+			di as res _col(30) %7.3f el(`m',`j'+1,1) _col(43) %7.3f el(`m',`j'+1,2) _col(56) %7.3f el(`m',`j'+1,3)
+		}
 
-            // add to estimation macros
-            ereturn mat mspe = `m'
+		// add to estimation macros
+		ereturn mat rmspe = `m'
         }
         
         // print confusion matrix for classification problem
@@ -185,7 +187,8 @@ version 16.0
                     pyseed(integer -1) ///
                     PRINTopt ///
                     NOSAVEPred ///
-                    NOSAVETransform ///
+                    NOSAVETransform /// legacy option
+                    NOSAVEbasexb /// equivalent to old NOSAVETransform
                     ///
                     voting ///
                     ///
@@ -235,6 +238,7 @@ version 16.0
                     table                                /// 
                     HOLDOUT1                            /// vanilla option, abbreviates to "holdout"
                     holdout(varname)                    ///
+                    CValid								///
                     SParse                                ///
                     SHOWOPTions                         ///
                 ]
@@ -266,6 +270,11 @@ version 16.0
     * defaults
     if "`finalest'"=="" {
         local finalest nnls1
+    }
+    * legacy option
+    if "`nosavetransform'"~="" {
+    	local nosavebasexb nosavebasexb
+    	local nosavetransform
     }
 
     if "`backend'"=="" {
@@ -493,7 +502,7 @@ version 16.0
                     "`touse'", ///
                     `pyseed', ///
                     "`nosavepred'", ///
-                    "`nosavetransform'", ///
+                    "`nosavebasexb'", ///
                     "`voting'" , ///
                     "`votetype'", ///
                     "`voteweights'", ///
@@ -583,6 +592,7 @@ program define pystacked_graph_table, rclass
     syntax ,                                ///
                 [                            ///
                     HOLDOUT1                /// vanilla option, abbreviates to "holdout"
+                    CValid					///
                     holdout(varname)        ///
                     GRAPH1                    /// vanilla option, abbreviates to "graph"
                     HISTogram                /// report histogram instead of default ROC
@@ -595,7 +605,12 @@ program define pystacked_graph_table, rclass
     local graphflag = `"`graph1'`histogram'`goptions'`lgoptions'"'~=""
     
     if "`holdout'`holdout1'"=="" {
-        local title In-sample
+    	if "`cvalid'"== "" {
+    		local title In-sample
+    	}
+    	else {
+	    	local title In-sample (CV)
+       	}
         tempvar touse
         qui gen `touse' = e(sample)
     }
@@ -644,21 +659,38 @@ program define pystacked_graph_table, rclass
         // complete graph title
         local title `title' Predictions
             
-        tempvar stacking_p stacking_r
+        tempvar stacking_p stacking_r stacking_p_cv stacking_r_cv
         predict double `stacking_p'
         label var `stacking_p' "Prediction: Stacking Regressor"
         qui gen double `stacking_r' = `y' - `stacking_p'
-        qui predict double `stacking_p', transform
+        qui predict double `stacking_p', basexb
+        qui predict double `stacking_p_cv', basexb cv
         forvalues i=1/`nlearners' {
             local lname : word `i' of `learners'
             label var `stacking_p'`i' "Prediction: `lname'"
-            tempvar stacking_r`i'
+            label var `stacking_p_cv'`i' "Prediction (CV): `lname'"
+            tempvar stacking_r`i' stacking_r_cv`i'
             qui gen double `stacking_r`i'' = `y' - `stacking_p'`i'
+            qui gen double `stacking_r_cv`i'' = `y' - `stacking_p_cv'`i'
         }
+        // assemble stacked CV prediction
+        qui gen double `stacking_p_cv'=0
+        forvalues i=1/`nlearners' {
+        	qui replace `stacking_p_cv' = `stacking_p_cv' + `stacking_p_cv'`i' * `weights'[`i',1]
+        }
+        label var `stacking_p_cv' "Prediction (CV): Stacking Regressor"
+        qui gen double `stacking_r_cv' = `y' - `stacking_p_cv'
     
+		// graph variables
+		if "`cvalid'"=="" {
+			local xvar stacking_p
+		}
+		else {
+			local xvar stacking_p_cv
+		}
         tempname g0
         if `graphflag' {
-            twoway (scatter `stacking_p' `y') (line `y' `y') if `touse'        ///
+            twoway (scatter ``xvar'' `y') (line `y' `y') if `touse'        ///
                 ,                                                            ///
                 legend(off)                                                    ///
                 title("STACKING")                                            ///
@@ -690,14 +722,22 @@ program define pystacked_graph_table, rclass
         if "`table'"~="" {
             
             // save in matrix
-            tempname m m_in m_out
+            tempname m m_in m_cv m_out
             
-            // column for in-sample MSPE
+            // column for in-sample RMSPE
             qui sum `stacking_r' if e(sample)
             mat `m_in' = r(sd) * sqrt( (r(N)-1)/r(N) )
             forvalues i=1/`nlearners' {
                 qui sum `stacking_r`i'' if e(sample)
                 mat `m_in' = `m_in' \ (r(sd) * sqrt( (r(N)-1)/r(N) ))
+            }
+            
+            // column for in-sample RMSPE
+            qui sum `stacking_r_cv' if e(sample)
+            mat `m_cv' = r(sd) * sqrt( (r(N)-1)/r(N) )
+            forvalues i=1/`nlearners' {
+                qui sum `stacking_r_cv`i'' if e(sample)
+                mat `m_cv' = `m_cv' \ (r(sd) * sqrt( (r(N)-1)/r(N) ))
             }
             
             // column for OOS MSPE
@@ -714,8 +754,8 @@ program define pystacked_graph_table, rclass
                 mat `m_out' = J(`nlearners'+1,1,.)
             }
             
-            mat `m' = `m_in' , `m_out'
-            mat colnames `m' = MSPE_in MSPE_out
+            mat `m' = `m_in' , `m_cv', `m_out'
+            mat colnames `m' = RMSPE_in RMSPE_cv RMSPE_out
             mat rownames `m' = STACKING `learners'
             
             return matrix m = `m'
@@ -730,8 +770,8 @@ program define pystacked_graph_table, rclass
         label var `stacking_p' "Predicted Probability: Stacking Regressor"
         predict double `stacking_c', class
         label var `stacking_c' "Predicted Classification: Stacking Regressor"
-        qui predict double `stacking_p', pr transform
-        qui predict double `stacking_c', class transform
+        qui predict double `stacking_p', pr basexb
+        qui predict double `stacking_c', class basexb
 
         forvalues i=1/`nlearners' {
             local lname : word `i' of `learners'
@@ -1168,7 +1208,7 @@ def run_stacked(type, # regression or classification
     allxvar_sel, # subset predictors for each learner (expanded var names)
     touse, # sample
     seed, # seed
-    nosavepred,nosavetransform, # store predictions
+    nosavepred,nosavebasexb, # store predictions
     voting,votetype,voteweights, # voting
     njobs, # number of cores
     foldvar, # foldvar
@@ -1447,13 +1487,13 @@ def run_stacked(type, # regression or classification
     __main__.type = type
     __main__.id = id
 
-    if nosavepred=="" or nosavetransform=="":
+    if nosavepred=="" or nosavebasexb=="":
         # Track NaNs
         x0_hasnan = np.isnan(x_0).any(axis=1)
         # Set any NaNs to zeros so that model.predict(.) won't crash
         x_0 = np.nan_to_num(x_0)
 
-    if nosavepred == "" or nosavetransform == "":
+    if nosavepred == "" or nosavebasexb == "":
         __main__.model_object = model
         __main__.model_xvars = xvars
         __main__.model_methods = methods
@@ -1475,7 +1515,7 @@ def run_stacked(type, # regression or classification
         pred[x0_hasnan] = np.nan
         __main__.predict_proba = pred_proba
 
-    if nosavetransform == "":
+    if nosavebasexb == "":
         transf = model.transform(x_0)
         # Set any predictions that should be missing to missing (NaN)
         transf[x0_hasnan] = np.nan

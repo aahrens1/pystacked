@@ -9,7 +9,8 @@ program define pystacked_p, rclass
 															xb /// 
 															Resid /// 
 															class /// 
-															TRANSForm ///
+															TRANSForm /// legacy option, equivalent to basexb
+															BASExb ///
 															force ///
 															CValid ///
 															]
@@ -25,12 +26,29 @@ program define pystacked_p, rclass
 	} 
 
 	* default
-	if ("`resid'`pr'`xb'`class'`transform'`cvalid'"=="") local xb xb
+	if ("`resid'`pr'`xb'`class'"=="") local xb xb
+	
+	* legacy option
+	if "`transform'"~="" {
+		local basexb basexb
+		local transform
+	}
 
 	* only 1 option max
-	local optcount : word count `resid' `pr' `xb' `class' `transform' `cvalid'
+	local optcount : word count `resid' `pr' `xb' `class'
 	if `optcount'>1 {
-		di as err "only one of options 'pr xb resid class transform cvalid' allowed"
+		di as err "only one of options 'pr xb resid class' allowed"
+		exit 198
+	}
+	
+	* incompatible or required options
+	if "`resid'`pr'`class'"~="" & "`cvalid'"~="" {
+		di as err "incompatible options: `resid' `pr' `class' `cvalid'"	
+		exit 198
+	}
+	if "`cvalid'"~="" & "`basexb'"=="" {
+		di as err "error - option cvalid currently supported only with option basexb"
+		exit 198
 	}
 
 	local command=e(cmd)
@@ -54,12 +72,12 @@ program define pystacked_p, rclass
 
 	marksample touse, novarlist
 
-	if "`transform'`cvalid'"=="" {
+	if "`basexb'`cvalid'"=="" {
 		qui gen `vtype' `predictvar' = .
 	}
 	
 	* Get predictions
-	python: post_prediction("`predictvar'","`transform'","`cvalid'","`vtype'","`touse'","`pr'`xb'`class'")
+	python: post_prediction("`predictvar'","`basexb'","`cvalid'","`vtype'","`touse'","`pr'`xb'`class'")
 	
 	if "`resid'"!="" {
 		replace `predictvar' = `depvar' - `predictvar' if `touse'
@@ -74,7 +92,7 @@ from sfi import Data,Matrix,Scalar,Macro
 from sfi import SFIToolkit
 import numpy as np
 
-def post_prediction(pred_var,transform,cvalid,var_type,touse,pred_type):
+def post_prediction(pred_var,basexb,cvalid,var_type,touse,pred_type):
 
 	# Start with a working flag
 	Scalar.setValue("r(import_success)", 1, vtype='visible')
@@ -108,7 +126,8 @@ def post_prediction(pred_var,transform,cvalid,var_type,touse,pred_type):
 		#"
 		SFIToolkit.error(198)	
 
-	if transform=="" and cvalid=="":
+	if basexb=="" and cvalid=="":
+		# stacked prediction
 		if type=="class" and pred_type == "pr":
 			from __main__ import predict_proba as pred
 			if pred.ndim>1:
@@ -121,7 +140,8 @@ def post_prediction(pred_var,transform,cvalid,var_type,touse,pred_type):
 			from __main__ import predict as pred
 		pred[touse==0] = np.nan
 		Data.store(var=pred_var,val=pred,obs=None)
-	elif transform!="":
+	elif basexb!="" and cvalid=="":
+		# learner predictions
 		from __main__ import transform as transf
 		ncol = transf.shape[1]
 		for j in range(ncol):
@@ -135,10 +155,11 @@ def post_prediction(pred_var,transform,cvalid,var_type,touse,pred_type):
 				Data.store(var=pred_var+str(j+1),val=transf[:,j]>0.5,obs=None)
 			else: 
 				Data.store(var=pred_var+str(j+1),val=transf[:,j],obs=None)
-	elif cvalid!="":
+	elif basexb!="" and cvalid!="":
+		# learner cross-validated predictions
 		try:  
 			from __main__ import cvoos as transf
-		except ImpotError:
+		except ImportError:
 			print("Error: Could not find pystacked estimation results.")
 			Scalar.setValue("r(import_success)", 0, vtype='visible')
 			return
