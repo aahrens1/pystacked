@@ -349,6 +349,9 @@ version 16.0
         gen int `fid'=`foldvar'
     }
 
+    tempvar id 
+    gen int `id'=_n
+
     ******** parse options using _pyparse.ado ********************************* 
 
     if `doublebarsyntax' {
@@ -496,6 +499,7 @@ version 16.0
                     "`voteweights'", ///
                     `njobs' , ///
                     "`fid'", ///
+                    "`id'", ///
                     "`showpywarnings'", ///
                     "`backend'", ///
                     "`sparse'", ///
@@ -1168,6 +1172,7 @@ def run_stacked(type, # regression or classification
     voting,votetype,voteweights, # voting
     njobs, # number of cores
     foldvar, # foldvar
+    idvar, # id var
     showpywarnings, # show warnings?
     parbackend, # backend
     sparse, # sparse predictor 
@@ -1199,6 +1204,9 @@ def run_stacked(type, # regression or classification
 
     y = np.array(sfi.Data.get(yvar,selectvar=touse))
     x = np.array(sfi.Data.get(xvars,selectvar=touse))
+    id = np.array(sfi.Data.get(idvar,selectvar=touse))
+    #id = np.reshape(id,(-1,1))
+    id.astype(int)
     fid = np.array(sfi.Data.get(foldvar,selectvar=touse))
     # If missings are present, need to specify they are NaNs.
     x_0 = np.array(sfi.Data.get(xvars,missingval=np.nan))
@@ -1437,6 +1445,7 @@ def run_stacked(type, # regression or classification
     sfi.Macro.setGlobal("e(base_est)"," ".join(methods))  
 
     __main__.type = type
+    __main__.id = id
 
     if nosavepred=="" or nosavetransform=="":
         # Track NaNs
