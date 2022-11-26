@@ -318,6 +318,8 @@ version 16.0
         }
     }
 
+    python clear
+
     // get sklearn version
     python: from sklearn import __version__ as sklearn_version
     python: sfi.Macro.setLocal("sklearn_ver1",format(sklearn_version).split(".")[0])
@@ -1121,6 +1123,7 @@ class SingleBest(BaseEstimator):
         coef = np.zeros(ncols)
         coef[best] = 1
         self.coef_ = coef
+        self.cvoos=X
         return self
     def predict(self, X):
         X = check_array(X, accept_sparse=True)
