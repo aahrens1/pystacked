@@ -155,7 +155,7 @@ def post_prediction(pred_var,basexb,cvalid,var_type,touse,pred_type):
 		try:  
 			from __main__ import cvoos as transf
 		except ImportError:
-			print("Error: Could not find pystacked estimation results.")
+			print("Error: Could not find cross-valid predicted values.")
 			Scalar.setValue("r(import_success)", 0, vtype='visible')
 			return
 		id = id -1

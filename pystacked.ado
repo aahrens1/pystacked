@@ -1551,7 +1551,7 @@ def run_stacked(type, # regression or classification
         # Set any predictions that should be missing to missing (NaN)
         transf[x0_hasnan] = np.nan
         __main__.transform = transf
-        if voting=="":
+        if voting=="" and finalest == "nnls1":
             __main__.cvoos = model.final_estimator_.cvoos
 
     # save versions of Python and packages
