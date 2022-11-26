@@ -206,9 +206,9 @@ see {helpb pystacked##section_stacking:here}.
 {synopt:{opt nosavep:red}} do not save predicted values
 (do not use if {cmd:predict} is used after estimation)
 {p_end}
-{synopt:{opt nosavet:ransform}} do not save predicted values
+{synopt:{opt nosaveb:asexb}} do not save predicted values
 of each base learner 
-(do not use if {cmd:predict} with {opt transf:orm} is used after estimation)
+(do not use if {cmd:predict} with {opt base:xb} is used after estimation)
 {p_end}
 {synopt:{opt njobs(int)}} 
 number of jobs for parallel computing. The default is 0 (no parallelization), 
@@ -271,9 +271,10 @@ ensure that sum(weights)=1.
 
 {pstd}
 After estimation, {opt pystacked} can report a table of in-sample
+(both cross-validated and full-sample-refitted)
 and, optionally, out-of-sample (holdout sample) performance
 for both the stacking regression and the base learners.
-For regression problems, the table reports the MSPE (mean squared prediction error);
+For regression problems, the table reports the root MSPE (mean squared prediction error);
 for classification problems, a confusion matrix is reported.
 The default holdout sample used for out-of-sample performance with the {opt holdout} option
 is all observations not included in the estimation.
@@ -337,6 +338,7 @@ To get predicted values:
 {bind:[{cmd:,}}
 {opt pr}
 {opt xb}
+{opt cv:alid}
 ]
 
 {pstd}
@@ -347,7 +349,8 @@ To get fitted values for each base learner:
 {it:type} {it:stub} 
 [{cmd:if} {it:exp}] [{cmd:in} {it:range}]
 {bind:[{cmd:,}}
-{opt transf:orm}
+{opt base:xb}
+{opt cv:alid}
 ]
 
 {synoptset 20}{...}
@@ -359,15 +362,18 @@ predicted probability (classification only)
 {synopt:{opt xb}}
 the default; predicted value (regression) or predicted class (classification)
 {p_end}
-{synopt:{opt transf:orm}}
+{synopt:{opt base:xb}}
 predicted values for each base learner
+{p_end}
+{synopt:{opt cv:alid}}
+cross-validated predicted values (default = use base learners re-fitted on full estimation sample)
 {p_end}
 {synoptline}
 
 {pstd}
 {it:Note:} Predicted values (in and out-sample)
-are calculated when {cmd:pystacked}
-is run and stored in Python memory. {cmd:predict} pulls the
+are calculated and stored in Python memory
+when {cmd:pystacked} is run. {cmd:predict} pulls the
 predicted values from Python memory and saves them in 
 Stata memory. This means that no changes on the data
 in Stata memory should be made {it:between} {cmd:pystacked} call
@@ -681,13 +687,14 @@ The weights determine how much each base learner contributes
 to the final stacking prediction.{p_end}
 
 {pstd}
-Request the MSPE table (in-sample only):{p_end}
+Request the root MSPE table (in-sample only):{p_end}
 {phang2}. {stata "pystacked, table"}{p_end}
 
 {pstd}
 Re-estimate using the first 400 observations, and
-request the MSPE table. Both in-sample and
-the default holdout sample (all unused observations) are reported.:{p_end}
+request the root MSPE table.
+RMSPEs for both in-sample (both refitted and cross-validated)
+and the default holdout sample (all unused observations) are reported.:{p_end}
 {phang2}. {stata "pystacked medv crim-lstat if _n<=400, type(regress) pyseed(123) methods(lassocv rf gradboost)"}{p_end}
 {phang2}. {stata "pystacked, table holdout"}{p_end}
 
@@ -700,14 +707,18 @@ Storing the predicted values:{p_end}
 {phang2}. {stata "predict double yhat, xb"}{p_end}
 
 {pstd}
+Storing the cross-validated predicted values:{p_end}
+{phang2}. {stata "predict double yhat_cv, xb cvalid"}{p_end}
+
+{pstd}
 We can also save the predicted values of each base learner:{p_end}
-{phang2}. {stata "predict double yhat, transform"}{p_end}
+{phang2}. {stata "predict double yhat, basexb"}{p_end}
 
 {pstd}
 {ul:Learner-specific predictors (Syntax 1)}
 
 {pstd}
-{cmd:pystacked} allows to use different sets of predictors 
+{cmd:pystacked} allows the use of different sets of predictors 
 for each base learners. For example, 
 linear estimators might perform better if interactions are 
 provided as inputs. Here, we use interactions and 2nd-order polynomials

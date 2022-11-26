@@ -41,11 +41,6 @@ program define pystacked_p, rclass
 		exit 198
 	}
 	
-	* incompatible or required options
-	if "`resid'`pr'`class'"~="" & "`cvalid'"~="" {
-		di as err "incompatible options: `resid' `pr' `class' `cvalid'"	
-		exit 198
-	}
 	if "`cvalid'"~="" & "`basexb'"=="" {
 		di as err "error - option cvalid currently supported only with option basexb"
 		exit 198

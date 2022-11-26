@@ -115,25 +115,21 @@ program define pystacked, eclass
             mat `m' = r(m)
             
             di
-            di as text "Confusion matrix: In-Sample and Out-of-Sample"
-            di as text "{hline 17}{c TT}{hline 42}"
+            di as text "Confusion matrix: In-Sample, CV, Holdout"
+            di as text "{hline 17}{c TT}{hline 59}"
             di as text "  Method" _c
-            di as text _col(18) "{c |} Weight      In-Sample       Out-of-Sample"
-            di as text _col(18) "{c |}             0       1         0       1  "
-            di as text "{hline 17}{c +}{hline 42}"
+            di as text _col(18) "{c |} Weight      In-Sample             CV             Holdout"
+            di as text _col(18) "{c |}             0       1         0       1         0       1"
+            di as text "{hline 17}{c +}{hline 59}"
             
-            // di as text "  STACKING" _c
-            // di as text _col(16) "0 {c |}" _c
-            // di as text "    .  " _c
-            // di as res  _col(27) %7.0f 1234567 _col(35) %7.0f 1234567 _col(45) %7.0f 1234567 _col(53) %7.0f 1234567
             di as text "  STACKING" _c
             di as text _col(16) "0 {c |}" _c
             di as text "    .  " _c
-            di as res  _col(27) %7.0f el(`m',1,1) _col(35) %7.0f el(`m',1,2) _col(45) %7.0f el(`m',1,3) _col(53) %7.0f el(`m',1,4)
+            di as res  _col(27) %7.0f el(`m',1,1) _col(35) %7.0f el(`m',1,2) _col(45) %7.0f el(`m',1,3) _col(53) %7.0f el(`m',1,4) _col(63) %7.0f el(`m',1,5) _col(71) %7.0f el(`m',1,6)
             di as text "  STACKING" _c
             di as text _col(16) "1 {c |}" _c
             di as text "    .  " _c
-            di as res  _col(27) %7.0f el(`m',2,1) _col(35) %7.0f el(`m',2,2) _col(45) %7.0f el(`m',2,3) _col(53) %7.0f el(`m',2,4)
+            di as res  _col(27) %7.0f el(`m',2,1) _col(35) %7.0f el(`m',2,2) _col(45) %7.0f el(`m',2,3) _col(53) %7.0f el(`m',2,4) _col(63) %7.0f el(`m',2,5) _col(71) %7.0f el(`m',2,6)
             
             forvalues j=1/`nlearners' {
                 local b : word `j' of `base_est'
@@ -141,12 +137,12 @@ program define pystacked, eclass
                 di as text _col(16) "0 {c |}" _c
                 di as res  _col(20) %5.3f el(`weights_mat',`j',1) _c
                 local r = 2*`j' + 1
-                di as res  _col(27) %7.0f el(`m',`r',1) _col(35) %7.0f el(`m',`r',2) _col(45) %7.0f el(`m',`r',3) _col(53) %7.0f el(`m',`r',4)
+                di as res  _col(27) %7.0f el(`m',`r',1) _col(35) %7.0f el(`m',`r',2) _col(45) %7.0f el(`m',`r',3) _col(53) %7.0f el(`m',`r',4) _col(63) %7.0f el(`m',`r',5) _col(71) %7.0f el(`m',`r',6)
                 di as text "  `b'" _c
                 di as text _col(16) "1 {c |}" _c
                 di as res  _col(20) %5.3f el(`weights_mat',`j',1) _c
                 local r = 2*`j' + 2
-                di as res  _col(27) %7.0f el(`m',`r',1) _col(35) %7.0f el(`m',`r',2) _col(45) %7.0f el(`m',`r',3) _col(53) %7.0f el(`m',`r',4)
+                di as res  _col(27) %7.0f el(`m',`r',1) _col(35) %7.0f el(`m',`r',2) _col(45) %7.0f el(`m',`r',3) _col(53) %7.0f el(`m',`r',4) _col(63) %7.0f el(`m',`r',5) _col(71) %7.0f el(`m',`r',6)
             }
             
             // add to estimation macros
@@ -188,7 +184,7 @@ version 16.0
                     PRINTopt ///
                     NOSAVEPred ///
                     NOSAVETransform /// legacy option
-                    NOSAVEbasexb /// equivalent to old NOSAVETransform
+                    NOSAVEBasexb /// equivalent to old NOSAVETransform
                     ///
                     voting ///
                     ///
@@ -604,6 +600,7 @@ program define pystacked_graph_table, rclass
     // any graph options implies graph
     local graphflag = `"`graph1'`histogram'`goptions'`lgoptions'"'~=""
     
+    // sample variable, holdout check, graph title
     if "`holdout'`holdout1'"=="" {
     	if "`cvalid'"== "" {
     		local title In-sample
@@ -765,26 +762,45 @@ program define pystacked_graph_table, rclass
     else {
         // classification problem
         
-        tempvar stacking_p stacking_c
-        predict double `stacking_p', pr
+        tempvar stacking_p stacking_c stacking_p_cv stacking_c_cv
+        qui predict double `stacking_p', pr
         label var `stacking_p' "Predicted Probability: Stacking Regressor"
-        predict double `stacking_c', class
+        qui predict double `stacking_c', class
         label var `stacking_c' "Predicted Classification: Stacking Regressor"
         qui predict double `stacking_p', pr basexb
         qui predict double `stacking_c', class basexb
+        qui predict double `stacking_p_cv', pr basexb cv
+        qui predict double `stacking_c_cv', class basexb cv
 
         forvalues i=1/`nlearners' {
             local lname : word `i' of `learners'
             label var `stacking_p'`i' "Predicted Probability: `lname'"
             label var `stacking_c'`i' "Predicted Classification: `lname'"
+            label var `stacking_p_cv'`i' "Predicted Probability (CV): `lname'"
+            label var `stacking_c_cv'`i' "Predicted Classification (CV): `lname'"
         }
+        // assemble stacked CV prediction
+        qui gen double `stacking_p_cv'=0
+        forvalues i=1/`nlearners' {
+        	qui replace `stacking_p_cv' = `stacking_p_cv' + `stacking_p_cv'`i' * `weights'[`i',1]
+        }
+        label var `stacking_p_cv' "Predicted Probability (CV): Stacking Regressor"
+        qui gen byte `stacking_c_cv' = `stacking_p_cv' >= 0.5
+        qui replace `stacking_c_cv' = . if `stacking_p_cv'==.
         
         if `graphflag' & "`histogram'"=="" {                            /// default is ROC
             // complete graph title
             local title `title' ROC
         
+			// graph variables
+			if "`cvalid'"=="" {
+				local xvar stacking_p
+			}
+			else {
+				local xvar stacking_p_cv
+			}
             tempname g0
-            roctab `y' `stacking_p',                                    ///
+            roctab `y' ``xvar'',                                    ///
                 graph                                                    ///
                 title("STACKING")                                        ///
                 `lgoptions'                                                ///
@@ -819,6 +835,13 @@ program define pystacked_graph_table, rclass
                 local ystyle freq
             }
             
+			// graph variables
+			if "`cvalid'"=="" {
+				local xvar stacking_p
+			}
+			else {
+				local xvar stacking_p_cv
+			}
             tempname g0
             qui histogram `stacking_p',                                    ///
                 title("STACKING")                                        ///
@@ -857,6 +880,10 @@ program define pystacked_graph_table, rclass
                 local in_0    = r(N)
                 qui count if `y'==1 & `stacking_c'==`r' & e(sample)
                 local in_1    = r(N)
+                qui count if `y'==0 & `stacking_c_cv'==`r' & e(sample)
+                local cv_0    = r(N)
+                qui count if `y'==1 & `stacking_c_cv'==`r' & e(sample)
+                local cv_1    = r(N)
                 if "`holdout'`holdout1'"~="" {
                     // touse is the holdout indicator
                     qui count if `y'==0 & `stacking_c'==`r' & `touse'
@@ -868,7 +895,7 @@ program define pystacked_graph_table, rclass
                     local out_0 = .
                     local out_1 = .
                 }
-                mat `mrow' = `in_0', `in_1', `out_0', `out_1'
+                mat `mrow' = `in_0', `in_1', `cv_0', `cv_1', `out_0', `out_1'
                 mat `m' = nullmat(`m') \ `mrow'
             }
             
@@ -880,6 +907,10 @@ program define pystacked_graph_table, rclass
                     local in_0    = r(N)
                     qui count if `y'==1 & `stacking_c'`i'==`r' & e(sample)
                     local in_1    = r(N)
+                    qui count if `y'==0 & `stacking_c_cv'`i'==`r' & e(sample)
+                    local cv_0    = r(N)
+                    qui count if `y'==1 & `stacking_c_cv'`i'==`r' & e(sample)
+                    local cv_1    = r(N)
                     if "`holdout'`holdout1'"~="" {
                         // touse is the holdout indicator
                         qui count if `y'==0 & `stacking_c'`i'==`r' & `touse'
@@ -891,7 +922,7 @@ program define pystacked_graph_table, rclass
                         local out_0 = .
                         local out_1 = .
                     }
-                    mat `mrow' = `in_0', `in_1', `out_0', `out_1'
+                    mat `mrow' = `in_0', `in_1', `cv_0', `cv_1', `out_0', `out_1'
                     mat `m' = `m' \ `mrow'
                 }
             }
@@ -902,7 +933,7 @@ program define pystacked_graph_table, rclass
                 local rnames `rnames' `lname'_0 `lname'_1
             }
             mat rownames `m' = `rnames'
-            mat colnames `m' = in_0 in_1 out_0 out_1
+            mat colnames `m' = in_0 cv_1 in_0 cv_1 out_0 out_1
             
             return matrix m = `m'
     
