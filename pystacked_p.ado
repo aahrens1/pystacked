@@ -24,20 +24,23 @@ program define pystacked_p, rclass
 			exit 198
 		}
 	} 
-
-	* default
-	if ("`resid'`pr'`xb'`class'"=="") local xb xb
 	
 	* legacy option
 	if "`transform'"~="" {
 		local basexb basexb
 		local transform
+		di as err "transform option is deprecated; use 'basexb'"
 	}
 
 	* only 1 option max
 	local optcount : word count `resid' `pr' `xb' `class'
 	if `optcount'>1 {
 		di as err "only one of options 'pr xb resid class' allowed"
+		exit 198
+	}
+
+	if "`resid'"!="" & "`basexb'`cvalid'"!="" {
+		di as err "resid not allowed with: `basexb' `cvalid'"
 		exit 198
 	}
 	
@@ -67,7 +70,7 @@ program define pystacked_p, rclass
 
 	marksample touse, novarlist
 
-	if "`basexb'`cvalid'"=="" {
+	if "`basexb'"=="" {
 		qui gen `vtype' `predictvar' = .
 	}
 	
@@ -108,6 +111,8 @@ def post_prediction(pred_var,basexb,cvalid,var_type,touse,pred_type):
 
 	if type=="class" and pred_type=="":
 		pred_type="pr"
+	elif type=="reg" and pred_type=="":
+		pred_type="xb"
 	elif type=="class" and pred_type=="xb":
 		SFIToolkit.stata('di as err "xb/resid not supported with classification"')
 		#"
@@ -127,7 +132,7 @@ def post_prediction(pred_var,basexb,cvalid,var_type,touse,pred_type):
 			from __main__ import predict_proba as pred
 			if pred.ndim>1:
 				pred=pred[:,1]
-		elif type=="class" and (pred_type == "" or pred_type == "class"):
+		elif type=="class" and pred_type == "class":
 			from __main__ import predict as pred
 			if pred.ndim>1:
 				pred=pred[:,1]

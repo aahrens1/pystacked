@@ -221,7 +221,13 @@ See {browse "https://scikit-learn.org/stable/modules/generated/sklearn.utils.par
 {p_end}
 {synopt:{opt folds(int)}} 
 number of folds used for cross-validation (not relevant for voting); 
-default is 5
+default is 5. Ignored if {opt foldvar(varname)} if specified.
+{p_end}
+{synopt:{opt foldvar(varname)}} 
+integer fold variable for cross-validation.
+{p_end}
+{synopt:{opt norandom}} 
+folds are created using the ordering of the data. 
 {p_end}
 {synopt:{opt sparse}} 
 converts predictor matrix to a sparse matrix. This will only lead to speed improvements
@@ -329,7 +335,7 @@ Graph syntax:
 {ul:Prediction}
 
 {pstd}
-To get predicted values:
+To get stacking predicted values:
 
 {p 8 14 2}
 {cmd:predict}
@@ -337,8 +343,9 @@ To get predicted values:
 [{cmd:if} {it:exp}] [{cmd:in} {it:range}]
 {bind:[{cmd:,}}
 {opt pr}
+{opt class}
 {opt xb}
-{opt cv:alid}
+{opt resid}
 ]
 
 {pstd}
@@ -356,17 +363,23 @@ To get fitted values for each base learner:
 {synoptset 20}{...}
 {synopthdr:Option}
 {synoptline}
-{synopt:{opt pr}}
-predicted probability (classification only)
-{p_end}
 {synopt:{opt xb}}
-the default; predicted value (regression) or predicted class (classification)
+predicted value; the default for regression
+{p_end}
+{synopt:{opt pr}}
+predicted probability; the default for classification
+{p_end}
+{synopt:{opt class}}
+predicted class
+{p_end}
+{synopt:{opt resid}}
+residuals
 {p_end}
 {synopt:{opt base:xb}}
-predicted values for each base learner
+predicted values for each base learner (default = use base learners re-fitted on full estimation sample)
 {p_end}
 {synopt:{opt cv:alid}}
-cross-validated predicted values (default = use base learners re-fitted on full estimation sample)
+cross-validated predicted values. Currently only supported if combined with {opt base:xb}.
 {p_end}
 {synoptline}
 
