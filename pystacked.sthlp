@@ -196,8 +196,7 @@ The default is non-negative least squares without an intercept
 and the additional constraint that weights sum to 1 ({it:nnls1}). 
 Alternatives are {it:nnls0} (non-negative least squares without intercept 
 without the sum-to-one constraint), 
-Alternatives are {it:singlebest}
-(use base learner with minimum MSE),
+{it:singlebest} (use base learner with minimum MSE),
 {it:ols} (ordinary least squares) or
 {it:ridge} for (logistic) ridge, which is the
 sklearn default. For more information, 

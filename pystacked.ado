@@ -1123,7 +1123,7 @@ class SingleBest(BaseEstimator):
         coef = np.zeros(ncols)
         coef[best] = 1
         self.coef_ = coef
-        self.cvoos=X
+        self.cvalid=X
         return self
     def predict(self, X):
         X = check_array(X, accept_sparse=True)
@@ -1152,7 +1152,7 @@ class ConstrLS(BaseEstimator):
         fit = minimize(fn,coef0,args=(X, y),method='SLSQP',bounds=bounds,constraints=cons)
         self.coef_ = fit.x
         self.is_fitted_ = True
-        self.cvoos=X
+        self.cvalid=X
         return self
         
     def predict(self, X):
@@ -1493,7 +1493,7 @@ def run_stacked(type, # regression or classification
                     )
 
     ##############################################################
-    ### fitting; save predictions in __main__                   ###
+    ### fitting; save predictions in __main__                  ###
     ##############################################################
 
     # Train model on training data
@@ -1555,7 +1555,12 @@ def run_stacked(type, # regression or classification
         transf[x0_hasnan] = np.nan
         __main__.transform = transf
         if voting=="" and (finalest == "nnls1" or finalest == "singlebest"):
-            __main__.cvoos = model.final_estimator_.cvoos
+            __main__.cvalid = model.final_estimator_.cvalid
+        else:
+        	# values for cvalid unavailable so return array of correct with with all NaNs
+        	cv0 = np.shape(x)[0]
+        	cv1 = np.shape(transf)[1]
+        	__main__.cvalid = np.empty((cv0,cv1))*np.nan
 
     # save versions of Python and packages
     sfi.Macro.setGlobal("e(sklearn_ver)",format(sklearn_version))

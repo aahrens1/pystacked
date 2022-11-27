@@ -158,9 +158,12 @@ def post_prediction(pred_var,basexb,cvalid,var_type,touse,pred_type):
 	elif basexb!="" and cvalid!="":
 		# learner cross-validated predictions
 		try:  
-			from __main__ import cvoos as transf
+			from __main__ import cvalid as transf
+			if np.isnan(transf).all():
+				SFIToolkit.stata('di as res "Warning: cvalid option not available with selected final estimator;"')
+				SFIToolkit.stata('di as res "         cross-validated predicted values are set to missing"')
 		except ImportError:
-			SFIToolkit.stata('di as err "Error: Could not find cross-valid predicted values."')
+			SFIToolkit.stata('di as err "Error: Could not find cross-validated predicted values."')
 			#"
 			SFIToolkit.error(198)
 			return
