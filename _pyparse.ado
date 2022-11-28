@@ -247,7 +247,7 @@ program define parse_LassoLogitCV, rclass
 	** intercept scaling
 	local optstr `optstr' 'intercept_scaling':`intercept_scaling',
 	** random state
-	if `random_state'>0 {
+	if `random_state'>=0 {
 		local optstr `optstr' 'random_state':`random_state',
 	}
 	else {
@@ -370,7 +370,7 @@ program define parse_ElasticCV, rclass
 		local optstr `optstr' 'selection':'cyclic',
 	}
 	** random state
-	if `random_state'>0 {
+	if `random_state'>=0 {
 		local optstr `optstr' 'random_state':`random_state',
 	}
 	else {
@@ -548,7 +548,7 @@ program define parse_rfReg, rclass
 		local optstr `optstr' 'n_jobs':None,
 	}
 	** random state
-	if `random_state'>0 {
+	if `random_state'>=0 {
 		local optstr `optstr' 'random_state':`random_state',
 	}
 	else {
@@ -691,7 +691,7 @@ program define parse_rfClass, rclass
 		local optstr `optstr' 'n_jobs':None,
 	}
 	** random state
-	if `random_state'>0 {
+	if `random_state'>=0 {
 		local optstr `optstr' 'random_state':`random_state',
 	}
 	else {
@@ -827,7 +827,7 @@ program define parse_gradboostReg, rclass
 		local optstr `optstr' 'init':None,
 	}
 	** random state
-	if `random_state'>0 {
+	if `random_state'>=0 {
 		local optstr `optstr' 'random_state':`random_state',
 	}
 	else {
@@ -984,7 +984,7 @@ program define parse_gradboostClass, rclass
 		local optstr `optstr' 'init':None,
 	}
 	** random state
-	if `random_state'>0 {
+	if `random_state'>=0 {
 		local optstr `optstr' 'random_state':`random_state',
 	}
 	else {
@@ -1181,7 +1181,7 @@ program define parse_LinearSVR, rclass
 		local optstr `optstr' 'dual':True,
 	}
 	** random state
-	if `random_state'>0 {
+	if `random_state'>=0 {
 		local optstr `optstr' 'random_state':`random_state',
 	}
 	else {
@@ -1289,7 +1289,7 @@ program define parse_SVC, rclass
 		local optstr `optstr' 'break_ties':'`break_ties'',
 	}
 	** random state
-	if `random_state'>0 {
+	if `random_state'>=0 {
 		local optstr `optstr' 'random_state':`random_state',
 	}
 	else {
@@ -1360,7 +1360,7 @@ program define parse_LinearSVC, rclass
 		local optstr `optstr' 'fit_intercept':True,
 	}
 	** random state
-	if `random_state'>0 {
+	if `random_state'>=0 {
 		local optstr `optstr' 'random_state':`random_state',
 	}
 	else {
@@ -1487,7 +1487,7 @@ program define parse_MLPReg, rclass
 		local optstr `optstr' 'shuffle':True,
 	}
 	** random state
-	if `random_state'>0 {
+	if `random_state'>=0 {
 		local optstr `optstr' 'random_state':`random_state',
 	}
 	else {
@@ -1694,7 +1694,7 @@ program define parse_MLPClass, rclass
 		local optstr `optstr' 'shuffle':True,
 	}
 	** random state
-	if `random_state'>0 {
+	if `random_state'>=0 {
 		local optstr `optstr' 'random_state':`random_state',
 	}
 	else {
