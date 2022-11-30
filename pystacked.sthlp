@@ -1,7 +1,7 @@
 {smcl}
-{* *! version 26nov2022}{...}
+{* *! version 30nov2022}{...}
 {hline}
-{cmd:help pystacked}{right: v0.4.7}
+{cmd:help pystacked}{right: v0.4.8}
 {hline}
 
 {title:Title}
@@ -235,7 +235,7 @@ folds are created using the ordering of the data.
 {p_end}
 {synopt:{opt noshuffle}} 
 cross-validation folds for {it:base learners} that use 
-cross-validation (e.g. {it:lassocv}) are created using the 
+cross-validation (e.g. {it:lassocv}) are based on 
 ordering of the data. 
 {p_end}
 {synopt:{opt sparse}} 

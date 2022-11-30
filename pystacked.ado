@@ -1,5 +1,5 @@
-*! pystacked v0.4.7
-*! last edited: 26nov2022
+*! pystacked v0.4.8
+*! last edited: 30nov2022
 *! authors: aa/ms
 
 // parent program
