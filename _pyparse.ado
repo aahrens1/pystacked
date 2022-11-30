@@ -178,7 +178,7 @@ program define parse_LassoLogitCV, rclass
 					l1_ratios(numlist) ///
 					Cs(integer 10) ///
 					NOCONStant /// 
-					cv(integer 5) ///
+					///cv(integer 5) ///
 					penalty(string) ///
 					solver(string) ///
 					tol(real 1e-4) ///
@@ -205,9 +205,9 @@ program define parse_LassoLogitCV, rclass
 		local optstr `optstr' 'fit_intercept':True,
 	}
 	** cv 
-	if `cv'>2 {
-		local optstr `optstr' 'cv':`cv',
-	}
+	*if `cv'>2 {
+	*	local optstr `optstr' 'cv':`cv',
+	*}
 	** penalty
 	if "`penalty'"=="l1"|"`penalty'"=="elasticnet"|"`penalty'"=="l2" {
 		local optstr `optstr' 'penalty':'`penalty'',
@@ -287,7 +287,7 @@ program define parse_ElasticCV, rclass
 					NORMalize ///
 					max_iter(integer 1000) ///
 					tol(real 1e-4) ///
-					cv(integer 5) ///
+					///cv(integer 5) ///
 					n_jobs(integer 0) ///
 					POSitive ///
 					random_state(integer -1) ///
@@ -342,12 +342,12 @@ program define parse_ElasticCV, rclass
 		local optstr `optstr' 'tol':`tol',
 	}
 	** cv
-	if `cv'>2 {
-		local optstr `optstr' 'cv':`cv',
-	}
-	else {
-		local optstr `optstr' 'cv':5,
-	}
+	*if `cv'>2 {
+	*	local optstr `optstr' 'cv':`cv',
+	*}
+	*else {
+	*	local optstr `optstr' 'cv':5,
+	*}
 	** n jobs
 	if `n_jobs'!=0 {
 		local optstr `optstr' 'n_jobs':`n_jobs',

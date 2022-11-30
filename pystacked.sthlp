@@ -225,8 +225,18 @@ default is 5. Ignored if {opt foldvar(varname)} if specified.
 {synopt:{opt foldvar(varname)}} 
 integer fold variable for cross-validation.
 {p_end}
+{synopt:{opt bfolds(int)}} 
+number of folds used for {it:base learners} that use 
+cross-validation (e.g. {it:lassocv}); 
+default is 5.  
+{p_end}
 {synopt:{opt norandom}} 
 folds are created using the ordering of the data. 
+{p_end}
+{synopt:{opt noshuffle}} 
+cross-validation folds for {it:base learners} that use 
+cross-validation (e.g. {it:lassocv}) are created using the 
+ordering of the data. 
 {p_end}
 {synopt:{opt sparse}} 
 converts predictor matrix to a sparse matrix. This will only lead to speed improvements

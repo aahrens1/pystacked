@@ -184,7 +184,9 @@ version 16.0
                     njobs(int 0) ///
                     folds(int 5) ///
                     foldvar(varname) ///
+                    bfolds(int 5) ///
                     NORANDOM ///
+                    NOSHUFFLE ///
                     ///
                     ///
                     pyseed(integer -1) ///
@@ -365,6 +367,7 @@ version 16.0
 
     tempvar id 
     gen int `id'=_n
+    local shuffle=("`noshuffle'"=="")
 
     ******** parse options using _pyparse.ado ********************************* 
 
@@ -513,6 +516,8 @@ version 16.0
                     "`voteweights'", ///
                     `njobs' , ///
                     "`fid'", ///
+                    `bfolds', ///
+                    `shuffle', ///
                     "`id'", ///
                     "`showpywarnings'", ///
                     "`backend'", ///
@@ -1110,7 +1115,7 @@ from scipy import __version__ as scipy_version
 from numpy import __version__ as numpy_version
 from sys import version as sys_version
 from sklearn.utils import parallel_backend
-from sklearn.model_selection import PredefinedSplit
+from sklearn.model_selection import PredefinedSplit,KFold,StratifiedKFold
 
 ### Define required Python functions/classes
 
@@ -1253,6 +1258,8 @@ def run_stacked(type, # regression or classification
     voting,votetype,voteweights, # voting
     njobs, # number of cores
     foldvar, # foldvar
+    bfolds, #
+    shuff, #
     idvar, # id var
     showpywarnings, # show warnings?
     parbackend, # backend
@@ -1298,8 +1305,14 @@ def run_stacked(type, # regression or classification
     if sparse!="":
         x = coo_matrix(x).tocsc()
 
+    shuff = shuff==1
+    if shuff: 
+        cvrng=rng
+    else: 
+        cvrng=None
+
     ##############################################################
-    ### prepare fit                                               ###
+    ### prepare fit                                            ###
     ##############################################################
 
     # convert strings to python objects
@@ -1337,15 +1350,15 @@ def run_stacked(type, # regression or classification
             if methods[m]=="lassocv":
                 opt =allopt[m]
                 newmethod= build_pipeline(allpipe[m],xvars,allxvar_sel[m])
-                newmethod.append(('lassocv',ElasticNetCV(**opt)))
+                newmethod.append(('lassocv',ElasticNetCV(**opt,cv=KFold(n_splits=bfolds,shuffle=shuff,random_state=cvrng))))
             if methods[m]=="ridgecv":
                 opt =allopt[m]
                 newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
-                newmethod.append(('lassocv',ElasticNetCV(**opt)))
+                newmethod.append(('lassocv',ElasticNetCV(**opt,cv=KFold(n_splits=bfolds,shuffle=shuff,random_state=cvrng))))
             if methods[m]=="elasticcv":
                 opt =allopt[m]
                 newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
-                newmethod.append(('lassocv',ElasticNetCV(**opt)))
+                newmethod.append(('lassocv',ElasticNetCV(**opt,cv=KFold(n_splits=bfolds,shuffle=shuff,random_state=cvrng))))
             if methods[m]=="rf":
                 opt =allopt[m]
                 newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
@@ -1381,15 +1394,15 @@ def run_stacked(type, # regression or classification
             if methods[m]=="lassocv":
                 opt =allopt[m]
                 newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
-                newmethod.append(('lassocv',LogisticRegressionCV(**opt)))
+                newmethod.append(('lassocv',LogisticRegressionCV(**opt,cv=StratifiedKFold(n_splits=bfolds,shuffle=shuff,random_state=cvrng))))
             if methods[m]=="ridgecv":
                 opt =allopt[m]
                 newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
-                newmethod.append(('lassocv',LogisticRegressionCV(**opt)))
+                newmethod.append(('lassocv',LogisticRegressionCV(**opt,cv=StratifiedKFold(n_splits=bfolds,shuffle=shuff,random_state=cvrng))))
             if methods[m]=="elasticcv":
                 opt =allopt[m]
                 newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
-                newmethod.append(('lassocv',LogisticRegressionCV(**opt)))
+                newmethod.append(('lassocv',LogisticRegressionCV(**opt,cv=StratifiedKFold(n_splits=bfolds,shuffle=shuff,random_state=cvrng))))
             if methods[m]=="rf":
                 opt =allopt[m]
                 newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
