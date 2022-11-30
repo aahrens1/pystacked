@@ -13,9 +13,16 @@ program define pystacked, eclass
     local restargs `*'
     if (strpos("`restargs'","print"))==0 {
 
-        // no replay - must estimate
         if ~replay() {
+            // no replay - must estimate
             _pystacked `0'
+        }
+        else {
+            // replay - check that pystacked estimation is in memory
+            if "`e(cmd)'"~="pystacked" {
+                di as err "last estimates not found"
+                exit 301
+            }
         }
 
         // save for display results
@@ -38,17 +45,17 @@ program define pystacked, eclass
             local mainargs `1'
             local 0 `mainargs' `ifinweight' `restargs'
         }
-        syntax [anything]  [if] [in] [aweight fweight] ,     ///
-                    [                                        ///
-                        GRAPH1                                /// vanilla option, abbreviates to "graph"
-                        HISTogram                            /// report histogram instead of default ROC
-                        graph(string asis)                    /// for passing options to graph combine
-                        lgraph(string asis)                    /// for passing options to the graphs of the learners
-                        TABle                                /// 
+        syntax [anything]  [if] [in] [aweight fweight] ,    ///
+                    [                                       ///
+                        GRAPH1                              /// vanilla option, abbreviates to "graph"
+                        HISTogram                           /// report histogram instead of default ROC
+                        graph(string asis)                  /// for passing options to graph combine
+                        lgraph(string asis)                 /// for passing options to the graphs of the learners
+                        TABle                               /// 
                         HOLDOUT1                            /// vanilla option, abbreviates to "holdout"
                         holdout(varname)                    ///
-                        CValid								///
-                        *                                    ///
+                        CValid                              ///
+                        *                                   ///
                     ]
         
         // display results
@@ -71,12 +78,12 @@ program define pystacked, eclass
 
         // graph/table block
         if `"`graph'`graph1'`lgraph'`histogram'`table'"' ~= "" {
-            pystacked_graph_table,                            ///
-                `holdout1' holdout(`holdout')                ///
-                `cvalid'									///
+            pystacked_graph_table,                          ///
+                `holdout1' holdout(`holdout')               ///
+                `cvalid'                                    ///
                 `graph1'                                    ///
-                `histogram'                                    ///
-                goptions(`graph') lgoptions(`lgraph')        ///
+                `histogram'                                 ///
+                goptions(`graph') lgoptions(`lgraph')       ///
                 `table'
         }
         
@@ -87,26 +94,26 @@ program define pystacked, eclass
             
             di
             di as text "RMSPE: In-Sample, CV, Holdout"
- 		di as text "{hline 17}{c TT}{hline 47}"
-		di as text "  Method" _c
-		di as text _col(18) "{c |} Weight   In-Sample        CV         Holdout"
-		di as text "{hline 17}{c +}{hline 47}"
-		
-		di as text "  STACKING" _c
-		di as text _col(18) "{c |}" _c
-		di as text "    .  " _c
-		di as res  _col(30) %7.3f el(`m',1,1) _col(43) %7.3f el(`m',1,2) _col(56) %7.3f el(`m',1,3)
-		
-		forvalues j=1/`nlearners' {
-			local b : word `j' of `base_est'
-			di as text "  `b'" _c
-			di as text _col(18) "{c |}" _c
-			di as res _col(20) %5.3f el(`weights_mat',`j',1) _c
-			di as res _col(30) %7.3f el(`m',`j'+1,1) _col(43) %7.3f el(`m',`j'+1,2) _col(56) %7.3f el(`m',`j'+1,3)
-		}
-
-		// add to estimation macros
-		ereturn mat rmspe = `m'
+            di as text "{hline 17}{c TT}{hline 47}"
+            di as text "  Method" _c
+            di as text _col(18) "{c |} Weight   In-Sample        CV         Holdout"
+            di as text "{hline 17}{c +}{hline 47}"
+            
+            di as text "  STACKING" _c
+            di as text _col(18) "{c |}" _c
+            di as text "    .  " _c
+            di as res  _col(30) %7.3f el(`m',1,1) _col(43) %7.3f el(`m',1,2) _col(56) %7.3f el(`m',1,3)
+            
+            forvalues j=1/`nlearners' {
+                local b : word `j' of `base_est'
+                di as text "  `b'" _c
+                di as text _col(18) "{c |}" _c
+                di as res _col(20) %5.3f el(`weights_mat',`j',1) _c
+                di as res _col(30) %7.3f el(`m',`j'+1,1) _col(43) %7.3f el(`m',`j'+1,2) _col(56) %7.3f el(`m',`j'+1,3)
+            }
+    
+            // add to estimation macros
+            ereturn mat rmspe = `m'
         }
         
         // print confusion matrix for classification problem
@@ -227,16 +234,16 @@ version 16.0
                     backend(string) ///
                     ///
                     /// options for graphing; ignore here
-                    GRAPH1                                /// vanilla option, abbreviates to "graph"
-                    HISTogram                            /// report histogram instead of default ROC
-                    graph(string asis)                    /// for passing options to graph combine
-                    lgraph(string asis)                    /// for passing options to the graphs of the learners
-                    table                                /// 
-                    HOLDOUT1                            /// vanilla option, abbreviates to "holdout"
-                    holdout(varname)                    ///
-                    CValid								///
-                    SParse                                ///
-                    SHOWOPTions                         ///
+                    GRAPH1                                  /// vanilla option, abbreviates to "graph"
+                    HISTogram                               /// report histogram instead of default ROC
+                    graph(string asis)                      /// for passing options to graph combine
+                    lgraph(string asis)                     /// for passing options to the graphs of the learners
+                    table                                   /// 
+                    HOLDOUT1                                /// vanilla option, abbreviates to "holdout"
+                    holdout(varname)                        ///
+                    CValid                                  ///
+                    SParse                                  ///
+                    SHOWOPTions                             ///
                 ]
 
     ** set data signature for pystacked_p;
@@ -269,8 +276,8 @@ version 16.0
     }
     * legacy option
     if "`nosavetransform'"~="" {
-    	local nosavebasexb nosavebasexb
-    	local nosavetransform
+        local nosavebasexb nosavebasexb
+        local nosavetransform
     }
 
     if "`backend'"=="" {
@@ -588,15 +595,15 @@ end
 program define pystacked_graph_table, rclass
     version 16.0
     syntax ,                                ///
-                [                            ///
+                [                           ///
                     HOLDOUT1                /// vanilla option, abbreviates to "holdout"
-                    CValid					///
+                    CValid                  ///
                     holdout(varname)        ///
-                    GRAPH1                    /// vanilla option, abbreviates to "graph"
-                    HISTogram                /// report histogram instead of default ROC
-                    goptions(string asis)    ///
-                    lgoptions(string asis)    ///
-                    table                    /// 
+                    GRAPH1                  /// vanilla option, abbreviates to "graph"
+                    HISTogram               /// report histogram instead of default ROC
+                    goptions(string asis)   ///
+                    lgoptions(string asis)  ///
+                    table                   /// 
                 ]
 
     // any graph options implies graph
@@ -604,12 +611,12 @@ program define pystacked_graph_table, rclass
     
     // sample variable, holdout check, graph title
     if "`holdout'`holdout1'"=="" {
-    	if "`cvalid'"== "" {
-    		local title In-sample
-    	}
-    	else {
-	    	local title In-sample (CV)
-       	}
+        if "`cvalid'"== "" {
+            local title In-sample
+        }
+        else {
+            local title In-sample (CV)
+           }
         tempvar touse
         qui gen `touse' = e(sample)
     }
@@ -675,46 +682,46 @@ program define pystacked_graph_table, rclass
         // assemble stacked CV prediction
         qui gen double `stacking_p_cv'=0
         forvalues i=1/`nlearners' {
-        	qui replace `stacking_p_cv' = `stacking_p_cv' + `stacking_p_cv'`i' * `weights'[`i',1]
+            qui replace `stacking_p_cv' = `stacking_p_cv' + `stacking_p_cv'`i' * `weights'[`i',1]
         }
         label var `stacking_p_cv' "Prediction (CV): Stacking Regressor"
         qui gen double `stacking_r_cv' = `y' - `stacking_p_cv'
     
-		// graph variables
-		if "`cvalid'"=="" {
-			local xvar stacking_p
-		}
-		else {
-			local xvar stacking_p_cv
-		}
+        // graph variables
+        if "`cvalid'"=="" {
+            local xvar stacking_p
+        }
+        else {
+            local xvar stacking_p_cv
+        }
         tempname g0
         if `graphflag' {
-            twoway (scatter ``xvar'' `y') (line `y' `y') if `touse'        ///
-                ,                                                            ///
-                legend(off)                                                    ///
-                title("STACKING")                                            ///
-                `lgoptions'                                                    ///
-                nodraw                                                        ///
+            twoway (scatter ``xvar'' `y') (line `y' `y') if `touse'         ///
+                ,                                                           ///
+                legend(off)                                                 ///
+                title("STACKING")                                           ///
+                `lgoptions'                                                 ///
+                nodraw                                                      ///
                 name(`g0', replace)
             local glist `g0'
             forvalues i=1/`nlearners' {
                 tempname g`i'
                 local lname : word `i' of `learners'
                 local w : di %5.3f el(`weights',`i',1)
-                twoway (scatter `stacking_p'`i' `y') (line `y' `y') if `touse'    ///
-                    ,                                                            ///
-                    legend(off)                                                    ///
-                    title("Learner: `lname'")                                    ///
-                    `lgoptions'                                                    ///
-                    subtitle("weight = `w'")                                    ///
-                    nodraw                                                        ///
+                twoway (scatter `stacking_p'`i' `y') (line `y' `y') if `touse'      ///
+                    ,                                                               ///
+                    legend(off)                                                     ///
+                    title("Learner: `lname'")                                       ///
+                    `lgoptions'                                                     ///
+                    subtitle("weight = `w'")                                        ///
+                    nodraw                                                          ///
                     name(`g`i'', replace)
                 local glist `glist' `g`i''
             }
         
-            graph combine `glist'                                        ///
-                            ,                                            ///
-                            title("`title'")                            ///
+            graph combine `glist'                                           ///
+                            ,                                               ///
+                            title("`title'")                                ///
                             `goptions'
         }
         
@@ -784,7 +791,7 @@ program define pystacked_graph_table, rclass
         // assemble stacked CV prediction
         qui gen double `stacking_p_cv'=0
         forvalues i=1/`nlearners' {
-        	qui replace `stacking_p_cv' = `stacking_p_cv' + `stacking_p_cv'`i' * `weights'[`i',1]
+            qui replace `stacking_p_cv' = `stacking_p_cv' + `stacking_p_cv'`i' * `weights'[`i',1]
         }
         label var `stacking_p_cv' "Predicted Probability (CV): Stacking Regressor"
         qui gen byte `stacking_c_cv' = `stacking_p_cv' >= 0.5
@@ -794,38 +801,38 @@ program define pystacked_graph_table, rclass
             // complete graph title
             local title `title' ROC
         
-			// graph variables
-			if "`cvalid'"=="" {
-				local xvar stacking_p
-			}
-			else {
-				local xvar stacking_p_cv
-			}
+            // graph variables
+            if "`cvalid'"=="" {
+                local xvar stacking_p
+            }
+            else {
+                local xvar stacking_p_cv
+            }
             tempname g0
             roctab `y' ``xvar'',                                    ///
-                graph                                                    ///
-                title("STACKING")                                        ///
-                `lgoptions'                                                ///
-                nodraw                                                    ///
+                graph                                               ///
+                title("STACKING")                                   ///
+                `lgoptions'                                         ///
+                nodraw                                              ///
                 name(`g0', replace)
             local glist `g0'
             forvalues i=1/`nlearners' {
                 tempname g`i'
                 local lname : word `i' of `learners'
-                roctab `y' `stacking_p'`i',                                ///
-                    graph                                                ///
-                    title("Learner: `lname'")                            ///
-                    `lgoptions'                                            ///
-                    nodraw                                                ///
+                roctab `y' `stacking_p'`i',                         ///
+                    graph                                           ///
+                    title("Learner: `lname'")                       ///
+                    `lgoptions'                                     ///
+                    nodraw                                          ///
                     name(`g`i'', replace)
                 local glist `glist' `g`i''
             }
-            graph combine `glist'                                        ///
-                            ,                                            ///
-                            title("`title'")                            ///
+            graph combine `glist'                                   ///
+                            ,                                       ///
+                            title("`title'")                        ///
                             `goptions'
         }
-        else if "`histogram'"~="" {                                        /// histogram
+        else if "`histogram'"~="" {                                 /// histogram
             // complete graph title
             local title `title' predicted probabilities
 
@@ -837,36 +844,36 @@ program define pystacked_graph_table, rclass
                 local ystyle freq
             }
             
-			// graph variables
-			if "`cvalid'"=="" {
-				local xvar stacking_p
-			}
-			else {
-				local xvar stacking_p_cv
-			}
+            // graph variables
+            if "`cvalid'"=="" {
+                local xvar stacking_p
+            }
+            else {
+                local xvar stacking_p_cv
+            }
             tempname g0
-            qui histogram `stacking_p',                                    ///
-                title("STACKING")                                        ///
+            qui histogram `stacking_p',                                 ///
+                title("STACKING")                                       ///
                 `ystyle'                                                ///
                 start(0)                                                ///
-                `lgoptions'                                                ///
-                nodraw                                                    ///
+                `lgoptions'                                             ///
+                nodraw                                                  ///
                 name(`g0', replace)
             local glist `g0'
             forvalues i=1/`nlearners' {
                 tempname g`i'
                 local lname : word `i' of `learners'
-                qui histogram `stacking_p'`i',                            ///
-                    title("Learner: `lname'")                            ///
+                qui histogram `stacking_p'`i',                          ///
+                    title("Learner: `lname'")                           ///
                     `ystyle'                                            ///
                     start(0)                                            ///
-                    `lgoptions'                                            ///
-                    nodraw                                                ///
+                    `lgoptions'                                         ///
+                    nodraw                                              ///
                     name(`g`i'', replace)
                 local glist `glist' `g`i''
             }
-            graph combine `glist'                                        ///
-                            ,                                            ///
+            graph combine `glist'                                       ///
+                            ,                                           ///
                             title("`title'")                            ///
                             `goptions'
         }
@@ -983,46 +990,46 @@ end
 program define fvstrip, rclass
     version 11.2
     syntax [anything] [if] , [ dropomit expand onebyone NOIsily ]
-    if "`expand'"~="" {                                                //  force call to fvexpand
+    if "`expand'"~="" {                                             //  force call to fvexpand
         if "`onebyone'"=="" {
             fvexpand `anything' `if'                                //  single call to fvexpand
             local anything `r(varlist)'
         }
         else {
             foreach vn of local anything {
-                fvexpand `vn' `if'                                    //  call fvexpand on items one-by-one
+                fvexpand `vn' `if'                                  //  call fvexpand on items one-by-one
                 local newlist    `newlist' `r(varlist)'
             }
             local anything    : list clean newlist
         }
     }
-    foreach vn of local anything {                                    //  loop through varnames
-        if "`dropomit'"~="" {                                        //  check & include only if
+    foreach vn of local anything {                                  //  loop through varnames
+        if "`dropomit'"~="" {                                       //  check & include only if
             _ms_parse_parts `vn'                                    //  not omitted (b. or o.)
             if ~`r(omit)' {
-                local unstripped    `unstripped' `vn'                //  add to list only if not omitted
+                local unstripped    `unstripped' `vn'               //  add to list only if not omitted
             }
         }
-        else {                                                        //  add varname to list even if
-            local unstripped        `unstripped' `vn'                //  could be omitted (b. or o.)
+        else {                                                      //  add varname to list even if
+            local unstripped        `unstripped' `vn'               //  could be omitted (b. or o.)
         }
     }
 // Now create list with b/n/o stripped out
     foreach vn of local unstripped {
-        local svn ""                                            //  initialize
+        local svn ""                                                //  initialize
         _ms_parse_parts `vn'
-        if "`r(type)'"=="variable" & "`r(op)'"=="" {            //  simplest case - no change
+        if "`r(type)'"=="variable" & "`r(op)'"=="" {                //  simplest case - no change
             local svn    `vn'
         }
-        else if "`r(type)'"=="variable" & "`r(op)'"=="o" {        //  next simplest case - o.varname => varname
+        else if "`r(type)'"=="variable" & "`r(op)'"=="o" {          //  next simplest case - o.varname => varname
             local svn    `r(name)'
         }
-        else if "`r(type)'"=="variable" {                        //  has other operators so strip o but leave .
+        else if "`r(type)'"=="variable" {                           //  has other operators so strip o but leave .
             local op    `r(op)'
             local op    : subinstr local op "o" "", all
             local svn    `op'.`r(name)'
         }
-        else if "`r(type)'"=="factor" {                            //  simple factor variable
+        else if "`r(type)'"=="factor" {                             //  simple factor variable
             local op    `r(op)'
             local op    : subinstr local op "b" "", all
             local op    : subinstr local op "n" "", all
@@ -1035,7 +1042,7 @@ program define fvstrip, rclass
                 local op    : subinstr local op "b" "", all
                 local op    : subinstr local op "n" "", all
                 local op    : subinstr local op "o" "", all
-                local opv    `op'.`r(name`i')'                    //  operator + . + varname
+                local opv    `op'.`r(name`i')'                     //  operator + . + varname
                 if `i'==1 {
                     local svn    `opv'
                 }
@@ -1058,13 +1065,13 @@ program define fvstrip, rclass
         }
         local stripped `stripped' `svn'
     }
-    local stripped    : list retokenize stripped                        //  clean any extra spaces
+    local stripped    : list retokenize stripped                   //  clean any extra spaces
     
-    if "`noisily'"~="" {                                            //  for debugging etc.
+    if "`noisily'"~="" {                                           //  for debugging etc.
 di as result "`stripped'"
     }
 
-    return local varlist    `stripped'                                //  return results in r(varlist)
+    return local varlist    `stripped'                             //  return results in r(varlist)
 end
 
 
@@ -1557,10 +1564,10 @@ def run_stacked(type, # regression or classification
         if voting=="" and (finalest == "nnls1" or finalest == "singlebest"):
             __main__.cvalid = model.final_estimator_.cvalid
         else:
-        	# values for cvalid unavailable so return array of correct with with all NaNs
-        	cv0 = np.shape(x)[0]
-        	cv1 = np.shape(transf)[1]
-        	__main__.cvalid = np.empty((cv0,cv1))*np.nan
+            # values for cvalid unavailable so return array of correct with with all NaNs
+            cv0 = np.shape(x)[0]
+            cv1 = np.shape(transf)[1]
+            __main__.cvalid = np.empty((cv0,cv1))*np.nan
 
     # save versions of Python and packages
     sfi.Macro.setGlobal("e(sklearn_ver)",format(sklearn_version))
