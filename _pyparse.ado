@@ -162,7 +162,7 @@ program define parse_Logit, rclass
 		local optstr `optstr' 'fit_intercept':True,
 	}
 	** penalty
-	local optstr `optstr' 'penalty':'none',
+	local optstr `optstr' 'penalty':'`penalty'',
 	local optstr {`optstr'}
 	local optstr = subinstr("`optstr'",",}","}",.)
 	local optstr = subinstr("`optstr'"," ","",.)
