@@ -149,6 +149,7 @@ program define parse_Logit, rclass
 	syntax [anything],  sklearn_ver(real) ///
 					[ ///
 					NOCONStant /// 
+					penalty(string) ///
 					PRINTopt /// 
 					]
 	local optstr 

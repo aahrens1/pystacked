@@ -1387,7 +1387,7 @@ def run_stacked(type, # regression or classification
             if methods[m]=="logit":
                 opt =allopt[m]
                 newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
-                newmethod.append(('lassocv',LogisticRegression(**opt)))
+                newmethod.append(('logit',LogisticRegression(**opt)))
             if methods[m]=="lassoic":
                 sfi.SFIToolkit.stata("di as err lassoic not supported with type(class)")
                 sfi.SFIToolkit.error()
