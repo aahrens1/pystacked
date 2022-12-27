@@ -1,5 +1,5 @@
-*! pystacked v0.4.8
-*! last edited: 30nov2022
+*! pystacked v0.4.9
+*! last edited: 27dec2022
 *! authors: aa/ms
 
 program _pyparse 
@@ -162,7 +162,18 @@ program define parse_Logit, rclass
 		local optstr `optstr' 'fit_intercept':True,
 	}
 	** penalty
-	local optstr `optstr' 'penalty':'`penalty'',
+	if "`penalty'"=="none" | "`penalty'"=="None" {
+		local penalty
+	}
+	if "`penalty'"!="" {
+		local optstr `optstr' 'penalty':'`penalty'',
+	}
+	else if `sklearn_ver'<120 {
+		local optstr `optstr' 'penalty':'none',
+	} 
+	else {
+		local optstr `optstr' 'penalty':None,
+	}
 	local optstr {`optstr'}
 	local optstr = subinstr("`optstr'",",}","}",.)
 	local optstr = subinstr("`optstr'"," ","",.)

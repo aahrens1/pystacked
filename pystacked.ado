@@ -1,5 +1,5 @@
-*! pystacked v0.4.8
-*! last edited: 30nov2022
+*! pystacked v0.4.9
+*! last edited: 27dec2022
 *! authors: aa/ms
 
 // parent program
@@ -406,10 +406,11 @@ version 16.0
                 local opt`i' `cmdopt`i'' 
                 local method`i' `method'
                 local pyopt`i' `r(optstr)'
-                if strpos("`pipe`i''","stdscaler")==0 & strpos("lassoic lassocv ridgecv elasticcv","`method'")!=0 {
-                    * stdscaler is added by default for linear regularized estimators
+                ** if (no)stdscaler isn't included, add it at the end for linear estimators
+                if strpos("`pipe`i''","stdscaler")==0 & strpos("lassoic lassocv ridgecv elasticcv logit","`method'")!=0 {
                     local pipe`i' `pipe`i'' stdscaler
                 }
+                ** remove 'nostdscaler'
                 local pipe`i' = subinstr("`pipe`i''","nostdscaler","",.)
                 if "`pipe`i''"=="" local pipe`i' passthrough
                 local allpipe `allpipe' '`pipe`i''', 

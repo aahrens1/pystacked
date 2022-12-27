@@ -1,7 +1,7 @@
 {smcl}
-{* *! version 30nov2022}{...}
+{* *! version 27dec2022}{...}
 {hline}
-{cmd:help pystacked}{right: v0.4.8}
+{cmd:help pystacked}{right: v0.4.9}
 {hline}
 
 {title:Title}
@@ -136,7 +136,7 @@ options passed to the base learners, see {helpb pystacked##base_learners_opt:Com
 {p_end}
 {synopt:{opt pipe*(string)}}
 pipelines passed to the base learners, see {helpb pystacked##pipelines:Pipelines}.
-Regularized linear learners use the {it:stdscaler} pipeline by default, which
+Linear learners use the {it:stdscaler} pipeline by default, which
 standardizes the predictors. To suppress this, use {it:nostdscaler}.
 For other learners, there is no default pipeline.
 {p_end}
