@@ -51,12 +51,40 @@ program define pystacked, eclass
                         HISTogram                           /// report histogram instead of default ROC
                         graph(string asis)                  /// for passing options to graph combine
                         lgraph(string asis)                 /// for passing options to the graphs of the learners
-                        TABle                               /// 
+                        TABLE1                              ///
+                        table(string)                       /// rmspe or confusion
                         HOLDOUT1                            /// vanilla option, abbreviates to "holdout"
                         holdout(varname)                    ///
                         CValid                              ///
                         *                                   ///
                     ]
+        
+        // default reg table = rmspe
+        // default class table = confusion
+        // table1 = "table" or ""
+        // table = rmspe or confusion
+        if "`table'"~="" & "`table1'"~="" {
+            di as err "error - multiple table options specified"
+            exit 198
+        }
+        if "`table'"~="" & "`table'"~="rmspe" & "`table'"~="confusion" {
+            di as err "error - option table(`table') not supported"
+            exit 198
+        }
+        if "`table'"=="confusion" & "`e(type)'"=="reg" {
+            di as err "error - confusion table available for classification problems only"
+            exit 198
+        }
+        // if table1 and table both blank, set macro table to default type
+        if "`table1'"~="" & "`table'"=="" {
+        	if "`e(type)'"=="reg" {
+        	    local table rmspe
+			}
+			else {
+			    local table confusion
+			}       	
+        }
+        // from here, table is the macro indicating table type
         
         // display results
         if `"`graph'`graph1'`lgraph'`histogram'`table'"' == "" {
@@ -84,11 +112,11 @@ program define pystacked, eclass
                 `graph1'                                    ///
                 `histogram'                                 ///
                 goptions(`graph') lgoptions(`lgraph')       ///
-                `table'
+                table(`table')
         }
         
-        // print RMSPE table for regression problem
-        if "`table'" ~= "" & "`e(type)'"=="reg" {
+        // print RMSPE table if specified
+        if "`table'"=="rmspe" {
             tempname m w
             mat `m' = r(m)
             
@@ -116,8 +144,8 @@ program define pystacked, eclass
             ereturn mat rmspe = `m'
         }
         
-        // print confusion matrix for classification problem
-        if "`table'" ~= "" & "`e(type)'"=="class" {
+        // print confusion matrix if specified
+        if "`table'"=="confusion" {
             tempname m w
             mat `m' = r(m)
             
@@ -609,7 +637,7 @@ program define pystacked_graph_table, rclass
                     HISTogram               /// report histogram instead of default ROC
                     goptions(string asis)   ///
                     lgoptions(string asis)  ///
-                    table                   /// 
+                    table(string)           ///
                 ]
 
     // any graph options implies graph
@@ -730,76 +758,38 @@ program define pystacked_graph_table, rclass
                             title("`title'")                                ///
                             `goptions'
         }
-        
-        if "`table'"~="" {
-            
-            // save in matrix
-            tempname m m_in m_cv m_out
-            
-            // column for in-sample RMSPE
-            qui sum `stacking_r' if e(sample)
-            mat `m_in' = r(sd) * sqrt( (r(N)-1)/r(N) )
-            forvalues i=1/`nlearners' {
-                qui sum `stacking_r`i'' if e(sample)
-                mat `m_in' = `m_in' \ (r(sd) * sqrt( (r(N)-1)/r(N) ))
-            }
-            
-            // column for in-sample RMSPE
-            qui sum `stacking_r_cv' if e(sample)
-            mat `m_cv' = r(sd) * sqrt( (r(N)-1)/r(N) )
-            forvalues i=1/`nlearners' {
-                qui sum `stacking_r_cv`i'' if e(sample)
-                mat `m_cv' = `m_cv' \ (r(sd) * sqrt( (r(N)-1)/r(N) ))
-            }
-            
-            // column for OOS MSPE
-            if "`holdout'`holdout1'"~="" {
-                // touse is the holdout indicator
-                qui sum `stacking_r' if `touse'
-                mat `m_out' = r(sd) * sqrt( (r(N)-1)/r(N) )
-                forvalues i=1/`nlearners' {
-                    qui sum `stacking_r`i'' if `touse'
-                    mat `m_out' = `m_out' \ (r(sd) * sqrt( (r(N)-1)/r(N) ))
-                }
-            }
-            else {
-                mat `m_out' = J(`nlearners'+1,1,.)
-            }
-            
-            mat `m' = `m_in' , `m_cv', `m_out'
-            mat colnames `m' = RMSPE_in RMSPE_cv RMSPE_out
-            mat rownames `m' = STACKING `learners'
-            
-            return matrix m = `m'
-    
-        }
     }
     else {
         // classification problem
         
-        tempvar stacking_p stacking_c stacking_p_cv stacking_c_cv
+        tempvar stacking_p stacking_c stacking_p_cv stacking_c_cv stacking_r  stacking_r_cv
         qui predict double `stacking_p', pr
         label var `stacking_p' "Predicted Probability: Stacking Regressor"
+        qui gen double `stacking_r' = `y' - `stacking_p'
         qui predict double `stacking_c', class
         label var `stacking_c' "Predicted Classification: Stacking Regressor"
         qui predict double `stacking_p', pr basexb
         qui predict double `stacking_c', class basexb
         qui predict double `stacking_p_cv', pr basexb cv
         qui predict double `stacking_c_cv', class basexb cv
-
+ 
         forvalues i=1/`nlearners' {
             local lname : word `i' of `learners'
             label var `stacking_p'`i' "Predicted Probability: `lname'"
             label var `stacking_c'`i' "Predicted Classification: `lname'"
             label var `stacking_p_cv'`i' "Predicted Probability (CV): `lname'"
             label var `stacking_c_cv'`i' "Predicted Classification (CV): `lname'"
-        }
+            tempvar stacking_r`i' stacking_r_cv`i'
+            qui gen double `stacking_r`i'' = `y' - `stacking_p'`i'
+            qui gen double `stacking_r_cv`i'' = `y' - `stacking_p_cv'`i'
+       }
         // assemble stacked CV prediction
         qui gen double `stacking_p_cv'=0
         forvalues i=1/`nlearners' {
             qui replace `stacking_p_cv' = `stacking_p_cv' + `stacking_p_cv'`i' * `weights'[`i',1]
         }
         label var `stacking_p_cv' "Predicted Probability (CV): Stacking Regressor"
+        qui gen double `stacking_r_cv' = `y' - `stacking_p_cv'
         qui gen byte `stacking_c_cv' = `stacking_p_cv' >= 0.5
         qui replace `stacking_c_cv' = . if `stacking_p_cv'==.
         
@@ -883,27 +873,98 @@ program define pystacked_graph_table, rclass
                             title("`title'")                            ///
                             `goptions'
         }
+    }
+    
+    // assemble table
+    if "`table'"=="rmspe" {
+        
+        // save in matrix
+        tempname m m_in m_cv m_out
+        
+        // column for in-sample RMSPE
+        qui sum `stacking_r' if e(sample)
+        mat `m_in' = r(sd) * sqrt( (r(N)-1)/r(N) )
+        forvalues i=1/`nlearners' {
+            qui sum `stacking_r`i'' if e(sample)
+            mat `m_in' = `m_in' \ (r(sd) * sqrt( (r(N)-1)/r(N) ))
+        }
+        
+        // column for in-sample RMSPE
+        qui sum `stacking_r_cv' if e(sample)
+        mat `m_cv' = r(sd) * sqrt( (r(N)-1)/r(N) )
+        forvalues i=1/`nlearners' {
+            qui sum `stacking_r_cv`i'' if e(sample)
+            mat `m_cv' = `m_cv' \ (r(sd) * sqrt( (r(N)-1)/r(N) ))
+        }
+        
+        // column for OOS MSPE
+        if "`holdout'`holdout1'"~="" {
+            // touse is the holdout indicator
+            qui sum `stacking_r' if `touse'
+            mat `m_out' = r(sd) * sqrt( (r(N)-1)/r(N) )
+            forvalues i=1/`nlearners' {
+                qui sum `stacking_r`i'' if `touse'
+                mat `m_out' = `m_out' \ (r(sd) * sqrt( (r(N)-1)/r(N) ))
+            }
+        }
+        else {
+            mat `m_out' = J(`nlearners'+1,1,.)
+        }
+        
+        mat `m' = `m_in' , `m_cv', `m_out'
+        mat colnames `m' = RMSPE_in RMSPE_cv RMSPE_out
+        mat rownames `m' = STACKING `learners'
+        
+        return matrix m = `m'
 
-        if "`table'"~="" {
+    }
+    else if "`table'"=="confusion" {
             
-            // save in matrix
-            tempname m mrow
-            
-            // stacking rows
+        // save in matrix
+        tempname m mrow
+        
+        // stacking rows
+        forvalues r=0/1 {
+            qui count if `y'==0 & `stacking_c'==`r' & e(sample)
+            local in_0    = r(N)
+            qui count if `y'==1 & `stacking_c'==`r' & e(sample)
+            local in_1    = r(N)
+            qui count if `y'==0 & `stacking_c_cv'==`r' & e(sample)
+            local cv_0    = r(N)
+            qui count if `y'==1 & `stacking_c_cv'==`r' & e(sample)
+            local cv_1    = r(N)
+            if "`holdout'`holdout1'"~="" {
+                // touse is the holdout indicator
+                qui count if `y'==0 & `stacking_c'==`r' & `touse'
+                local out_0    = r(N)
+                qui count if `y'==1 & `stacking_c'==`r' & `touse'
+                local out_1    = r(N)
+            }
+            else {
+                local out_0 = .
+                local out_1 = .
+            }
+            mat `mrow' = `in_0', `in_1', `cv_0', `cv_1', `out_0', `out_1'
+            mat `m' = nullmat(`m') \ `mrow'
+        }
+        
+        // base learner rows
+        forvalues i=1/`nlearners' {
+        
             forvalues r=0/1 {
-                qui count if `y'==0 & `stacking_c'==`r' & e(sample)
+                qui count if `y'==0 & `stacking_c'`i'==`r' & e(sample)
                 local in_0    = r(N)
-                qui count if `y'==1 & `stacking_c'==`r' & e(sample)
+                qui count if `y'==1 & `stacking_c'`i'==`r' & e(sample)
                 local in_1    = r(N)
-                qui count if `y'==0 & `stacking_c_cv'==`r' & e(sample)
+                qui count if `y'==0 & `stacking_c_cv'`i'==`r' & e(sample)
                 local cv_0    = r(N)
-                qui count if `y'==1 & `stacking_c_cv'==`r' & e(sample)
+                qui count if `y'==1 & `stacking_c_cv'`i'==`r' & e(sample)
                 local cv_1    = r(N)
                 if "`holdout'`holdout1'"~="" {
                     // touse is the holdout indicator
-                    qui count if `y'==0 & `stacking_c'==`r' & `touse'
+                    qui count if `y'==0 & `stacking_c'`i'==`r' & `touse'
                     local out_0    = r(N)
-                    qui count if `y'==1 & `stacking_c'==`r' & `touse'
+                    qui count if `y'==1 & `stacking_c'`i'==`r' & `touse'
                     local out_1    = r(N)
                 }
                 else {
@@ -911,48 +972,20 @@ program define pystacked_graph_table, rclass
                     local out_1 = .
                 }
                 mat `mrow' = `in_0', `in_1', `cv_0', `cv_1', `out_0', `out_1'
-                mat `m' = nullmat(`m') \ `mrow'
+                mat `m' = `m' \ `mrow'
             }
-            
-            // base learner rows
-            forvalues i=1/`nlearners' {
-            
-                forvalues r=0/1 {
-                    qui count if `y'==0 & `stacking_c'`i'==`r' & e(sample)
-                    local in_0    = r(N)
-                    qui count if `y'==1 & `stacking_c'`i'==`r' & e(sample)
-                    local in_1    = r(N)
-                    qui count if `y'==0 & `stacking_c_cv'`i'==`r' & e(sample)
-                    local cv_0    = r(N)
-                    qui count if `y'==1 & `stacking_c_cv'`i'==`r' & e(sample)
-                    local cv_1    = r(N)
-                    if "`holdout'`holdout1'"~="" {
-                        // touse is the holdout indicator
-                        qui count if `y'==0 & `stacking_c'`i'==`r' & `touse'
-                        local out_0    = r(N)
-                        qui count if `y'==1 & `stacking_c'`i'==`r' & `touse'
-                        local out_1    = r(N)
-                    }
-                    else {
-                        local out_0 = .
-                        local out_1 = .
-                    }
-                    mat `mrow' = `in_0', `in_1', `cv_0', `cv_1', `out_0', `out_1'
-                    mat `m' = `m' \ `mrow'
-                }
-            }
-            
-            local rnames STACKING_0 STACKING_1
-            forvalues i=1/`nlearners' {
-                local lname : word `i' of `learners'
-                local rnames `rnames' `lname'_0 `lname'_1
-            }
-            mat rownames `m' = `rnames'
-            mat colnames `m' = in_0 cv_1 in_0 cv_1 out_0 out_1
-            
-            return matrix m = `m'
-    
         }
+        
+        local rnames STACKING_0 STACKING_1
+        forvalues i=1/`nlearners' {
+            local lname : word `i' of `learners'
+            local rnames `rnames' `lname'_0 `lname'_1
+        }
+        mat rownames `m' = `rnames'
+        mat colnames `m' = in_0 cv_1 in_0 cv_1 out_0 out_1
+        
+        return matrix m = `m'
+
     }
     
 end
