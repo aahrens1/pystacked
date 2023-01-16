@@ -143,6 +143,9 @@ def post_prediction(pred_var,basexb,cvalid,var_type,touse,pred_type):
 	elif basexb!="" and cvalid=="":
 		# learner predictions
 		from __main__ import transform as transf
+		if len(methods)==1 and type=="class":
+			print(transf)
+			transf=transf[:,[1]]
 		ncol = transf.shape[1]
 		for j in range(ncol):
 			if var_type == "double":
