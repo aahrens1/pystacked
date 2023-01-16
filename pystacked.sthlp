@@ -285,12 +285,15 @@ ensure that sum(weights)=1.
 {ul:Postestimation tables}
 
 {pstd}
-After estimation, {opt pystacked} can report a table of in-sample
+After estimation, {opt pystacked} with the {opt table} option
+will report a table of in-sample
 (both cross-validated and full-sample-refitted)
 and, optionally, out-of-sample (holdout sample) performance
 for both the stacking regression and the base learners.
-For regression problems, the table reports the root MSPE (mean squared prediction error);
-for classification problems, a confusion matrix is reported.
+The available tables types are either a table of root mean squared prediction errors
+({opt table(rmspe)}, the default for regression problems)
+or a confusion matrix ({opt table(confusion)}),
+the default for classification problems.
 The default holdout sample used for out-of-sample performance with the {opt holdout} option
 is all observations not included in the estimation.
 Alternatively, the user can specify the holdout sample explicitly
@@ -303,7 +306,7 @@ Table syntax:
 
 {p 8 14 2}
 {cmd:pystacked} {bind:[{cmd:,}}
-{opt tab:le}
+{opt table}[{cmd:(}{it:options}{cmd:)}]
 {opt holdout}[{cmd:(}{it:varname}{cmd:)}]
 ]
 
