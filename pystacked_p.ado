@@ -143,9 +143,10 @@ def post_prediction(pred_var,basexb,cvalid,var_type,touse,pred_type):
 	elif basexb!="" and cvalid=="":
 		# learner predictions
 		from __main__ import transform as transf
-		if len(methods)==1 and type=="class":
-			print(transf)
-			transf=transf[:,[1]]
+		if len(methods)==1:
+			SFIToolkit.stata('di as err "basexp not supported with only one learner"')
+			#"
+			SFIToolkit.error(198)
 		ncol = transf.shape[1]
 		for j in range(ncol):
 			if var_type == "double":
@@ -159,6 +160,10 @@ def post_prediction(pred_var,basexb,cvalid,var_type,touse,pred_type):
 			else: 
 				Data.store(var=pred_var+str(j+1),val=transf[:,j],obs=None)
 	elif basexb!="" and cvalid!="":
+		if len(methods)==1:
+			SFIToolkit.stata('di as err "cvalid not supported with only one learner"')
+			#"
+			SFIToolkit.error(198)
 		# learner cross-validated predictions
 		try:  
 			from __main__ import cvalid as transf

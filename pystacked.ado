@@ -77,12 +77,12 @@ program define pystacked, eclass
         }
         // if table1 and table both blank, set macro table to default type
         if "`table1'"~="" & "`table'"=="" {
-        	if "`e(type)'"=="reg" {
-        	    local table rmspe
-			}
-			else {
-			    local table confusion
-			}       	
+            if "`e(type)'"=="reg" {
+                local table rmspe
+            }
+            else {
+                local table confusion
+            }           
         }
         // from here, table is the macro indicating table type
         
@@ -1154,6 +1154,9 @@ from sklearn.model_selection import PredefinedSplit,KFold,StratifiedKFold
 ### Define required Python functions/classes
 
 class SingleBest(BaseEstimator):
+    """
+    Select base learner with lowest MSE
+    """
     _estimator_type="regressor"
     def fit(self, X, y):
         X, y = check_X_y(X, y, accept_sparse=True)
@@ -1177,6 +1180,9 @@ class SingleBest(BaseEstimator):
         return X[:,self.best]
 
 class ConstrLS(BaseEstimator):
+    """
+    Constrained least squares, weights sum to 1 and >= 0
+    """
     _estimator_type="regressor"
     def fit(self, X, y):
 
@@ -1223,9 +1229,9 @@ class SparseTransformer(TransformerMixin):
         return csr_matrix(X)
 
 def get_index(lst, w):
-    #
-    #return indexes of where elements in 'w' are stored in 'lst'
-    #
+    """
+    return indexes of where elements in 'w' are stored in 'lst'
+    """
     lst = lst.split(" ")
     w = w.split(" ")
     sel = []
@@ -1321,8 +1327,8 @@ def run_stacked(type, # regression or classification
         nj = njobs
         
     ##############################################################
-    ### load data                                                 ###
-    ##############################################################    
+    ### load data                                              ###
+    ##############################################################
 
     y = np.array(sfi.Data.get(yvar,selectvar=touse))
     x = np.array(sfi.Data.get(xvars,selectvar=touse))
