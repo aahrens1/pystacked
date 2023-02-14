@@ -4,3 +4,5 @@ f pystacked.ado
 f _pyparse.ado
 f pystacked_p.ado
 f pystacked.sthlp
+f pystacked.py
+f pystacked_p.py
