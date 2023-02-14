@@ -1,4 +1,6 @@
-
+#! pystacked v0.5.0
+#! last edited: 14feb2023
+#! authors: aa/ms
 
 # Import required Python modules
 import sfi

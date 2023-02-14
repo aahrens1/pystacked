@@ -1,3 +1,8 @@
+#! pystacked v0.5.0
+#! last edited: 14feb2023
+#! authors: aa/ms
+
+
 # Import SFI, always with stata 16
 from sfi import Data,Matrix,Scalar,Macro
 from sfi import SFIToolkit
