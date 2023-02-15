@@ -56,6 +56,7 @@ program define pystacked, eclass
                         HOLDOUT1                            /// vanilla option, abbreviates to "holdout"
                         holdout(varname)                    ///
                         CValid                              ///
+                        NOESTIMATE                          /// suppress call to run_stacked; no estimates, only parses
                         *                                   ///
                     ]
         
@@ -87,7 +88,7 @@ program define pystacked, eclass
         // from here, table is the macro indicating table type
         
         // display results
-        if `"`graph'`graph1'`lgraph'`histogram'`table'"' == "" {
+        if `"`graph'`graph1'`lgraph'`histogram'`table'`noestimate'"' == "" {
 
             di
             di as res "Stacking weights:"
@@ -274,6 +275,7 @@ version 16.0
                     CValid                                  ///
                     SParse                                  ///
                     SHOWOPTions                             ///
+                    NOESTIMATE                              /// suppress call to run_stacked; no estimates, only parses
                 ]
 
     ** set data signature for pystacked_p;
@@ -532,40 +534,41 @@ version 16.0
     qui gen byte `esample' = `touse'
     ereturn post, depname(`yvar') esample(`esample') obs(`N')
 
-    python: run_stacked(    ///
-                    "`type'",    ///
-                    "`finalest'", ///
-                    "`allmethods'", ///
-                    "`yvar_t'", ///
-                    "`xvars_all_t'",    ///
-                    "`training_var'", ///
-                    ///
-                    "`allpyopt'", ///
-                    "`allpipe'", ///
-                    "`allxvars_t'", ///
-                    ///  
-                    "`touse'", ///
-                    `pyseed', ///
-                    "`nosavepred'", ///
-                    "`nosavebasexb'", ///
-                    "`voting'" , ///
-                    "`votetype'", ///
-                    "`voteweights'", ///
-                    `njobs' , ///
-                    "`fid'", ///
-                    `bfolds', ///
-                    `shuffle', ///
-                    "`id'", ///
-                    "`showpywarnings'", ///
-                    "`backend'", ///
-                    "`sparse'", ///
-                    "`showoptions'" ///
-                    )
-
+    if "`noestimate'"=="" {
+        python: run_stacked(    ///
+                        "`type'",    ///
+                        "`finalest'", ///
+                        "`allmethods'", ///
+                        "`yvar_t'", ///
+                        "`xvars_all_t'",    ///
+                        "`training_var'", ///
+                        ///
+                        "`allpyopt'", ///
+                        "`allpipe'", ///
+                        "`allxvars_t'", ///
+                        ///  
+                        "`touse'", ///
+                        `pyseed', ///
+                        "`nosavepred'", ///
+                        "`nosavebasexb'", ///
+                        "`voting'" , ///
+                        "`votetype'", ///
+                        "`voteweights'", ///
+                        `njobs' , ///
+                        "`fid'", ///
+                        `bfolds', ///
+                        `shuffle', ///
+                        "`id'", ///
+                        "`showpywarnings'", ///
+                        "`backend'", ///
+                        "`sparse'", ///
+                        "`showoptions'" ///
+                        )
+    }
     ereturn local cmd        pystacked
     ereturn local predict    pystacked_p
     ereturn local depvar    `yvar'
-    ereturn local type        `type'
+    ereturn local type      `type'
 
     forvalues i = 1(1)`mcount' {
         local opt`i' = stritrim("`opt`i''")
