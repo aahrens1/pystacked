@@ -169,6 +169,7 @@ def run_stacked(type, # regression or classification
     methods, # list of base learners
     yvar, # outcome
     xvars, # predictors (temp names)
+    wvar, # weight var
     training, # marks holdout sample
     allopt, # options for each learner
     allpipe, # pipes for each learner
@@ -205,8 +206,8 @@ def run_stacked(type, # regression or classification
     if njobs==0: 
         nj = None 
     else: 
-        nj = njobs
-        
+        nj = njobs 
+
     ##############################################################
     ### load data                                              ###
     ##############################################################
@@ -214,6 +215,12 @@ def run_stacked(type, # regression or classification
     y = np.array(sfi.Data.get(yvar,selectvar=touse))
     x = np.array(sfi.Data.get(xvars,selectvar=touse))
     id = np.array(sfi.Data.get(idvar,selectvar=touse))
+    if wvar!="":
+        weights = np.array(sfi.Data.get(wvar,selectvar=touse))
+    else:
+        weights =None
+    print(weights)
+
     #id = np.reshape(id,(-1,1))
     id.astype(int)
     fid = np.array(sfi.Data.get(foldvar,selectvar=touse))
@@ -447,6 +454,7 @@ def run_stacked(type, # regression or classification
     if voting=="":
         w = model.final_estimator_.coef_
         if len(w.shape)==1:
+            #w=w/sum(w)
             sfi.Matrix.store("e(weights)",w)
         else:
             sfi.Matrix.store("e(weights)",w[0])

@@ -40,7 +40,12 @@ program define pystacked, eclass
             local restargs `*'
             local 0 `beforecomma'
             syntax anything(name=beforeifinweight) [if] [in] [aweight fweight]
-            local ifinweight `if' `in' `weight' `exp'
+            if "`weight'"!="" {
+                local ifinweight `if' `in' [`weight' `exp']
+            }
+            else {
+                local ifinweight `if' `in' `weight' `exp'
+            }
             tokenize `beforeifinweight', parse("|")
             local mainargs `1'
             local 0 `mainargs' `ifinweight' `restargs'
@@ -201,7 +206,12 @@ version 16.0
     local restargs `*'
     local 0 `beforecomma'
     syntax anything(name=beforeifinweight) [if] [in] [aweight fweight]
-    local ifinweight `if' `in' `weight' `exp'
+            if "`weight'"!="" {
+                local ifinweight `if' `in' [`weight' `exp']
+            }
+            else {
+                local ifinweight `if' `in' `weight' `exp'
+            }
     tokenize `beforeifinweight', parse("|")
     local mainargs `1'
     local 0 `mainargs' `ifinweight' `restargs'
@@ -284,6 +294,13 @@ version 16.0
     `dqui' datasignature clear 
     `dqui'  datasignature set
     `dqui' datasignature report
+
+    if ("`exp'"!="") {
+        tempvar wvar
+        local wvar_t = subinstr("`exp'","=","",.)
+        local wvar_t = subinstr("`wvar_t'"," ","",.)
+        gen `wvar'=`wvar_t'
+    }
 
     if "`type'"=="" local type reg
     if substr("`type'",1,3)=="reg" {
@@ -381,7 +398,7 @@ version 16.0
 
     // mark sample 
     marksample touse
-    markout `touse' `varlist'
+    markout `touse' `varlist' `wvar'
     qui count if `touse'
     local N        = r(N)
 
@@ -404,7 +421,7 @@ version 16.0
     }
 
     tempvar id 
-    gen int `id'=_n
+    gen long `id'=_n
     local shuffle=("`noshuffle'"=="")
 
     ******** parse options using _pyparse.ado ********************************* 
@@ -535,12 +552,13 @@ version 16.0
     ereturn post, depname(`yvar') esample(`esample') obs(`N')
 
     if "`noestimate'"=="" {
-        python: run_stacked(    ///
+        python: run_stacked( ///
                         "`type'",    ///
                         "`finalest'", ///
                         "`allmethods'", ///
                         "`yvar_t'", ///
-                        "`xvars_all_t'",    ///
+                        "`xvars_all_t'", ///
+                        "`wvar'", ///
                         "`training_var'", ///
                         ///
                         "`allpyopt'", ///
