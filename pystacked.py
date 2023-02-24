@@ -133,10 +133,6 @@ def build_pipeline(pipes,xvars,xvar_sel):
     if xvar_sel!="":
         sel_ix = get_index(xvars,xvar_sel)
         ct = ColumnTransformer([("selector", "passthrough", sel_ix)],remainder="drop")
-        #print(xvars.split(" "))
-        #print(xvar_sel)
-        #print(sel_ix)
-        #print([xvars.split(" ")[i] for i in sel_ix])
         ll.append(("selector",ct))
     pipes = pipes.split()
     for p in range(len(pipes)):
@@ -219,7 +215,6 @@ def run_stacked(type, # regression or classification
         weights = np.array(sfi.Data.get(wvar,selectvar=touse))
     else:
         weights =None
-    print(weights)
 
     #id = np.reshape(id,(-1,1))
     id.astype(int)
