@@ -16,7 +16,7 @@ else {
 
 local ver `0'
 
-cap python set exec "/Users/kahrens/python_envs/sk`ver'/bin/python3"
+python set exec "/Users/kahrens/python_envs/sk`ver'/bin/python3"
 
 cap log close
 log using "log_cs_pystacked_`ver'.txt", text replace

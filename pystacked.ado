@@ -1,5 +1,5 @@
-*! pystacked v0.5.0
-*! last edited: 14feb2023
+*! pystacked v0.6.0
+*! last edited: 25feb2023
 *! authors: aa/ms
 
 // parent program
@@ -235,23 +235,23 @@ version 16.0
     }
     syntax varlist(min=2 fv) [if] [in] [aweight fweight], ///
                 [ ///
-                    type(string) /// classification or regression
+                    TYpe(string) /// classification or regression
                     FINALest(string) ///
-                    njobs(int 0) ///
-                    folds(int 5) ///
-                    foldvar(varname) ///
-                    bfolds(int 5) ///
+                    NJobs(int 0) ///
+                    Folds(int 5) ///
+                    FOLDVar(varname) ///
+                    BFolds(int 5) ///
                     NORANDOM ///
                     NOSHUFFLE ///
                     ///
                     ///
-                    pyseed(integer -1) ///
+                    PYSeed(integer -1) ///
                     PRINTopt ///
                     NOSAVEPred ///
                     NOSAVETransform /// legacy option
                     NOSAVEBasexb /// equivalent to old NOSAVETransform
                     ///
-                    voting ///
+                    VOTing ///
                     ///
                     VOTEType(string) ///
                     VOTEWeights(numlist >0) ///
@@ -259,7 +259,7 @@ version 16.0
                     Methods(string) ///
                     `numopts' ///
                     ///
-                    SHOWPywarnings ///
+                    SHOWPymessages ///
                     backend(string) ///
                     ///
                     /// options for graphing; ignore here
@@ -267,7 +267,7 @@ version 16.0
                     HISTogram                               /// report histogram instead of default ROC
                     graph(string asis)                      /// for passing options to graph combine
                     lgraph(string asis)                     /// for passing options to the graphs of the learners
-                    table                                   /// 
+                    TABle                                   /// 
                     HOLDOUT1                                /// vanilla option, abbreviates to "holdout"
                     holdout(varname)                        ///
                     CValid                                  ///
@@ -319,18 +319,12 @@ version 16.0
         local nosavetransform
     }
 
-    if "`backend'"=="" {
-        if "`c(os)'"=="Windows" {
-            local backend threading
-        }
-        else {
-            local backend loky
-        }
-    }
+    if "`backend'"=="" local backend threading
     if "`backend'"!="loky"&"`backend'"!="multiprocessing"&"`backend'"!="threading" {
         di as err "backend not supported"
         exit 198
     }
+    //local backend threading
 
     if "`votetype'"!="" {
         local voting voting
@@ -552,7 +546,7 @@ version 16.0
                         `bfolds', ///
                         `shuffle', ///
                         "`id'", ///
-                        "`showpywarnings'", ///
+                        "`showpymessages'", ///
                         "`backend'", ///
                         "`sparse'", ///
                         "`showoptions'" ///

@@ -1,7 +1,7 @@
 {smcl}
-{* *! version 14feb2023}{...}
+{* *! version 25feb2023}{...}
 {hline}
-{cmd:help pystacked}{right: v0.5.0}
+{cmd:help pystacked}{right: v0.6.0}
 {hline}
 
 {title:Title}
@@ -34,9 +34,21 @@ algorithms.
 {pstd}
 {opt pystacked} requires at least Stata 16 (or higher),  
 a Python installation and scikit-learn (0.24 or higher). {opt pystacked}
-has been tested with scikit-learn 0.24, 1.0, 1.1.0, 1.1.1 and 1.1.2.
+has been 
+{browse "https://github.com/aahrens1/pystacked/tree/main/cert":tested} 
+with scikit-learn 0.24.2, 1.0.2, 1.1.3, and 1.2.1.
 See {helpb python:here} and {browse "https://blog.stata.com/2020/08/18/stata-python-integration-part-1-setting-up-stata-to-use-python/":here} 
 for how to set up Python for Stata on your system.
+
+{pstd}
+{opt pystacked} is compatible with {helpb ddml} and {helpb qddml} for 
+Double/Debiased Machine Learning. 
+{helpb ddml} implements algorithms for causal inference aided by supervised
+machine learning.
+
+{pstd}
+Check our {browse "https://statalasso.github.io/":website} for more information 
+and regular updates.
 
 {marker methodopts}{...}
 {title:Contents}
@@ -60,7 +72,9 @@ for how to set up Python for Stata on your system.
 {title:Syntax overview}
 
 {pstd}
-There are two alternative syntaxes. The {ul:first syntax} is:
+There are two alternative syntaxes, which offer the same 
+functionality, but are provided for accommodate different tastes.
+The {ul:first syntax} is:
 
 {p 8 14 2}
 {cmd:pystacked}
@@ -106,17 +120,15 @@ The {ul:second syntax} is:
 The first syntax uses {opt methods(string)} to select base learners, where
 {it:string} is a list of base learners.
 Options are passed on to base learners via {opt cmdopt1(string)}, 
-{opt cmdopt2(string)} to {opt cmdopt10(string)}. 
-That is, up to 
-10 base learners can be specified and options are passed on in the order in which
+{opt cmdopt2(string)}, etc. 
+That is, base learners can be specified and options are passed on in the order in which
 they appear in {opt methods(string)} (see {helpb pystacked##base_learners_opt:Command options}).
 Likewise, the {opt pipe*(string)} option can be used 
 for pre-processing predictors within Python on the fly (see {helpb pystacked##pipelines:Pipelines}).
 Furthermore, {opt xvars*(varlist)} allows to specify a learner-specific varlist of predictors.
 
 {pstd}
-The second syntax imposes no limit on the number of base learners (aside from the increasing
-computational complexity). Base learners are added before the comma 
+In the second syntax, base learners are added before the comma 
 using {opt method(string)} together with {opt opt(string)} and separated by
 "||". 
 
@@ -149,7 +161,8 @@ See {helpb pystacked##predictors:here}.
 {synoptline}
 {pstd}
 {it:Note:} {opt *} is replaced
-with 1 to 10. The number refers to the order given 
+the the learner index, i.e., the number refers to the 
+order given 
 in {opt methods(string)}.
 
 {marker syntax2}{...}
@@ -195,7 +208,7 @@ final estimator used to combine base learners.
 The default is non-negative least squares without an intercept 
 and the additional constraint that weights sum to 1 ({it:nnls1}). 
 Alternatives are {it:nnls0} (non-negative least squares without intercept 
-without the sum-to-one constraint), 
+and without the sum-to-one constraint), 
 {it:singlebest} (use base learner with minimum MSE),
 {it:ols} (ordinary least squares) or
 {it:ridge} for (logistic) ridge, which is the
@@ -214,8 +227,7 @@ number of jobs for parallel computing. The default is 0 (no parallelization),
 -1 uses all available CPUs, -2 uses all CPUs minus 1. 
 {p_end}
 {synopt:{opt backend(string)}} 
-joblib backend used for parallelization; the default is 'loky' under Linux/MacOS
-and 'threading' under Windows. 
+joblib backend used for parallelization; the default is 'threading'. 
 See {browse "https://scikit-learn.org/stable/modules/generated/sklearn.utils.parallel_backend.html":here} for more information.
 {p_end}
 {synopt:{opt folds(int)}} 
@@ -254,6 +266,18 @@ sufficient, as the Python seed is generated automatically. 2) Setting {opt pysee
 with any positive integer {it:x} allows to control the Python seed 
 directly. 3) {opt pyseed(0)} sets the seed to None in Python.
 The default is {opt pyseed(-1)}.
+{p_end}
+{synopt:{opt print:opt}} 
+prints the default options for specified learners.
+Only one learner can be specified.
+This is for information only.
+No estimation is done.
+{p_end}
+{synopt:{opt show:opt}} 
+prints the options passed on to Python.
+{p_end}
+{synopt:{opt showp:y}} 
+prints Python messages.
 {p_end}
 {synoptline}
 
@@ -388,10 +412,13 @@ predicted class
 residuals
 {p_end}
 {synopt:{opt base:xb}}
-predicted values for each base learner (default = use base learners re-fitted on full estimation sample)
+predicted values for each base learner. By default, the 
+predicted values from re-fitting base learners on the full estimation sample
+are returned.
 {p_end}
 {synopt:{opt cv:alid}}
-cross-validated predicted values. Currently only supported if combined with {opt base:xb}.
+cross-validated predicted values. 
+Currently only supported if combined with {opt base:xb}.
 {p_end}
 {synoptline}
 
@@ -933,9 +960,26 @@ For further information, see
 To install/update {cmd:pystacked}, type {p_end}
 {phang2}. {stata "net install pystacked, from(https://raw.githubusercontent.com/aahrens1/pystacked/main) replace"}{p_end}
 
-{marker misc}{title:References}
-{marker Harrison1978}{...}
+{marker misc}{title:Miscellaneous}
 
+{title:Website}
+
+{pstd}
+Check our {browse "https://statalasso.github.io/":website} for more information 
+and regular updates.
+
+{title:Github}
+
+{pstd}
+Our Github repository with our code is available 
+{browse "https://github.com/aahrens1/pystacked":here}.
+You can use the "Issues" section to contact us. 
+The "cert" folder includes scripts which we use to test
+our program.
+
+{title:References}
+
+{marker Harrison1978}{...}
 {pstd}
 Harrison, D. and Rubinfeld, D.L (1978). Hedonic prices and the 
 demand for clean air. {it:J. Environ. Economics & Management},
@@ -955,7 +999,8 @@ Wolpert, David H. Stacked generalization. {it:Neural networks} 5.2 (1992): 241-2
 {title:Contact}
 
 {pstd}
-If you encounter an error, contact us via email. If you have a question, you 
+If you encounter an error, contact us via email or
+Github Issues. If you have a question, you 
 can also post on Statalist (please tag @Achim Ahrens). 
 
 {title:Acknowledgements}
@@ -970,6 +1015,14 @@ Marco Alfano for feedback.
 All remaining errors are our own. 
 
 {title:Citation}
+
+{pstd}
+Ahrens, A., Hansen, C.B. and Schaffer, M.E., 2022. 
+pystacked: Stacking generalization and machine learning in Stata.
+{browse "https://arxiv.org/abs/2301.09397":arxiv link}.
+
+{pstd}
+A bibtex file is available {browse "https://statalasso.github.io/dta/pystacked.bib":here}.
 
 {pstd}
 Please also cite scikit-learn; see {browse "https://scikit-learn.org/stable/about.html"}.

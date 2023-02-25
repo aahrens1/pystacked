@@ -1,5 +1,5 @@
-#! pystacked v0.5.0
-#! last edited: 14feb2023
+#! pystacked v0.6.0
+#! last edited: 25feb2023
 #! authors: aa/ms
 
 # Import required Python modules
@@ -198,6 +198,8 @@ def run_stacked(type, # regression or classification
     
     if showpywarnings=="":
         warnings.filterwarnings('ignore')
+    else:
+        warnings.filterwarnings('default')
     
     if njobs==0: 
         nj = None 
