@@ -1,8 +1,8 @@
 --------------------------------------------------------------------------------------------------------------------------
       name:  <unnamed>
-       log:  /Users/kahrens/MyProjects/pystacked/cert/log_cs_pystacked_024.txt
+       log:  /Users/kahrens/MyProjects/pystacked/cert/log_cs_pystacked_113.txt
   log type:  text
- opened on:  25 Feb 2023, 20:50:24
+ opened on:  25 Feb 2023, 20:55:48
 
 . 
 . do "cs_pystacked_class.do"
@@ -18,7 +18,7 @@
 . python: import sklearn
 
 . python: sklearn.__version__
-'0.24.2'
+'1.1.3'
 
 . 
 . tempfile testdata
@@ -40,7 +40,7 @@
 . gen train2 = u<.75
 
 . save `testdata'
-file /var/folders/0w/r8yclchd52bfwbf8l00fkkrr0000gs/T//S_82579.000001 saved as .dta format
+file /var/folders/0w/r8yclchd52bfwbf8l00fkkrr0000gs/T//S_82910.000001 saved as .dta format
 
 . 
 . *******************************************************************************
@@ -74,10 +74,10 @@ Stacking weights:
   Method         |      Weight
 -----------------+---------------------
   logit          |      0.0000000
-  gradboost      |      0.4815436
-  gradboost      |      0.3446398
-  nnet           |      0.1131333
-  nnet           |      0.0606833
+  gradboost      |      0.4815155
+  gradboost      |      0.3446655
+  nnet           |      0.1131199
+  nnet           |      0.0606992
 
 .         
 . mat W = e(weights)
@@ -111,8 +111,8 @@ Stacking weights:
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  logit          |      0.3594720
-  rf             |      0.6405280
+  logit          |      0.3591150
+  rf             |      0.6408850
 
 . predict yb , basexb cvalid
 
@@ -371,20 +371,20 @@ Stacking weights:
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  logit          |      0.0807566
+  logit          |      0.0807563
   lassocv        |      0.0000000
-  gradboost      |      0.6112319
-  nnet           |      0.3080115
+  gradboost      |      0.6112265
+  nnet           |      0.3080172
 logit lassocv rf nnet
 
 Stacking weights:
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  logit          |      0.0011912
+  logit          |      0.0602403
   lassocv        |      0.0000000
-  rf             |      0.4785094
-  nnet           |      0.5202994
+  rf             |      0.4216790
+  nnet           |      0.5180808
 logit ridgecv gradboost nnet
 
 Stacking weights:
@@ -392,9 +392,9 @@ Stacking weights:
   Method         |      Weight
 -----------------+---------------------
   logit          |      0.0000000
-  ridgecv        |      0.0340911
-  gradboost      |      0.4721158
-  nnet           |      0.4937931
+  ridgecv        |      0.0340931
+  gradboost      |      0.4721140
+  nnet           |      0.4937929
 logit elasticcv gradboost nnet
 
 Stacking weights:
@@ -413,17 +413,17 @@ Stacking weights:
 -----------------+---------------------
   logit          |      0.1574005
   elasticcv      |      0.0000000
-  gradboost      |      0.4810850
-  svm            |      0.3615145
+  gradboost      |      0.4810864
+  svm            |      0.3615132
 
 
 Stacking weights:
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  logit          |      0.2031120
+  logit          |      0.2031101
   lassocv        |      0.0000000
-  gradboost      |      0.7968880
+  gradboost      |      0.7968899
 
 . 
 . 
@@ -448,9 +448,9 @@ Stacking weights:
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  logit          |      0.0637121
-  rf             |      0.4239032
-  gradboost      |      0.5123848
+  logit          |      0.1419184
+  rf             |      0.3417368
+  gradboost      |      0.5163447
 
 . pystacked, table
 
@@ -459,14 +459,14 @@ Confusion matrix: In-Sample, CV, Holdout
   Method         | Weight      In-Sample             CV             Holdout
                  |             0       1         0       1         0       1
 -----------------+-----------------------------------------------------------
-  STACKING     0 |    .       417       9       398      35         .       .
-  STACKING     1 |    .         4     260        23     234         .       .
-  logit        0 | 0.064      399      39       389      49         .       .
-  logit        1 | 0.064       22     230        32     220         .       .
-  rf           0 | 0.424      421       1       395      34         .       .
-  rf           1 | 0.424        0     268        26     235         .       .
-  gradboost    0 | 0.512      416      13       398      34         .       .
-  gradboost    1 | 0.512        5     256        23     235         .       .
+  STACKING     0 |    .       417      13       397      35         .       .
+  STACKING     1 |    .         4     256        24     234         .       .
+  logit        0 | 0.142      399      39       389      49         .       .
+  logit        1 | 0.142       22     230        32     220         .       .
+  rf           0 | 0.342      421       1       393      36         .       .
+  rf           1 | 0.342        0     268        28     233         .       .
+  gradboost    0 | 0.516      416      13       398      34         .       .
+  gradboost    1 | 0.516        5     256        23     235         .       .
 
 . 
 . // with holdout sample
@@ -476,9 +476,9 @@ Stacking weights:
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  logit          |      0.4067909
-  rf             |      0.3144122
-  gradboost      |      0.2787970
+  logit          |      0.4227930
+  rf             |      0.1819019
+  gradboost      |      0.3953051
 
 . // default holdout - all available obs
 . pystacked, table holdout
@@ -489,14 +489,14 @@ Confusion matrix: In-Sample, CV, Holdout
   Method         | Weight      In-Sample             CV             Holdout
                  |             0       1         0       1         0       1
 -----------------+-----------------------------------------------------------
-  STACKING     0 |    .       202       4       192      14       203      19
-  STACKING     1 |    .         1     118        11     108        15     128
-  logit        0 | 0.407      198       8       183      16       200      20
-  logit        1 | 0.407        5     114        20     106        18     127
-  rf           0 | 0.314      203       1       193      22       206      22
-  rf           1 | 0.314        0     121        10     100        12     125
-  gradboost    0 | 0.279      203       4       196      24       203      24
-  gradboost    1 | 0.279        0     118         7      98        15     123
+  STACKING     0 |    .       201       4       192      15       204      19
+  STACKING     1 |    .         2     118        11     107        14     128
+  logit        0 | 0.423      198       8       183      16       200      20
+  logit        1 | 0.423        5     114        20     106        18     127
+  rf           0 | 0.182      203       1       190      21       206      22
+  rf           1 | 0.182        0     121        13     101        12     125
+  gradboost    0 | 0.395      203       4       196      24       203      24
+  gradboost    1 | 0.395        0     118         7      98        15     123
 
 . // specified holdout sample
 . pystacked, table holdout(h1)
@@ -507,14 +507,14 @@ Confusion matrix: In-Sample, CV, Holdout
   Method         | Weight      In-Sample             CV             Holdout
                  |             0       1         0       1         0       1
 -----------------+-----------------------------------------------------------
-  STACKING     0 |    .       202       4       192      14        96      11
-  STACKING     1 |    .         1     118        11     108         5      63
-  logit        0 | 0.407      198       8       183      16        93      11
-  logit        1 | 0.407        5     114        20     106         8      63
-  rf           0 | 0.314      203       1       193      22        97      13
-  rf           1 | 0.314        0     121        10     100         4      61
-  gradboost    0 | 0.279      203       4       196      24        96      13
-  gradboost    1 | 0.279        0     118         7      98         5      61
+  STACKING     0 |    .       201       4       192      15        96      11
+  STACKING     1 |    .         2     118        11     107         5      63
+  logit        0 | 0.423      198       8       183      16        93      11
+  logit        1 | 0.423        5     114        20     106         8      63
+  rf           0 | 0.182      203       1       190      21        96      13
+  rf           1 | 0.182        0     121        13     101         5      61
+  gradboost    0 | 0.395      203       4       196      24        96      13
+  gradboost    1 | 0.395        0     118         7      98         5      61
 
 . 
 . // as pystacked option
@@ -527,14 +527,14 @@ Confusion matrix: In-Sample, CV, Holdout
   Method         | Weight      In-Sample             CV             Holdout
                  |             0       1         0       1         0       1
 -----------------+-----------------------------------------------------------
-  STACKING     0 |    .       201       4       188      15       200      17
-  STACKING     1 |    .         2     118        15     107        18     130
-  logit        0 | 0.536      198       8       184      15       200      20
-  logit        1 | 0.536        5     114        19     107        18     127
-  rf           0 | 0.168      203       1       192      23       206      22
-  rf           1 | 0.168        0     121        11      99        12     125
-  gradboost    0 | 0.297      203       4       192      24       203      24
-  gradboost    1 | 0.297        0     118        11      98        15     123
+  STACKING     0 |    .       201       6       187      16       200      17
+  STACKING     1 |    .         2     116        16     106        18     130
+  logit        0 | 0.555      198       8       184      15       200      20
+  logit        1 | 0.555        5     114        19     107        18     127
+  rf           0 | 0.000      203       1       189      23       206      22
+  rf           1 | 0.000        0     121        14      99        12     125
+  gradboost    0 | 0.445      203       4       192      24       203      24
+  gradboost    1 | 0.445        0     118        11      98        15     123
 
 . 
 . // syntax 2
@@ -545,9 +545,9 @@ Stacking weights:
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  logit          |      0.4658911
-  rf             |      0.5341089
-  gradboost      |      0.0000000
+  logit          |      0.5390052
+  rf             |      0.1529283
+  gradboost      |      0.3080665
 
 . pystacked, table holdout
 Number of holdout observations:  365
@@ -557,14 +557,14 @@ Confusion matrix: In-Sample, CV, Holdout
   Method         | Weight      In-Sample             CV             Holdout
                  |             0       1         0       1         0       1
 -----------------+-----------------------------------------------------------
-  STACKING     0 |    .       202       4       191      18       202      16
-  STACKING     1 |    .         1     118        12     104        16     131
-  logit        0 | 0.466      196       7       188      22       200      21
-  logit        1 | 0.466        7     115        15     100        18     126
-  rf           0 | 0.534      203       1       189      21       206      22
-  rf           1 | 0.534        0     121        14     101        12     125
-  gradboost    0 | 0.000      203       4       193      24       203      24
-  gradboost    1 | 0.000        0     118        10      98        15     123
+  STACKING     0 |    .       201       5       190      20       200      18
+  STACKING     1 |    .         2     117        13     102        18     129
+  logit        0 | 0.539      196       7       188      22       200      21
+  logit        1 | 0.539        7     115        15     100        18     126
+  rf           0 | 0.153      203       1       187      21       206      22
+  rf           1 | 0.153        0     121        16     101        12     125
+  gradboost    0 | 0.308      203       4       193      24       203      24
+  gradboost    1 | 0.308        0     118        10      98        15     123
 
 . 
 . 
@@ -589,9 +589,9 @@ Stacking weights:
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  logit          |      0.1782491
-  rf             |      0.3574248
-  gradboost      |      0.4643262
+  logit          |      0.2222832
+  rf             |      0.1008356
+  gradboost      |      0.6768812
 
 . pystacked, graph
 
@@ -603,9 +603,9 @@ Stacking weights:
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  logit          |      0.4110651
-  rf             |      0.5168489
-  gradboost      |      0.0720860
+  logit          |      0.4649098
+  rf             |      0.3468785
+  gradboost      |      0.1882117
 
 . // default holdout - all available obs
 . pystacked, graph holdout
@@ -642,9 +642,9 @@ Stacking weights:
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  logit          |      0.3833952
-  rf             |      0.3670662
-  gradboost      |      0.2495385
+  logit          |      0.4265024
+  rf             |      0.0974954
+  gradboost      |      0.4760021
 
 . pystacked, graph holdout
 Number of holdout observations:  365
@@ -665,7 +665,7 @@ end of do-file
 . python: import sklearn
 
 . python: sklearn.__version__
-'0.24.2'
+'1.1.3'
 
 . 
 . global model lpsa lcavol lweight age lbph svi lcp gleason pgg45

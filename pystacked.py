@@ -1,5 +1,5 @@
-#! pystacked v0.5.0
-#! last edited: 14feb2023
+#! pystacked v0.6.0
+#! last edited: 25feb2023
 #! authors: aa/ms
 
 # Import required Python modules
@@ -133,10 +133,6 @@ def build_pipeline(pipes,xvars,xvar_sel):
     if xvar_sel!="":
         sel_ix = get_index(xvars,xvar_sel)
         ct = ColumnTransformer([("selector", "passthrough", sel_ix)],remainder="drop")
-        #print(xvars.split(" "))
-        #print(xvar_sel)
-        #print(sel_ix)
-        #print([xvars.split(" ")[i] for i in sel_ix])
         ll.append(("selector",ct))
     pipes = pipes.split()
     for p in range(len(pipes)):
@@ -169,6 +165,7 @@ def run_stacked(type, # regression or classification
     methods, # list of base learners
     yvar, # outcome
     xvars, # predictors (temp names)
+    wvar, # weight var
     training, # marks holdout sample
     allopt, # options for each learner
     allpipe, # pipes for each learner
@@ -201,12 +198,14 @@ def run_stacked(type, # regression or classification
     
     if showpywarnings=="":
         warnings.filterwarnings('ignore')
+    else:
+        warnings.filterwarnings('default')
     
     if njobs==0: 
         nj = None 
     else: 
-        nj = njobs
-        
+        nj = njobs 
+
     ##############################################################
     ### load data                                              ###
     ##############################################################
@@ -214,6 +213,11 @@ def run_stacked(type, # regression or classification
     y = np.array(sfi.Data.get(yvar,selectvar=touse))
     x = np.array(sfi.Data.get(xvars,selectvar=touse))
     id = np.array(sfi.Data.get(idvar,selectvar=touse))
+    if wvar!="":
+        weights = np.array(sfi.Data.get(wvar,selectvar=touse))
+    else:
+        weights =None
+
     #id = np.reshape(id,(-1,1))
     id.astype(int)
     fid = np.array(sfi.Data.get(foldvar,selectvar=touse))
@@ -447,6 +451,7 @@ def run_stacked(type, # regression or classification
     if voting=="":
         w = model.final_estimator_.coef_
         if len(w.shape)==1:
+            #w=w/sum(w)
             sfi.Matrix.store("e(weights)",w)
         else:
             sfi.Matrix.store("e(weights)",w[0])

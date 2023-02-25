@@ -5,6 +5,53 @@ python: sklearn.__version__
 
 global xvars crim-lstat
 
+*******************************************************************************
+*** check against SJ paper 											 		***
+*******************************************************************************
+
+clear all
+use https://statalasso.github.io/dta/cal_housing.dta, clear
+set seed 42
+gen train=runiform()
+replace train=train<.75
+replace medh = medh/10e3 
+label var medh 
+set seed 42
+pystacked medh longi-medi if train,                        ///
+    type(regress)                                          ///
+    methods(ols lassocv lassocv rf gradboost)              ///
+    pipe3(poly2) cmdopt5(learning_rate(0.01)               ///
+    n_estimators(1000))
+
+mat W = e(weights)
+assert reldif(0,el(W,1,1))<0.0001
+assert reldif(0,el(W,2,1))<0.0001
+assert reldif(0,el(W,3,1))<0.0001
+assert reldif(0.8382714,el(W,4,1))<0.0001
+assert reldif(0.1617286,el(W,5,1))<0.0001
+
+
+*******************************************************************************
+*** foldvar															 		***
+*******************************************************************************
+
+insheet using "/Users/kahrens/Dropbox (PP)/ddml/Data/housing.csv", ///
+	clear comma
+
+gen fid = 1 + (_n>250)
+	
+pystacked medv $xvars, method(ols rf) foldvar(fid)
+predict yb , basexb cvalid
+
+reg medv $xvars if _n<=250
+predict ols1 if _n>250
+reg medv $xvars if _n>250
+predict ols2 if _n<=250
+gen ols_crossfit = ols1 if _n>250
+replace ols_crossfit = ols2 if _n<=250
+
+assert reldif(ols_crossfit , yb1)<10e-6
+
 
 *******************************************************************************
 *** pystacked with one predictor									 		***
@@ -138,14 +185,14 @@ pystacked lpsa $xvars, ///
 						 methods(ols lassoic rf ) ///
 						 pipe1(poly2) pipe2(poly2 nostdscaler) pipe3(poly2)  
 ereturn list
-predict a, transf
+predict a, basexb
 
  
 pystacked lpsa c.($xvars)##c.($xvars), ///
 						 type(regress) pyseed(243) ///
 						 methods(ols lassoic  rf ) pipe2(nostdscaler)
 ereturn list
-predict b, transf
+predict b, basexb
 list lpsa a* b* if _n <= 10
 
 assert reldif(a1,b1)<1e-5
@@ -236,7 +283,7 @@ pystacked lpsa lcavol lweight age lbph svi lcp gleason pgg45, ///
 predict double yhat, xb
 list yhat if _n < 10
 
-predict double t, transform  
+predict double t, basexb
 
 mat W = e(weights)
 gen myhat = t1*el(W,1,1)+t2*el(W,2,1)+t3*el(W,3,1)

@@ -15,6 +15,55 @@ gen train2 = u<.75
 save `testdata'
 
 *******************************************************************************
+*** check against SJ paper 											 		***
+*******************************************************************************
+
+ insheet using ///
+ https://archive.ics.uci.edu/ml/machine-learning-databases/spambase/spambase.data, ///
+ clear comma
+set seed 42
+gen train=runiform()
+replace train=train<.75
+ 
+ pystacked v58 v1-v57                           || ///
+    m(logit) pipe(poly2)                        || ///
+    m(gradboost) opt(n_estimators(600))         || ///
+    m(gradboost) opt(n_estimators(1000))        || ///
+    m(nnet) opt(hidden_layer_sizes(5 5))        || ///
+    m(nnet) opt(hidden_layer_sizes(5))          || ///
+    if train, type(class) njobs(8) backend(threading) 
+	
+mat W = e(weights)
+assert reldif(0.0011469,el(W,1,1))<0.01
+assert reldif(0.4806232,el(W,2,1))<0.01
+assert reldif(0.3456255,el(W,3,1))<0.01
+assert reldif( 0.1130183,el(W,4,1))<0.01
+assert reldif( 0.0595860,el(W,5,1))<0.01
+ 
+
+*******************************************************************************
+*** foldvar															 		***
+*******************************************************************************
+
+use `testdata', clear
+
+gen fid = 1 + (_n>345)
+	
+pystacked v58 v1 v2 v3, method(logit rf) foldvar(fid) type(class)
+predict yb , basexb cvalid
+
+logit v58 v1 v2 v3 if fid==1
+predict log1 if fid ==2
+logit v58 v1 v2 v3 if fid==2
+predict log2 if fid==1
+gen double log_crossfit = log1 if fid==2
+replace log_crossfit = log2 if fid==1
+
+assert reldif(log_crossfit , yb1)<10e-6
+
+
+
+*******************************************************************************
 *** check that predicted value = weighted avg of transform variables 		***
 *******************************************************************************
 						 
@@ -25,7 +74,7 @@ pystacked $model, type(class) pyseed(123)
 predict double yhat, pr
 list yhat if _n < 10
 
-predict double t, transform  
+predict double t, basexb
 
 mat W = e(weights)
 gen myhat = t1*el(W,1,1)+t2*el(W,2,1)+t3*el(W,3,1)
@@ -43,6 +92,8 @@ predict double xhat1
 
 logit v58 v57
 predict double xhat2 
+
+assert reldif(xhat1,xhat2)<0.0001
 
 *******************************************************************************
 *** predicted values/classes										 		***
@@ -70,7 +121,11 @@ pystacked $model, type(class) pyseed(123) ///
 							njobs(4) pipe1(poly2) ///
 							voting voteweights(0.1 .4) ///
 							votetype(soft)
-			
+mat W = e(weights)
+assert reldif(0.1,el(W,1,1))<0.0001
+assert reldif(0.4,el(W,2,1))<0.0001
+assert reldif(0.5,el(W,3,1))<0.0001
+ 
 
 *******************************************************************************
 *** try other estimators											 		***

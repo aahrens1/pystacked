@@ -1,5 +1,5 @@
-*! pystacked v0.5.0
-*! last edited: 14feb2023
+*! pystacked v0.6.0
+*! last edited: 25feb2023
 *! authors: aa/ms
 
 // parent program
@@ -40,7 +40,12 @@ program define pystacked, eclass
             local restargs `*'
             local 0 `beforecomma'
             syntax anything(name=beforeifinweight) [if] [in] [aweight fweight]
-            local ifinweight `if' `in' `weight' `exp'
+            if "`weight'"!="" {
+                local ifinweight `if' `in' [`weight' `exp']
+            }
+            else {
+                local ifinweight `if' `in' `weight' `exp'
+            }
             tokenize `beforeifinweight', parse("|")
             local mainargs `1'
             local 0 `mainargs' `ifinweight' `restargs'
@@ -56,6 +61,7 @@ program define pystacked, eclass
                         HOLDOUT1                            /// vanilla option, abbreviates to "holdout"
                         holdout(varname)                    ///
                         CValid                              ///
+                        NOESTIMATE                          /// suppress call to run_stacked; no estimates, only parses
                         *                                   ///
                     ]
         
@@ -87,7 +93,7 @@ program define pystacked, eclass
         // from here, table is the macro indicating table type
         
         // display results
-        if `"`graph'`graph1'`lgraph'`histogram'`table'"' == "" {
+        if `"`graph'`graph1'`lgraph'`histogram'`table'`noestimate'"' == "" {
 
             di
             di as res "Stacking weights:"
@@ -200,67 +206,60 @@ version 16.0
     local restargs `*'
     local 0 `beforecomma'
     syntax anything(name=beforeifinweight) [if] [in] [aweight fweight]
-    local ifinweight `if' `in' `weight' `exp'
+            if "`weight'"!="" {
+                local ifinweight `if' `in' [`weight' `exp']
+            }
+            else {
+                local ifinweight `if' `in' `weight' `exp'
+            }
     tokenize `beforeifinweight', parse("|")
     local mainargs `1'
     local 0 `mainargs' `ifinweight' `restargs'
     local doublebarsyntax = ("`2'"=="|")*("`3'"=="|")
+    if `doublebarsyntax'==0 {
+        // set default
+        if ("`methods'"=="") {
+            if ("`type'"=="reg") {
+                local methods0 ols lassocv gradboost
+            }
+            else {
+                local methods0 logit lassocv gradboost
+            }
+        }
+        // required to allow for numbered options
+        syntax varlist(min=2 fv) [if] [in] [aweight fweight] [, Methods(string) *]
+        if `"`methods'"'=="" local methods `methods0'
+        forv i = 1/`:list sizeof methods' {
+            local numopts `numopts' cmdopt`i'(string asis) pipe`i'(string asis) xvars`i'(varlist fv)
+        }
+    }
     syntax varlist(min=2 fv) [if] [in] [aweight fweight], ///
                 [ ///
-                    type(string) /// classification or regression
+                    TYpe(string) /// classification or regression
                     FINALest(string) ///
-                    njobs(int 0) ///
-                    folds(int 5) ///
-                    foldvar(varname) ///
-                    bfolds(int 5) ///
+                    NJobs(int 0) ///
+                    Folds(int 5) ///
+                    FOLDVar(varname) ///
+                    BFolds(int 5) ///
                     NORANDOM ///
                     NOSHUFFLE ///
                     ///
                     ///
-                    pyseed(integer -1) ///
+                    PYSeed(integer -1) ///
                     PRINTopt ///
                     NOSAVEPred ///
                     NOSAVETransform /// legacy option
                     NOSAVEBasexb /// equivalent to old NOSAVETransform
                     ///
-                    voting ///
+                    VOTing ///
                     ///
                     VOTEType(string) ///
                     VOTEWeights(numlist >0) ///
                     debug ///
                     Methods(string) ///
-                    cmdopt1(string asis) ///
-                    cmdopt2(string asis) ///
-                    cmdopt3(string asis) ///
-                    cmdopt4(string asis) ///
-                    cmdopt5(string asis) ///
-                    cmdopt6(string asis) ///
-                    cmdopt7(string asis) ///
-                    cmdopt8(string asis) ///
-                    cmdopt9(string asis) ///
-                    cmdopt10(string asis) ///
-                    pipe1(string asis) ///
-                    pipe2(string asis) ///
-                    pipe3(string asis) ///
-                    pipe4(string asis) ///
-                    pipe5(string asis) ///
-                    pipe6(string asis) ///
-                    pipe7(string asis) ///
-                    pipe8(string asis) ///
-                    pipe9(string asis) ///
-                    pipe10(string asis) ///
-                    xvars1(varlist fv) ///
-                    xvars2(varlist fv) ///
-                    xvars3(varlist fv) ///
-                    xvars4(varlist fv) ///
-                    xvars5(varlist fv) ///
-                    xvars6(varlist fv) ///
-                    xvars7(varlist fv) ///
-                    xvars8(varlist fv) ///
-                    xvars9(varlist fv) ///
-                    xvars10(varlist fv) ///
+                    `numopts' ///
                     ///
-                    SHOWPywarnings ///
+                    SHOWPymessages ///
                     backend(string) ///
                     ///
                     /// options for graphing; ignore here
@@ -268,13 +267,16 @@ version 16.0
                     HISTogram                               /// report histogram instead of default ROC
                     graph(string asis)                      /// for passing options to graph combine
                     lgraph(string asis)                     /// for passing options to the graphs of the learners
-                    table                                   /// 
+                    TABle                                   /// 
                     HOLDOUT1                                /// vanilla option, abbreviates to "holdout"
                     holdout(varname)                        ///
                     CValid                                  ///
                     SParse                                  ///
                     SHOWOPTions                             ///
+                    NOESTIMATE                              /// suppress call to run_stacked; no estimates, only parses
                 ]
+
+    if `"`methods'"'=="" local methods `methods0'
 
     ** set data signature for pystacked_p;
     * need to do this before temp vars are created
@@ -282,6 +284,13 @@ version 16.0
     `dqui' datasignature clear 
     `dqui'  datasignature set
     `dqui' datasignature report
+
+    if ("`exp'"!="") {
+        tempvar wvar
+        local wvar_t = subinstr("`exp'","=","",.)
+        local wvar_t = subinstr("`wvar_t'"," ","",.)
+        gen `wvar'=`wvar_t'
+    }
 
     if "`type'"=="" local type reg
     if substr("`type'",1,3)=="reg" {
@@ -310,18 +319,12 @@ version 16.0
         local nosavetransform
     }
 
-    if "`backend'"=="" {
-        if "`c(os)'"=="Windows" {
-            local backend threading
-        }
-        else {
-            local backend loky
-        }
-    }
+    if "`backend'"=="" local backend threading
     if "`backend'"!="loky"&"`backend'"!="multiprocessing"&"`backend'"!="threading" {
         di as err "backend not supported"
         exit 198
     }
+    //local backend threading
 
     if "`votetype'"!="" {
         local voting voting
@@ -339,29 +342,13 @@ version 16.0
         }
     } 
 
-    if (`doublebarsyntax'==0)&("`methods'"=="") {
-        if ("`type'"=="reg") {
-            local methods ols lassocv gradboost
-        }
-        else {
-            local methods logit lassocv gradboost
-        }
-    }
-    if (`doublebarsyntax'==0)&("`methods'"!="") {
-        local mcount : word count `methods'
-        if `mcount'>10 {
-            di as err "more than 10 methods specified, but only up to 10 supported using this syntax"
-            di as err "use e.g. 'pystacked y x* || m(rf) || m(lassocv) || ...' to specify as many base learners as you want"
-        }
-    }
-
     python clear
 
     qui findfile pystacked.py
     cap python script "`r(fn)'", global
     if _rc != 0 {
-    noi disp "Error loading Python Script for pystacked. Installation corrupted."
-                    error 199
+        noi disp "Error loading Python Script for pystacked. Installation corrupted."
+        error 199
     }
     python: from pystacked import *
 
@@ -379,7 +366,7 @@ version 16.0
 
     // mark sample 
     marksample touse
-    markout `touse' `varlist'
+    markout `touse' `varlist' `wvar'
     qui count if `touse'
     local N        = r(N)
 
@@ -402,7 +389,7 @@ version 16.0
     }
 
     tempvar id 
-    gen int `id'=_n
+    gen long `id'=_n
     local shuffle=("`noshuffle'"=="")
 
     ******** parse options using _pyparse.ado ********************************* 
@@ -412,7 +399,7 @@ version 16.0
         syntax_parse `beforeifinweight' , type(`type') touse(`touse') sklearn1(`sklearn_ver1') sklearn2(`sklearn_ver2') sklearn3(`sklearn_ver3')
         local allmethods `r(allmethods)'
         local allpyopt `r(allpyopt)'
-        local mcount = `r(mcount)'
+        local mcount : word count `allmethods'
         local allpipe (
         forvalues i = 1(1)`mcount' {
             local opt`i' `r(opt`i')'
@@ -427,8 +414,9 @@ version 16.0
     else {
         // Syntax 1
         local allmethods `methods'
+        local mcount : word count `allmethods'
         local allpipe (
-        forvalues i = 1(1)10 {
+        forvalues i = 1(1)`mcount' {
             local method : word `i' of `allmethods'
             if "`method'"!="" {
                 local mcount = `i'
@@ -532,40 +520,42 @@ version 16.0
     qui gen byte `esample' = `touse'
     ereturn post, depname(`yvar') esample(`esample') obs(`N')
 
-    python: run_stacked(    ///
-                    "`type'",    ///
-                    "`finalest'", ///
-                    "`allmethods'", ///
-                    "`yvar_t'", ///
-                    "`xvars_all_t'",    ///
-                    "`training_var'", ///
-                    ///
-                    "`allpyopt'", ///
-                    "`allpipe'", ///
-                    "`allxvars_t'", ///
-                    ///  
-                    "`touse'", ///
-                    `pyseed', ///
-                    "`nosavepred'", ///
-                    "`nosavebasexb'", ///
-                    "`voting'" , ///
-                    "`votetype'", ///
-                    "`voteweights'", ///
-                    `njobs' , ///
-                    "`fid'", ///
-                    `bfolds', ///
-                    `shuffle', ///
-                    "`id'", ///
-                    "`showpywarnings'", ///
-                    "`backend'", ///
-                    "`sparse'", ///
-                    "`showoptions'" ///
-                    )
-
+    if "`noestimate'"=="" {
+        python: run_stacked( ///
+                        "`type'",    ///
+                        "`finalest'", ///
+                        "`allmethods'", ///
+                        "`yvar_t'", ///
+                        "`xvars_all_t'", ///
+                        "`wvar'", ///
+                        "`training_var'", ///
+                        ///
+                        "`allpyopt'", ///
+                        "`allpipe'", ///
+                        "`allxvars_t'", ///
+                        ///  
+                        "`touse'", ///
+                        `pyseed', ///
+                        "`nosavepred'", ///
+                        "`nosavebasexb'", ///
+                        "`voting'" , ///
+                        "`votetype'", ///
+                        "`voteweights'", ///
+                        `njobs' , ///
+                        "`fid'", ///
+                        `bfolds', ///
+                        `shuffle', ///
+                        "`id'", ///
+                        "`showpymessages'", ///
+                        "`backend'", ///
+                        "`sparse'", ///
+                        "`showoptions'" ///
+                        )
+    }
     ereturn local cmd        pystacked
     ereturn local predict    pystacked_p
     ereturn local depvar    `yvar'
-    ereturn local type        `type'
+    ereturn local type      `type'
 
     forvalues i = 1(1)`mcount' {
         local opt`i' = stritrim("`opt`i''")

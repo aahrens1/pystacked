@@ -1,8 +1,8 @@
 --------------------------------------------------------------------------------------------------------------------------
       name:  <unnamed>
-       log:  /Users/kahrens/MyProjects/pystacked/cert/log_cs_pystacked_024.txt
+       log:  /Users/kahrens/MyProjects/pystacked/cert/log_cs_pystacked_102.txt
   log type:  text
- opened on:  25 Feb 2023, 20:50:24
+ opened on:  25 Feb 2023, 20:53:20
 
 . 
 . do "cs_pystacked_class.do"
@@ -18,7 +18,7 @@
 . python: import sklearn
 
 . python: sklearn.__version__
-'0.24.2'
+'1.0.2'
 
 . 
 . tempfile testdata
@@ -40,7 +40,7 @@
 . gen train2 = u<.75
 
 . save `testdata'
-file /var/folders/0w/r8yclchd52bfwbf8l00fkkrr0000gs/T//S_82579.000001 saved as .dta format
+file /var/folders/0w/r8yclchd52bfwbf8l00fkkrr0000gs/T//S_82713.000001 saved as .dta format
 
 . 
 . *******************************************************************************
@@ -411,10 +411,10 @@ Stacking weights:
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  logit          |      0.1574005
+  logit          |      0.1574003
   elasticcv      |      0.0000000
-  gradboost      |      0.4810850
-  svm            |      0.3615145
+  gradboost      |      0.4810855
+  svm            |      0.3615142
 
 
 Stacking weights:
@@ -665,7 +665,7 @@ end of do-file
 . python: import sklearn
 
 . python: sklearn.__version__
-'0.24.2'
+'1.0.2'
 
 . 
 . global model lpsa lcavol lweight age lbph svi lcp gleason pgg45
