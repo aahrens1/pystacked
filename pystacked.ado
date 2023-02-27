@@ -217,18 +217,22 @@ version 16.0
     local 0 `mainargs' `ifinweight' `restargs'
     local doublebarsyntax = ("`2'"=="|")*("`3'"=="|")
     if `doublebarsyntax'==0 {
+        // required to allow for numbered options
+        syntax varlist(min=2 fv) [if] [in] [aweight fweight] [, Methods(string) TYpe(string) *]
         // set default
+        if ("`type'"=="") {
+            local type reg
+            local typeopt type(reg)
+        }
         if ("`methods'"=="") {
-            if ("`type'"=="reg") {
-                local methods0 ols lassocv gradboost
+            if (substr("`type'",1,5)=="class") {
+                local methods logit lassocv gradboost
             }
             else {
-                local methods0 logit lassocv gradboost
+                local methods ols lassocv gradboost
             }
+            local methodsopt methods(`methods')
         }
-        // required to allow for numbered options
-        syntax varlist(min=2 fv) [if] [in] [aweight fweight] [, Methods(string) *]
-        if `"`methods'"'=="" local methods `methods0'
         forv i = 1/`:list sizeof methods' {
             local numopts `numopts' cmdopt`i'(string asis) pipe`i'(string asis) xvars`i'(varlist fv)
         }
@@ -292,6 +296,7 @@ version 16.0
         gen `wvar'=`wvar_t'
     }
 
+    * set defaults
     if "`type'"=="" local type reg
     if substr("`type'",1,3)=="reg" {
         local type reg
@@ -302,6 +307,15 @@ version 16.0
     else {
         di as err "type(`type') not recognized"
         exit 198
+    }
+    if ("`methods'"=="") {
+        if ("`type'"=="class") {
+            local methods logit lassocv gradboost
+        }
+        else {
+            local methods ols lassocv gradboost
+        }
+        local methodsopt methods(`methods')
     }
 
     * set the Python seed using randomly drawn number 
