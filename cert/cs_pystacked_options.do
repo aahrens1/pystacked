@@ -50,35 +50,32 @@ pystacked $model, method(elasticcv) type(class) ///
 			cmdopt1( ///
 			c(9) ///
 			nocons ///
-			cv(4) ///
 			tol(0.001) ///
 			max_iter(90) ///
 			n_jobs(2) ///
 			intercept_scaling(1.1) ///
 			l1_ratios(0 0.1 1) ///
-			) showopt   
+			) showopt  bfolds(4)  
 
 pystacked $model, method(lassocv) type(class) ///
 			cmdopt1( ///
 			c(9) ///
 			nocons ///
-			cv(4) ///
 			tol(0.001) ///
 			max_iter(90) ///
 			n_jobs(2) ///
 			intercept_scaling(1.1) ///
-			) showopt  
+			) showopt bfolds(4) 
 
 pystacked $model, method(ridgecv) type(class) ///
 			cmdopt1( ///
 			c(9) ///
 			nocons ///
-			cv(4) ///
 			tol(0.001) ///
 			max_iter(90) ///
 			n_jobs(2) ///
 			intercept_scaling(1.1) ///
-			) showopt   	
+			) showopt bfolds(4) 	
 
 pystacked $model, method(nnet) type(class) ///
 			cmdopt1( ///
@@ -172,9 +169,8 @@ pystacked $model, method(lassocv) ///
 			nocons ///
 			max_iter(500) ///
 			tol(0.001) ///
-			cv(3) ///
 			positive ///
-			) showopt  
+			) showopt bfolds(3) 
 
 pystacked $model, method(ridgecv) ///
 			cmdopt1( ///
@@ -184,9 +180,8 @@ pystacked $model, method(ridgecv) ///
 			nocons ///
 			max_iter(500) ///
 			tol(0.001) ///
-			cv(3) ///
 			positive ///
-			) showopt  	
+			) showopt  bfolds(3)  	
 			
 pystacked $model, method(gradboost) ///
 			cmdopt1( ///

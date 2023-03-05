@@ -15,6 +15,18 @@ gen train2 = u<.75
 save `testdata'
 
 *******************************************************************************
+*** check that it works without default methods						 		***
+*******************************************************************************
+
+ insheet using ///
+ https://archive.ics.uci.edu/ml/machine-learning-databases/spambase/spambase.data, ///
+ clear comma
+set seed 42
+gen train=runiform()
+replace train=train<.75
+ pystacked v58 v1-v57 
+
+*******************************************************************************
 *** check against SJ paper 											 		***
 *******************************************************************************
 
