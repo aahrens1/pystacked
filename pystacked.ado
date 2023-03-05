@@ -362,7 +362,7 @@ version 16.0
     qui findfile pystacked.py
     cap python script "`r(fn)'", global
     if _rc != 0 {
-        noi disp "Error loading Python Script for pystacked. Installation corrupted."
+        noi disp "Error loading Python Script for pystacked."
         error 199
     }
     python: from pystacked import *
