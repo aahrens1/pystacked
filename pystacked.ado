@@ -358,6 +358,7 @@ version 16.0
 
     python clear
 
+    pystacked_check_python
     qui findfile pystacked.py
     cap python script "`r(fn)'", global
     if _rc != 0 {
@@ -1123,4 +1124,37 @@ di as result "`stripped'"
     }
 
     return local varlist    `stripped'                             //  return results in r(varlist)
+end
+
+cap program drop pystacked_check_python
+program define pystacked_check_python
+// code borrowed from nwxtregress :)
+    qui {
+        cap python query
+        if _rc == 0 {
+            cap python which numpy
+            local HasNumpy = _rc    
+
+            cap python which scipy
+            local HasScipy = _rc
+
+            cap python which sfi
+            local HasSfi = _rc
+
+            if `=`HasNumpy'+`HasSfi'+`HasScipy'' > 0 {
+                noi disp as smcl "{cmd:pystacked} option {it:python} requires the following Python packages:"
+                if `HasNumpy' != 0 noi disp "  numpy"
+                if `HasScipy' != 0 noi disp "  scipy"
+                if `HasSfi' != 0 noi disp "  sfi"
+                noi disp "Please install them before using the option {it:pystacked}."
+            }
+        *   exit
+        }
+        else {
+            noi disp as error "Error loading Python."
+            error 199
+        }
+    }   
+
+
 end
