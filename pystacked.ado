@@ -1128,7 +1128,7 @@ end
 
 cap program drop pystacked_check_python
 program define pystacked_check_python
-// code borrowed from nwxtregress :)
+// code adapted from nwxtregress :)
     qui {
         cap python query
         if _rc == 0 {
@@ -1141,11 +1141,15 @@ program define pystacked_check_python
             cap python which sfi
             local HasSfi = _rc
 
-            if `=`HasNumpy'+`HasSfi'+`HasScipy'' > 0 {
+            cap python which sklearn
+            local HasSkl = _rc
+
+            if `=`HasNumpy'+`HasSfi'+`HasScipy'+`HasSkl'' > 0 {
                 noi disp as smcl "{cmd:pystacked} option {it:python} requires the following Python packages:"
                 if `HasNumpy' != 0 noi disp "  numpy"
                 if `HasScipy' != 0 noi disp "  scipy"
                 if `HasSfi' != 0 noi disp "  sfi"
+                if `HasSkl' != 0 noi disp "  sklearn"
                 noi disp "Please install them before using the option {it:pystacked}."
             }
         *   exit
