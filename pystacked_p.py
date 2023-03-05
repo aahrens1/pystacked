@@ -1,5 +1,5 @@
-#! pystacked v0.6.0
-#! last edited: 25feb2023
+#! pystacked v0.6.1
+#! last edited: 5mar2023
 #! authors: aa/ms
 
 
@@ -71,12 +71,18 @@ def post_prediction(pred_var,basexb,cvalid,var_type,touse,pred_type):
 				Data.addVarDouble(pred_var+str(j+1))
 			else: 
 				Data.addVarFloat(pred_var+str(j+1))
-			transf[touse==0,j]=np.nan
-			Data.setVarLabel(pred_var+str(j+1),"Prediction"+" "+methods[j])
+			pred=transf[:,j]
+			predna =np.isnan(pred)
 			if pred_type=="class":
-				Data.store(var=pred_var+str(j+1),val=transf[:,j]>0.5,obs=None)
-			else: 
-				Data.store(var=pred_var+str(j+1),val=transf[:,j],obs=None)
+				pred=(pred>0.5)*1 
+				pred=pred.astype(float)
+				pred[predna]=np.nan
+				Data.setVarLabel(pred_var+str(j+1),"Predicted class "+" "+methods[j])
+			elif type=="class":
+				Data.setVarLabel(pred_var+str(j+1),"Predicted probability "+" "+methods[j])
+			else:
+				Data.setVarLabel(pred_var+str(j+1),"Predicted value"+" "+methods[j])
+			Data.store(var=pred_var+str(j+1),val=pred,obs=None)
 	elif basexb!="" and cvalid!="":
 		if len(methods)==1:
 			SFIToolkit.stata('di as err "cvalid not supported with only one learner"')
@@ -101,9 +107,15 @@ def post_prediction(pred_var,basexb,cvalid,var_type,touse,pred_type):
 				Data.addVarDouble(pred_var+str(j+1))
 			else: 
 				Data.addVarFloat(pred_var+str(j+1))
-			#transf[touse==0,j]=np.nan
-			Data.setVarLabel(pred_var+str(j+1),"Prediction"+" "+methods[j])
+			pred=transf[:,j]
+			predna =np.isnan(pred)
 			if pred_type=="class":
-				Data.store(var=pred_var+str(j+1),val=transf[:,j]>0.5,obs=id)
-			else: 
-				Data.store(var=pred_var+str(j+1),val=transf[:,j],obs=id)
+				pred=(pred>0.5)*1 
+				pred=pred.astype(float)
+				pred[predna]=np.nan
+				Data.setVarLabel(pred_var+str(j+1),"Predicted class "+" "+methods[j])
+			elif type=="class":
+				Data.setVarLabel(pred_var+str(j+1),"Predicted probability "+" "+methods[j])
+			else:
+				Data.setVarLabel(pred_var+str(j+1),"Predicted value"+" "+methods[j])
+			Data.store(var=pred_var+str(j+1),val=pred,obs=id)

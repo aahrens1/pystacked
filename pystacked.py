@@ -1,5 +1,5 @@
-#! pystacked v0.6.0
-#! last edited: 25feb2023
+#! pystacked v0.6.1
+#! last edited: 5mar2023
 #! authors: aa/ms
 
 # Import required Python modules
@@ -62,7 +62,7 @@ class SingleBest(BaseEstimator):
 
 class ConstrLS(BaseEstimator):
     """
-    Constrained least squares, weights sum to 1 and >= 0
+    Constrained least squares, weights sum to 1 and optionally >= 0
     """
     _estimator_type="regressor"
     def fit(self, X, y):
@@ -79,7 +79,10 @@ class ConstrLS(BaseEstimator):
         
         #Constraints and bounds
         cons = {'type': 'eq', 'fun': lambda coef: np.sum(coef)-1}
-        bounds = [[0.0,1.0] for i in range(xdim)] 
+        if self.unit_interval==True:
+            bounds = [[0.0,1.0] for i in range(xdim)] 
+        else:
+            bounds = None
 
         #Do minimisation
         fit = minimize(fn,coef0,args=(X, y),method='SLSQP',bounds=bounds,constraints=cons)
@@ -92,6 +95,9 @@ class ConstrLS(BaseEstimator):
         X = check_array(X, accept_sparse=True)
         check_is_fitted(self, 'is_fitted_')
         return np.matmul(X,self.coef_)
+
+    def __init__(self, unit_interval=True):
+        self.unit_interval = unit_interval
 
 class ConstrLSClassifier(ConstrLS):
     _estimator_type="classifier"
@@ -380,6 +386,10 @@ def run_stacked(type, # regression or classification
         fin_est = LinearRegressionClassifier()    
     elif finalest == "ols" and type == "reg": 
         fin_est = LinearRegression()    
+    elif finalest == "ls1" and type == "reg":
+        fin_est = ConstrLS(unit_interval=False)    
+    elif finalest == "ls1" and type == "class":
+        fin_est = ConstrLSClassifier(unit_interval=False)    
     else:
         sfi.SFIToolkit.stata('di as err "final estimator not supported with type()"')
         #"

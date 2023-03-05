@@ -6,6 +6,15 @@ python: sklearn.__version__
 global xvars crim-lstat
 
 *******************************************************************************
+*** check that it works without default methods						 		***
+*******************************************************************************
+
+clear all
+use https://statalasso.github.io/dta/cal_housing.dta, clear
+set seed 42
+pystacked medh longi-medi 
+
+*******************************************************************************
 *** check against SJ paper 											 		***
 *******************************************************************************
 
@@ -57,7 +66,7 @@ assert reldif(ols_crossfit , yb1)<10e-6
 *** pystacked with one predictor									 		***
 *******************************************************************************
 
-sysuse auto 
+sysuse auto , clear
 pystacked price mpg, type(reg) m(ols)
 predict double xhat1
 

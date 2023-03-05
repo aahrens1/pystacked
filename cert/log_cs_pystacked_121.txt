@@ -1,8 +1,8 @@
---------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
       name:  <unnamed>
        log:  /Users/kahrens/MyProjects/pystacked/cert/log_cs_pystacked_121.txt
   log type:  text
- opened on:  25 Feb 2023, 20:58:17
+ opened on:   5 Mar 2023, 13:35:41
 
 . 
 . do "cs_pystacked_class.do"
@@ -11,8 +11,8 @@
 . 
 . which pystacked 
 /Users/kahrens/MyProjects/pystacked/pystacked.ado
-*! pystacked v0.5.0
-*! last edited: 14feb2023
+*! pystacked v0.6.1
+*! last edited: 5mar2023
 *! authors: aa/ms
 
 . python: import sklearn
@@ -40,12 +40,38 @@
 . gen train2 = u<.75
 
 . save `testdata'
-file /var/folders/0w/r8yclchd52bfwbf8l00fkkrr0000gs/T//S_83024.000001 saved as .dta format
+file /var/folders/0w/r8yclchd52bfwbf8l00fkkrr0000gs/T//S_35097.000001 saved as .dta format
 
 . 
 . *******************************************************************************
-. *** check against SJ paper                                                                                              
->         ***
+. *** check that it works without default methods                                                         ***
+. *******************************************************************************
+. 
+.  insheet using ///
+>  https://archive.ics.uci.edu/ml/machine-learning-databases/spambase/spambase.data, ///
+>  clear comma
+(58 vars, 4,601 obs)
+
+. set seed 42
+
+. gen train=runiform()
+
+. replace train=train<.75
+(4,601 real changes made)
+
+.  pystacked v58 v1-v57 
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0089558
+  lassocv        |      0.0000000
+  gradboost      |      0.9910442
+
+. 
+. *******************************************************************************
+. *** check against SJ paper                                                                                                      ***
 . *******************************************************************************
 . 
 .  insheet using ///
@@ -95,8 +121,7 @@ Stacking weights:
 .  
 . 
 . *******************************************************************************
-. *** foldvar                                                                                                             
->                         ***
+. *** foldvar                                                                                                                                     ***
 . *******************************************************************************
 . 
 . use `testdata', clear
@@ -230,8 +255,7 @@ Stacking weights:
 
 . 
 . *******************************************************************************
-. *** only one predictor                                                                                                  
->         ***
+. *** only one predictor                                                                                                          ***
 . *******************************************************************************
 . 
 . use `testdata', clear
@@ -277,8 +301,7 @@ Log likelihood = -437.95561                             Pseudo R2     = 0.0508
 
 . 
 . *******************************************************************************
-. *** predicted values/classes                                                                                            
-> ***
+. *** predicted values/classes                                                                                            ***
 . *******************************************************************************
 . 
 . cap drop yhat*
@@ -309,8 +332,7 @@ Stacking weights:
 
 . 
 . *******************************************************************************
-. *** try voting                                                                                                          
->                 ***
+. *** try voting                                                                                                                          ***
 . *******************************************************************************
 . 
 . use `testdata', clear
@@ -341,8 +363,7 @@ Stacking weights:
 .  
 . 
 . *******************************************************************************
-. *** try other estimators                                                                                                
->         ***
+. *** try other estimators                                                                                                        ***
 . *******************************************************************************
 . 
 . use `testdata', clear
@@ -428,8 +449,7 @@ Stacking weights:
 . 
 . 
 . *******************************************************************************
-. *** check table option                                                                                                  
->         ***
+. *** check table option                                                                                                          ***
 . *******************************************************************************
 . 
 . use `testdata', clear
@@ -569,8 +589,7 @@ Confusion matrix: In-Sample, CV, Holdout
 . 
 . 
 . *******************************************************************************
-. *** check graph option                                                                                                  
->         ***
+. *** check graph option                                                                                                          ***
 . *******************************************************************************
 . 
 . use `testdata', clear
@@ -658,8 +677,8 @@ end of do-file
 .  
 . which pystacked 
 /Users/kahrens/MyProjects/pystacked/pystacked.ado
-*! pystacked v0.5.0
-*! last edited: 14feb2023
+*! pystacked v0.6.1
+*! last edited: 5mar2023
 *! authors: aa/ms
 
 . python: import sklearn
@@ -672,8 +691,7 @@ end of do-file
 
 . 
 . *******************************************************************************
-. *** check options classification                                                                                        
-> ***
+. *** check options classification                                                                                        ***
 . *******************************************************************************
 . 
 . clear
@@ -704,9 +722,9 @@ end of do-file
 >                         ) showopt 
 
 Base learner: rf
-n_estimators = 400; criterion = entropy; max_depth = 3; min_samples_split = 5; min_samples_leaf = 0.1; min_weight_fraction
-> _leaf = 0.1; max_features = sqrt; max_leaf_nodes = None; min_impurity_decrease = 0.1; bootstrap = True; oob_score = Fals
-> e; n_jobs = 3; random_state = RandomState(MT19937); warm_start = False; ccp_alpha = 0; max_samples = 10; 
+n_estimators = 400; criterion = entropy; max_depth = 3; min_samples_split = 5; min_samples_leaf = 0.1; min_weight_fraction_leaf = 0.1; max_features = sqrt; max_lea
+> f_nodes = None; min_impurity_decrease = 0.1; bootstrap = True; oob_score = False; n_jobs = 3; random_state = RandomState(MT19937); warm_start = False; ccp_alpha 
+> = 0; max_samples = 10; 
 
 Single base learner: no stacking done.
 
@@ -734,10 +752,9 @@ Stacking weights:
 >                         ) showopt  
 
 Base learner: gradboost
-loss = exponential; learning_rate = 0.2; n_estimators = 400; criterion = friedman_mse; subsample = 0.8; min_samples_split 
-> = 5; min_samples_leaf = 0.1; min_weight_fraction_leaf = 0.1; max_depth = 3; min_impurity_decrease = 0.1; init = None; ra
-> ndom_state = RandomState(MT19937); max_features = sqrt; max_leaf_nodes = 4; warm_start = False; validation_fraction = 0.
-> 15; n_iter_no_change = None; tol = 0.0001; ccp_alpha = 0; 
+loss = exponential; learning_rate = 0.2; n_estimators = 400; criterion = friedman_mse; subsample = 0.8; min_samples_split = 5; min_samples_leaf = 0.1; min_weight_f
+> raction_leaf = 0.1; max_depth = 3; min_impurity_decrease = 0.1; init = None; random_state = RandomState(MT19937); max_features = sqrt; max_leaf_nodes = 4; warm_s
+> tart = False; validation_fraction = 0.15; n_iter_no_change = None; tol = 0.0001; ccp_alpha = 0; 
 
 Single base learner: no stacking done.
 
@@ -752,18 +769,536 @@ Stacking weights:
 >                         cmdopt1( ///
 >                         c(9) ///
 >                         nocons ///
->                         cv(4) ///
 >                         tol(0.001) ///
 >                         max_iter(90) ///
 >                         n_jobs(2) ///
 >                         intercept_scaling(1.1) ///
 >                         l1_ratios(0 0.1 1) ///
->                         ) showopt   
-option cv() not allowed
-r(198);
+>                         ) showopt  bfolds(4)  
+
+Base learner: elasticcv
+Cs = 9; fit_intercept = False; penalty = elasticnet; solver = saga; tol = 0.001; max_iter = 90; n_jobs = 2; refit = True; intercept_scaling = 1.1; random_state = R
+> andomState(MT19937); l1_ratios = (0, 0.1, 1); 
+
+Single base learner: no stacking done.
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  elasticcv      |      1.0000000
+
+. 
+. pystacked $model, method(lassocv) type(class) ///
+>                         cmdopt1( ///
+>                         c(9) ///
+>                         nocons ///
+>                         tol(0.001) ///
+>                         max_iter(90) ///
+>                         n_jobs(2) ///
+>                         intercept_scaling(1.1) ///
+>                         ) showopt bfolds(4) 
+
+Base learner: lassocv
+Cs = 9; fit_intercept = False; penalty = l1; solver = saga; tol = 0.001; max_iter = 90; n_jobs = 2; refit = True; intercept_scaling = 1.1; random_state = RandomSta
+> te(MT19937); 
+
+Single base learner: no stacking done.
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  lassocv        |      1.0000000
+
+. 
+. pystacked $model, method(ridgecv) type(class) ///
+>                         cmdopt1( ///
+>                         c(9) ///
+>                         nocons ///
+>                         tol(0.001) ///
+>                         max_iter(90) ///
+>                         n_jobs(2) ///
+>                         intercept_scaling(1.1) ///
+>                         ) showopt bfolds(4)     
+
+Base learner: ridgecv
+Cs = 9; fit_intercept = False; penalty = l2; solver = newton-cg; tol = 0.001; max_iter = 90; n_jobs = 2; refit = True; intercept_scaling = 1.1; random_state = Rand
+> omState(MT19937); 
+
+Single base learner: no stacking done.
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ridgecv        |      1.0000000
+
+. 
+. pystacked $model, method(nnet) type(class) ///
+>                         cmdopt1( ///
+>                         hidden_layer_sizes(5 5) ///
+>                         activation(logistic) ///
+>                         alpha(0.0002) ///
+>                         learning_rate(adaptive) ///
+>                         learning_rate_init(0.01) ///
+>                         max_iter(100) ///
+>                         power_t(0.4) ///
+>                         shuffle(False) ///
+>                         momentum(0.8) ///
+>                         validation_fraction(0.15) ///
+>                         beta_1(0.91) ///
+>                         beta_2(0.991) ///
+>                         epsilon(1e-7) ///
+>                         n_iter_no_change(9) ///
+>                         max_fun(14000) ///
+>                         ) showopt                       
+
+Base learner: nnet
+hidden_layer_sizes = (5, 5); activation = logistic; solver = adam; alpha = 0.0002; batch_size = auto; learning_rate = adaptive; learning_rate_init = 0.01; power_t 
+> = 0.4; max_iter = 100; shuffle = False; random_state = RandomState(MT19937); tol = 0.0001; verbose = False; warm_start = False; momentum = 0.8; nesterovs_momentu
+> m = True; early_stopping = False; validation_fraction = 0.15; beta_1 = 0.91; beta_2 = 0.991; epsilon = 1e-07; n_iter_no_change = 9; max_fun = 14000; 
+
+Single base learner: no stacking done.
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  nnet           |      1.0000000
+
+. 
+. pystacked $model, method(svm) type(class) ///
+>                         cmdopt1( ///
+>                         c(0.1) ///
+>                         kernel(poly) ///
+>                         degree(2) ///
+>                         gamma(auto) ///
+>                         coef0(0.01) ///
+>                         shrinking(False) ///
+>                         tol(1e-2) ///
+>                         cache_size(150) ///
+>                         max_iter(10) ///
+>                         ) showopt 
+
+Base learner: svm
+C = 0.1; kernel = poly; degree = 2; gamma = auto; coef0 = 0.01; shrinking = False; probability = True; tol = 0.01; cache_size = 150; max_iter = 10; decision_functi
+> on_shape = ovr; random_state = RandomState(MT19937); 
+
+Single base learner: no stacking done.
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  svm            |      1.0000000
+
+.                         
+.                         
+.                         
+. *******************************************************************************
+. *** check options regression                                                                                            ***
+. *******************************************************************************
+. 
+. clear
+
+. insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
+(11 vars, 97 obs)
+
+. 
+. pystacked $model, method(linsvm) ///
+>                         cmdopt1( ///
+>                         epsilon(0.01) ///
+>                         tol(1e-3) ///
+>                         c(1.1) ///
+>                         loss(squared_epsilon_insensitive) ///
+>                         nocons ///
+>                         intercept_scaling(1.1) ///
+>                         dual(False) ///
+>                         max_iter(900) ///
+>                         ) showopt       
+
+Base learner: linsvm
+epsilon = 0.01; tol = 0.001; C = 1.1; loss = squared_epsilon_insensitive; fit_intercept = False; intercept_scaling = 1.1; dual = False; random_state = RandomState(
+> MT19937); max_iter = 900; 
+
+Single base learner: no stacking done.
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  linsvm         |      1.0000000
+
+. 
+. pystacked $model, method(svm) ///
+>                         cmdopt1( ///
+>                         kernel(poly) ///
+>                         degree(2) ///
+>                         gamma(auto) ///
+>                         coef0(0.1) ///
+>                         tol(1e-2) ///
+>                         c(1.1) ///
+>                         epsilon(0.14) ///
+>                         shrinking(False) ///
+>                         max_iter(10) ///
+>                         ) showopt       
+
+Base learner: svm
+kernel = poly; degree = 2; gamma = auto; coef0 = 0.1; tol = 0.01; C = 1.1; epsilon = 0.14; max_iter = 10; shrinking = False; cache_size = 200; 
+
+Single base learner: no stacking done.
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  svm            |      1.0000000
+
+. 
+. pystacked $model, method(nnet) ///
+>                         cmdopt1( ///
+>                         hidden_layer_sizes(5 5) ///
+>                         activation(logistic) ///
+>                         alpha(0.0002) ///
+>                         learning_rate(adaptive) ///
+>                         learning_rate_init(0.01) ///
+>                         max_iter(100) ///
+>                         shuffle(False) ///
+>                         momentum(0.8) ///
+>                         validation_fraction(0.15) ///
+>                         beta_1(0.91) ///
+>                         beta_2(0.991) ///
+>                         epsilon(1e-7) ///
+>                         n_iter_no_change(9) ///
+>                         max_fun(14000) ///
+>                         ) showopt                       
+
+Base learner: nnet
+hidden_layer_sizes = (5, 5); activation = logistic; solver = adam; alpha = 0.0002; batch_size = auto; learning_rate = adaptive; learning_rate_init = 0.01; power_t 
+> = 0.5; max_iter = 100; shuffle = False; random_state = RandomState(MT19937); tol = 0.0001; verbose = False; warm_start = False; momentum = 0.8; nesterovs_momentu
+> m = True; early_stopping = False; validation_fraction = 0.15; beta_1 = 0.91; beta_2 = 0.991; epsilon = 1e-07; n_iter_no_change = 9; max_fun = 14000; 
+
+Single base learner: no stacking done.
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  nnet           |      1.0000000
+
+. 
+. pystacked $model, method(lassocv) ///
+>                         cmdopt1( ///
+>                         alphas(0.01 0.1 1 2) ///
+>                         eps(0.1) ///
+>                         n_alphas(20) ///
+>                         nocons ///
+>                         max_iter(500) ///
+>                         tol(0.001) ///
+>                         positive ///
+>                         ) showopt bfolds(3) 
+
+Base learner: lassocv
+alphas = [0.01, 0.1, 1, 2]; l1_ratio = 1; eps = 0.1; n_alphas = 20; fit_intercept = False; max_iter = 500; tol = 0.001; n_jobs = None; positive = True; selection =
+>  cyclic; random_state = RandomState(MT19937); 
+
+Single base learner: no stacking done.
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  lassocv        |      1.0000000
+
+. 
+. pystacked $model, method(ridgecv) ///
+>                         cmdopt1( ///
+>                         alphas(0.01 0.1 1 2) ///
+>                         eps(0.01) ///
+>                         n_alphas(20) ///
+>                         nocons ///
+>                         max_iter(500) ///
+>                         tol(0.001) ///
+>                         positive ///
+>                         ) showopt  bfolds(3)    
+
+Base learner: ridgecv
+alphas = [0.01, 0.1, 1, 2]; l1_ratio = 0; eps = 0.01; n_alphas = 20; fit_intercept = False; max_iter = 500; tol = 0.001; n_jobs = None; positive = True; selection 
+> = cyclic; random_state = RandomState(MT19937); 
+
+Single base learner: no stacking done.
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ridgecv        |      1.0000000
+
+.                         
+. pystacked $model, method(gradboost) ///
+>                         cmdopt1( ///
+>                         learning_rate(0.2) ///
+>                         n_estimators(400) ///
+>                         subsample(0.8) ///
+>                         min_samples_split(5) ///
+>                         min_samples_leaf(0.1) ///
+>                         min_weight_fraction_leaf(.1) ///
+>                         max_depth(3) ///        
+>                         min_impurity_decrease(.1) ///
+>                         max_features(sqrt) ///
+>                         alpha(.8) ///
+>                         max_leaf_nodes(4) /// 
+>                         warm_start ///
+>                         validation_fraction(.15) ///
+>                         ) showopt  
+
+Base learner: gradboost
+loss = squared_error; learning_rate = 0.2; n_estimators = 400; subsample = 0.8; criterion = friedman_mse; min_samples_split = 5; min_samples_leaf = 0.1; min_weight
+> _fraction_leaf = 0.1; max_depth = 3; min_impurity_decrease = 0.1; init = None; random_state = RandomState(MT19937); max_features = sqrt; alpha = 0.8; max_leaf_no
+> des = 4; warm_start = True; validation_fraction = 0.15; n_iter_no_change = None; tol = 0.0001; ccp_alpha = 0; 
+
+Single base learner: no stacking done.
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  gradboost      |      1.0000000
+
+. 
+. pystacked $model, method(rf) ///
+>                         cmdopt1( ///
+>                         n_estimators(400) ///
+>                         min_samples_split(5) ///
+>                         min_samples_leaf(0.1) ///
+>                         min_weight_fraction_leaf(.1) ///
+>                         max_depth(3) ///        
+>                         min_impurity_decrease(.1) ///
+>                         max_features(sqrt) ///
+>                         max_leaf_nodes(4) /// 
+>                         warm_start ///
+>                         ) showopt 
+
+Base learner: rf
+n_estimators = 400; criterion = squared_error; max_depth = 3; min_samples_split = 5; min_samples_leaf = 0.1; min_weight_fraction_leaf = 0.1; max_features = sqrt; m
+> ax_leaf_nodes = 4; min_impurity_decrease = 0.1; bootstrap = True; oob_score = False; n_jobs = None; random_state = RandomState(MT19937); warm_start = True; ccp_a
+> lpha = 0; max_samples = None; 
+
+Single base learner: no stacking done.
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  rf             |      1.0000000
+
+.  
+. 
+end of do-file
+
+. do "cs_pystacked_reg.do"
+
+. 
+. which pystacked 
+/Users/kahrens/MyProjects/pystacked/pystacked.ado
+*! pystacked v0.6.1
+*! last edited: 5mar2023
+*! authors: aa/ms
+
+. python: import sklearn
+
+. python: sklearn.__version__
+'1.2.1'
+
+. 
+. global xvars crim-lstat
+
+. 
+. *******************************************************************************
+. *** check that it works without default methods                                                         ***
+. *******************************************************************************
+. 
+. clear all
+
+. use https://statalasso.github.io/dta/cal_housing.dta, clear
+
+. set seed 42
+
+. pystacked medh longi-medi 
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0000000
+  lassocv        |      0.0000000
+  gradboost      |      1.0000000
+
+. 
+. *******************************************************************************
+. *** check against SJ paper                                                                                                      ***
+. *******************************************************************************
+. 
+. clear all
+
+. use https://statalasso.github.io/dta/cal_housing.dta, clear
+
+. set seed 42
+
+. gen train=runiform()
+
+. replace train=train<.75
+(20,640 real changes made)
+
+. replace medh = medh/10e3 
+variable medhousevalue was long now double
+(20,640 real changes made)
+
+. label var medh 
+
+. set seed 42
+
+. pystacked medh longi-medi if train,                        ///
+>     type(regress)                                          ///
+>     methods(ols lassocv lassocv rf gradboost)              ///
+>     pipe3(poly2) cmdopt5(learning_rate(0.01)               ///
+>     n_estimators(1000))
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0000000
+  lassocv        |      0.0000000
+  lassocv        |      0.0000000
+  rf             |      0.8382714
+  gradboost      |      0.1617286
+
+. 
+. mat W = e(weights)
+
+. assert reldif(0,el(W,1,1))<0.0001
+
+. assert reldif(0,el(W,2,1))<0.0001
+
+. assert reldif(0,el(W,3,1))<0.0001
+
+. assert reldif(0.8382714,el(W,4,1))<0.0001
+
+. assert reldif(0.1617286,el(W,5,1))<0.0001
+
+. 
+. 
+. *******************************************************************************
+. *** foldvar                                                                                                                                     ***
+. *******************************************************************************
+. 
+. insheet using "/Users/kahrens/Dropbox (PP)/ddml/Data/housing.csv", ///
+>         clear comma
+(14 vars, 506 obs)
+
+. 
+. gen fid = 1 + (_n>250)
+
+.         
+. pystacked medv $xvars, method(ols rf) foldvar(fid)
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0000000
+  rf             |      1.0000000
+
+. predict yb , basexb cvalid
+
+. 
+. reg medv $xvars if _n<=250
+
+      Source |       SS           df       MS      Number of obs   =       250
+-------------+----------------------------------   F(13, 236)      =    107.69
+       Model |  14969.2255        13  1151.47888   Prob > F        =    0.0000
+    Residual |  2523.45072       236  10.6925878   R-squared       =    0.8557
+-------------+----------------------------------   Adj R-squared   =    0.8478
+       Total |  17492.6762       249  70.2517116   Root MSE        =      3.27
+
+------------------------------------------------------------------------------
+        medv | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+        crim |   1.208708   .5165797     2.34   0.020     .1910112    2.226404
+          zn |   .0246793   .0139997     1.76   0.079     -.002901    .0522596
+       indus |   .0101453    .051355     0.20   0.844    -.0910274    .1113181
+        chas |   .4227349   .8157238     0.52   0.605    -1.184296    2.029765
+         nox |  -8.480356   4.493227    -1.89   0.060    -17.33231    .3716021
+          rm |   8.865556   .4935031    17.96   0.000     7.893322     9.83779
+         age |   -.048789   .0117209    -4.16   0.000      -.07188    -.025698
+         dis |  -1.123173   .2121414    -5.29   0.000    -1.541106   -.7052403
+         rad |   .2089508   .1511725     1.38   0.168    -.0888692    .5067707
+         tax |  -.0160083   .0039309    -4.07   0.000    -.0237525   -.0082641
+     ptratio |  -.6580104   .1244101    -5.29   0.000    -.9031065   -.4129142
+           b |   .0178036   .0052194     3.41   0.001      .007521    .0280863
+       lstat |  -.1155318    .057027    -2.03   0.044    -.2278789   -.0031847
+       _cons |   -9.94033   5.878804    -1.69   0.092    -21.52197    1.641306
+------------------------------------------------------------------------------
+
+. predict ols1 if _n>250
+(option xb assumed; fitted values)
+(250 missing values generated)
+
+. reg medv $xvars if _n>250
+
+      Source |       SS           df       MS      Number of obs   =       256
+-------------+----------------------------------   F(13, 242)      =     52.56
+       Model |  17507.9606        13   1346.7662   Prob > F        =    0.0000
+    Residual |  6200.28792       242  25.6210244   R-squared       =    0.7385
+-------------+----------------------------------   Adj R-squared   =    0.7244
+       Total |  23708.2486       255  92.9735238   Root MSE        =    5.0617
+
+------------------------------------------------------------------------------
+        medv | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+        crim |  -.1115731   .0360786    -3.09   0.002    -.1826413    -.040505
+          zn |   .0467109   .0226302     2.06   0.040     .0021336    .0912883
+       indus |  -.1248697   .1586528    -0.79   0.432    -.4373864     .187647
+        chas |   6.203216   1.432213     4.33   0.000      3.38202    9.024411
+         nox |  -25.37038    6.91223    -3.67   0.000    -38.98619   -11.75456
+          rm |   .8986557   .5743273     1.56   0.119     -.232663    2.029974
+         age |    .029812   .0256754     1.16   0.247    -.0207637    .0803878
+         dis |  -1.569539     .33795    -4.64   0.000    -2.235238   -.9038402
+         rad |   .3418979   .0982913     3.48   0.001     .1482821    .5355137
+         tax |  -.0045875   .0070141    -0.65   0.514     -.018404    .0092289
+     ptratio |  -1.387848   .2406709    -5.77   0.000    -1.861925   -.9137712
+           b |   .0058822   .0031425     1.87   0.062    -.0003079    .0120723
+       lstat |  -.7205029   .0727863    -9.90   0.000    -.8638784   -.5771273
+       _cons |   66.56659   7.426122     8.96   0.000      51.9385    81.19467
+------------------------------------------------------------------------------
+
+. predict ols2 if _n<=250
+(option xb assumed; fitted values)
+(256 missing values generated)
+
+. gen ols_crossfit = ols1 if _n>250
+(250 missing values generated)
+
+. replace ols_crossfit = ols2 if _n<=250
+(250 real changes made)
+
+. 
+. assert reldif(ols_crossfit , yb1)<10e-6
+
+. 
+. 
+. *******************************************************************************
+. *** pystacked with one predictor                                                                                        ***
+. *******************************************************************************
+. 
+. sysuse auto 
+no; dataset in memory has changed since last saved
+r(4);
 
 end of do-file
-r(198);
+r(4);
 
 end of do-file
-r(198);
+r(4);
