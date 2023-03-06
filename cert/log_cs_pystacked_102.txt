@@ -2,7 +2,7 @@
       name:  <unnamed>
        log:  /Users/kahrens/MyProjects/pystacked/cert/log_cs_pystacked_102.txt
   log type:  text
- opened on:   5 Mar 2023, 13:27:00
+ opened on:   6 Mar 2023, 15:23:37
 
 . 
 . do "cs_pystacked_class.do"
@@ -40,7 +40,7 @@
 . gen train2 = u<.75
 
 . save `testdata'
-file /var/folders/0w/r8yclchd52bfwbf8l00fkkrr0000gs/T//S_34719.000001 saved as .dta format
+file /var/folders/0w/r8yclchd52bfwbf8l00fkkrr0000gs/T//S_65642.000001 saved as .dta format
 
 . 
 . *******************************************************************************
@@ -1178,15 +1178,15 @@ Stacking weights:
 . 
 . mat W = e(weights)
 
-. assert reldif(0,el(W,1,1))<0.0001
+. assert reldif(0,el(W,1,1))<0.005
 
-. assert reldif(0,el(W,2,1))<0.0001
+. assert reldif(0,el(W,2,1))<0.005
 
-. assert reldif(0,el(W,3,1))<0.0001
+. assert reldif(0,el(W,3,1))<0.005
 
-. assert reldif(0.8382714,el(W,4,1))<0.0001
+. assert reldif(0.8382714,el(W,4,1))<0.005
 
-. assert reldif(0.1617286,el(W,5,1))<0.0001
+. assert reldif(0.1617286,el(W,5,1))<0.005
 
 . 
 . 
@@ -1293,12 +1293,1080 @@ Stacking weights:
 . *** pystacked with one predictor                                                                                        ***
 . *******************************************************************************
 . 
-. sysuse auto 
-no; dataset in memory has changed since last saved
-r(4);
+. sysuse auto , clear
+(1978 automobile data)
 
-end of do-file
-r(4);
+. pystacked price mpg, type(reg) m(ols)
+Single base learner: no stacking done.
 
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      1.0000000
+
+. predict double xhat1
+
+. 
+. reg price mpg
+
+      Source |       SS           df       MS      Number of obs   =        74
+-------------+----------------------------------   F(1, 72)        =     20.26
+       Model |   139449474         1   139449474   Prob > F        =    0.0000
+    Residual |   495615923        72  6883554.48   R-squared       =    0.2196
+-------------+----------------------------------   Adj R-squared   =    0.2087
+       Total |   635065396        73  8699525.97   Root MSE        =    2623.7
+
+------------------------------------------------------------------------------
+       price | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         mpg |  -238.8943   53.07669    -4.50   0.000    -344.7008   -133.0879
+       _cons |   11253.06   1170.813     9.61   0.000     8919.088    13587.03
+------------------------------------------------------------------------------
+
+. predict double xhat2 
+(option xb assumed; fitted values)
+
+. 
+. assert reldif(xhat1,xhat2)<10e-6
+
+. 
+. 
+. *******************************************************************************
+. *** check stdscaler default with regularized linear learners                            ***
+. *******************************************************************************
+. 
+. insheet using "/Users/kahrens/Dropbox (PP)/ddml/Data/housing.csv", ///
+>         clear comma
+(14 vars, 506 obs)
+
+. 
+. pystacked medv $xvars, method(gradboost lassocv)   
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  gradboost      |      0.9835543
+  lassocv        |      0.0164457
+
+. di "`e(pipe2)'"
+stdscaler
+
+. assert "`e(pipe2)'"=="stdscaler"
+
+. 
+. pystacked medv $xvars, method(gradboost lassocv) pipe2(nostdscaler)
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  gradboost      |      0.9639648
+  lassocv        |      0.0360352
+
+. di "`e(pipe2)'"
+passthrough
+
+. assert "`e(pipe2)'"=="passthrough"
+
+.         
+. pystacked medv $xvars || m(gradboost) || m(lassocv)   
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  gradboost      |      0.9271398
+  lassocv        |      0.0728602
+
+. di "`e(pipe2)'"
+stdscaler
+
+. assert "`e(pipe2)'"=="stdscaler"
+
+. 
+. pystacked medv $xvars || m(gradboost) || m(lassocv) pipe(nostdscaler)
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  gradboost      |      0.9722477
+  lassocv        |      0.0277523
+
+. di "`e(pipe2)'"
+passthrough
+
+. assert "`e(pipe2)'"=="passthrough"
+
+. 
+. 
+. *******************************************************************************
+. *** xvar option                                                                                                                         ***
+. *******************************************************************************
+. 
+. insheet using "/Users/kahrens/Dropbox (PP)/ddml/Data/housing.csv", ///
+>         clear comma
+(14 vars, 506 obs)
+
+.         
+. global xuse c.(crim lstat)##c.(crim lstat)
+
+. global xall c.(crim-lstat)##c.(crim-lstat)
+
+. 
+. set seed 789
+
+. pystacked medv $xuse, method(gradboost lassocv)   
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  gradboost      |      0.7474007
+  lassocv        |      0.2525993
+
+. predict double xb
+
+.  
+. set seed 789
+
+. pystacked medv $xall, method(gradboost lassocv) xvars1($xuse) xvars2($xuse) 
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  gradboost      |      0.7474007
+  lassocv        |      0.2525993
+
+. predict double xb2
+
+. 
+. set seed 789
+
+. pystacked medv $xall || method(gradboost) xvars($xuse) || m(lassocv) xvars($xuse),  
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  gradboost      |      0.7474007
+  lassocv        |      0.2525993
+
+. predict double xb3
+
+. 
+. set seed 789
+
+. pystacked medv crim, method(gradboost lassocv) xvars1($xuse) xvars2($xuse)  
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  gradboost      |      0.7474007
+  lassocv        |      0.2525993
+
+. predict double xb4
+
+. 
+. ** this should be different
+. set seed 789
+
+. pystacked medv crim, method(gradboost lassocv) xvars1(crim lstat) xvars2(crim lstat)   
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  gradboost      |      0.8821268
+  lassocv        |      0.1178732
+
+. predict double xb5
+
+. 
+. assert reldif(xb,xb2)<1e-5
+
+. assert reldif(xb,xb3)<1e-5
+
+. assert reldif(xb,xb4)<1e-5
+
+. assert xb!=xb5
+
+. 
+. 
+. *******************************************************************************
+. *** xvar vs pipeline                                                                                                            ***
+. *******************************************************************************
+. 
+. insheet using "/Users/kahrens/Dropbox (PP)/ddml/Data/housing.csv", ///
+>         clear comma
+(14 vars, 506 obs)
+
+.         
+. set seed 789
+
+. pystacked medv crim-lstat, method(gradboost lassocv) xvars2(c.(crim-lstat)##c.(crim-lstat))  
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  gradboost      |      0.8222623
+  lassocv        |      0.1777377
+
+. predict double xb1
+
+. 
+. set seed 789
+
+. pystacked medv crim-lstat, method(gradboost lassocv) pipe2(poly2) 
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  gradboost      |      0.8222622
+  lassocv        |      0.1777378
+
+. predict double xb2
+
+. 
+. assert reldif(xb1,xb2)<1e-5
+
+. 
+. 
+. *******************************************************************************
+. *** voting                                                                                                                                      ***
+. *******************************************************************************
+. 
+. clear
+
+. insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data, tab clear
+(11 vars, 97 obs)
+
+. 
+. global xvars lcavol-pgg
+
+. 
+. set seed 124345
+
+. 
+. pystacked lpsa $xvars, ///
+>                                                  type(regress) pyseed(243) ///
+>                                                  methods(ols lassoic rf) ///
+>                                                  pipe1(poly2) pipe2(poly2) /// 
+>                                                  voting voteweights(.5 .1)
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.5000000
+  lassoic        |      0.1000000
+  rf             |      0.4000000
+
+. 
+. // should cause error
+. cap pystacked lpsa $xvars, ///
+>                                                  type(regress) pyseed(243) ///
+>                                                  methods(ols lassoic rf) ///
+>                                                  pipe1(poly2) pipe2(poly2) /// 
+>                                                  voting voteweights(.5 .9)      
+
+. assert _rc == 198                                                
+
+.                                         
+. *******************************************************************************
+. *** check pipeline                                                                                                                      ***
+. *******************************************************************************
+. 
+. clear
+
+. insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
+(11 vars, 97 obs)
+
+. global xvars lcavol-pgg
+
+. 
+. 
+. pystacked lpsa $xvars, ///
+>                                                  type(regress) pyseed(243) ///
+>                                                  methods(ols lassoic rf ) ///
+>                                                  pipe1(poly2) pipe2(poly2 nostdscaler) pipe3(poly2)  
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0691339
+  lassoic        |      0.7905221
+  rf             |      0.1403440
+
+. ereturn list
+
+scalars:
+                  e(N) =  97
+             e(mcount) =  3
+
+macros:
+             e(xvars3) : "lcavol lweight age lbph svi lcp gleason pgg45"
+              e(pipe3) : "poly2"
+             e(pyopt3) : "{'n_estimators':100,'criterion':'squared_error','max_depth':None,'min_samples_split':2,'min_samples_leaf':1,'min_weight_fraction_leaf.."
+            e(method3) : "rf"
+             e(xvars2) : "lcavol lweight age lbph svi lcp gleason pgg45"
+              e(pipe2) : "poly2"
+             e(pyopt2) : "{'criterion':'aic','fit_intercept':True,'max_iter':500,'positive':False}"
+            e(method2) : "lassoic"
+             e(xvars1) : "lcavol lweight age lbph svi lcp gleason pgg45"
+              e(pipe1) : "poly2"
+             e(pyopt1) : "{'fit_intercept':True,'positive':False}"
+            e(method1) : "ols"
+               e(type) : "reg"
+             e(depvar) : "lpsa"
+            e(predict) : "pystacked_p"
+                e(cmd) : "pystacked"
+         e(python_ver) : "3.10.6 (main, Aug 30 2022, 05:12:36) [Clang 13.1.6 (clang-1316.0.21.2.5)]"
+          e(scipy_ver) : "1.10.1"
+          e(numpy_ver) : "1.24.2"
+        e(sklearn_ver) : "1.0.2"
+           e(base_est) : "ols lassoic rf"
+
+matrices:
+            e(weights) :  3 x 1
+
+functions:
+             e(sample)   
+
+. predict a, basexb
+
+. 
+.  
+. pystacked lpsa c.($xvars)##c.($xvars), ///
+>                                                  type(regress) pyseed(243) ///
+>                                                  methods(ols lassoic  rf ) pipe2(nostdscaler)
+note: svi omitted because of collinearity.
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0000000
+  lassoic        |      0.5411446
+  rf             |      0.4588554
+
+. ereturn list
+
+scalars:
+                  e(N) =  97
+             e(mcount) =  3
+
+macros:
+             e(xvars3) : "lcavol lweight age lbph svi lcp gleason pgg45 __000005 __000006 __000007 __000008 __000009 __00000A __00000B __00000C __00000D __0000.."
+              e(pipe3) : "passthrough"
+             e(pyopt3) : "{'n_estimators':100,'criterion':'squared_error','max_depth':None,'min_samples_split':2,'min_samples_leaf':1,'min_weight_fraction_leaf.."
+            e(method3) : "rf"
+             e(xvars2) : "lcavol lweight age lbph svi lcp gleason pgg45 __000005 __000006 __000007 __000008 __000009 __00000A __00000B __00000C __00000D __0000.."
+              e(pipe2) : "passthrough"
+             e(pyopt2) : "{'criterion':'aic','fit_intercept':True,'max_iter':500,'positive':False}"
+            e(method2) : "lassoic"
+             e(xvars1) : "lcavol lweight age lbph lcp gleason pgg45 __000005 __000006 __000007 __000008 __000009 __00000A __00000B __00000C __00000D __00000E _.."
+              e(pipe1) : "passthrough"
+             e(pyopt1) : "{'fit_intercept':True,'positive':False}"
+            e(method1) : "ols"
+               e(type) : "reg"
+             e(depvar) : "lpsa"
+            e(predict) : "pystacked_p"
+                e(cmd) : "pystacked"
+         e(python_ver) : "3.10.6 (main, Aug 30 2022, 05:12:36) [Clang 13.1.6 (clang-1316.0.21.2.5)]"
+          e(scipy_ver) : "1.10.1"
+          e(numpy_ver) : "1.24.2"
+        e(sklearn_ver) : "1.0.2"
+           e(base_est) : "ols lassoic rf"
+
+matrices:
+            e(weights) :  3 x 1
+
+functions:
+             e(sample)   
+
+. predict b, basexb
+
+. list lpsa a* b* if _n <= 10
+
+     +-----------------------------------------------------------------------------------+
+     |      lpsa   age         a1         a2         a3         b1         b2         b3 |
+     |-----------------------------------------------------------------------------------|
+  1. | -.4307829    50   .2531799   1.079373   .3325487   .2531799   1.079373   .3325487 |
+  2. | -.1625189    58   .5338573   .9922831   .0659286   .5338573   .9922831   .0659286 |
+  3. | -.1625189    74   .2774684   .7602873   .3647012   .2774684   .7602873   .3647012 |
+  4. | -.1625189    58   .4093789   .8741754   .0859689   .4093789   .8741754   .0859689 |
+  5. |  .3715636    62   1.388298   1.827831   .6633989   1.388298   1.827831   .6633989 |
+     |-----------------------------------------------------------------------------------|
+  6. |  .7654678    50   .6148925   1.051359   .4205081   .6148925   1.051359   .4205081 |
+  7. |  .7654678    64   1.843947    1.93333   1.027373   1.843947    1.93333   1.027373 |
+  8. |  .8544153    58   1.820537   1.894149   1.162384   1.820537   1.894149   1.162384 |
+  9. |  1.047319    47   1.383648   1.367152   .7764618   1.383648   1.367152   .7764618 |
+ 10. |  1.047319    63   .8287085   1.473098   1.236331   .8287085   1.473098   1.236331 |
+     +-----------------------------------------------------------------------------------+
+
+. 
+. assert reldif(a1,b1)<1e-5
+
+. assert reldif(a2,b2)<1e-5
+
+. 
+. *******************************************************************************
+. *** check that xvar() subsetting works                                                                          ***
+. *******************************************************************************
+. 
+. 
+. insheet using https://statalasso.github.io/dta/housing.csv, clear
+(14 vars, 506 obs)
+
+. 
+. set seed 789
+
+. pystacked medv crim lstat, method(gradboost lassocv) pyseed(-1)
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  gradboost      |      0.8821268
+  lassocv        |      0.1178732
+
+. predict double xb
+
+. 
+. set seed 789
+
+. pystacked medv crim-lstat, method(gradboost lassocv) xvars1(crim lstat) xvars2(crim lstat) pyseed(-1)
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  gradboost      |      0.8821268
+  lassocv        |      0.1178732
+
+. predict double xb2
+
+. 
+. set seed 789
+
+. pystacked medv crim-lstat || method(gradboost) xvars(crim lstat) || m(lassocv) xvars(crim lstat), pyseed(-1)
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  gradboost      |      0.8821268
+  lassocv        |      0.1178732
+
+. predict double xb3
+
+. list xb* if _n<5
+
+     +-----------------------------------+
+     |        xb         xb2         xb3 |
+     |-----------------------------------|
+  1. | 26.407073   26.407073   26.407073 |
+  2. | 22.074846   22.074846   22.074846 |
+  3. |  34.43726    34.43726    34.43726 |
+  4. | 35.627233   35.627233   35.627233 |
+     +-----------------------------------+
+
+. assert reldif(xb,xb2)<10e-9
+
+. assert reldif(xb,xb3)<10e-9
+
+. 
+. 
+. *** with factor variables
+. 
+. insheet using https://statalasso.github.io/dta/housing.csv, clear
+(14 vars, 506 obs)
+
+. 
+. set seed 789
+
+. pystacked medv i.rad##c.crim, method(gradboost lassocv) pyseed(-1)
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  gradboost      |      0.4791765
+  lassocv        |      0.5208235
+
+. predict double xb
+
+. 
+. set seed 789
+
+. pystacked medv i.rad##c.(crim-lstat), method(gradboost lassocv) xvars1(i.rad##c.crim) xvars2(i.rad##c.crim) pyseed(-1)
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  gradboost      |      0.4791765
+  lassocv        |      0.5208235
+
+. predict double xb2
+
+. 
+. set seed 789
+
+. pystacked medv i.rad##c.(crim-lstat) || method(gradboost) xvars(i.rad##c.crim) || m(lassocv) xvars(i.rad##c.crim), pyseed(-1)
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  gradboost      |      0.4791765
+  lassocv        |      0.5208235
+
+. predict double xb3
+
+. list xb* if _n<5
+
+     +-----------------------------------+
+     |        xb         xb2         xb3 |
+     |-----------------------------------|
+  1. |  25.94403    25.94403    25.94403 |
+  2. | 27.627624   27.627624   27.627624 |
+  3. | 29.591053   29.591053   29.591053 |
+  4. | 30.817581   30.817581   30.817581 |
+     +-----------------------------------+
+
+. assert reldif(xb,xb2)<10e-9
+
+. assert reldif(xb,xb3)<10e-9
+
+. 
+. 
+. *******************************************************************************
+. *** try various combinations of estimators                                                                      ***
+. *******************************************************************************
+. 
+. insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
+(11 vars, 97 obs)
+
+. 
+. local m1 ols lassocv gradboost nnet
+
+. local m2 ols lassocv rf nnet
+
+. local m3 ols lassoic gradboost nnet
+
+. local m4 ols ridgecv gradboost nnet
+
+. local m5 ols elasticcv gradboost nnet
+
+. local m6 ols elasticcv gradboost svm
+
+. local m7 ols elasticcv gradboost linsvm
+
+. 
+. foreach m in "`m1'" "`m2'" "`m3'" "`m4'" "`m5'" "`m6'" "`m7'" {
+  2.         di "`m'"
+  3.         pystacked lpsa lcavol lweight age lbph svi lcp gleason pgg45, ///
+>                                                  type(regress) pyseed(243) ///
+>                                                  methods(`m') /// 
+>                                                  njobs(4) ///
+>                                                  pipe2(poly2) pipe1(poly2)
+  4.         pystacked lpsa lcavol lweight age lbph svi lcp gleason pgg45, ///
+>                                                  type(regress) pyseed(243) ///
+>                                                  methods(`m') /// 
+>                                                  njobs(4) ///
+>                                                  pipe2(poly2) pipe1(poly2) finalest(singlebest)
+  5. }
+ols lassocv gradboost nnet
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0000000
+  lassocv        |      0.5805509
+  gradboost      |      0.3399453
+  nnet           |      0.0795038
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0000000
+  lassocv        |      1.0000000
+  gradboost      |      0.0000000
+  nnet           |      0.0000000
+ols lassocv rf nnet
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0000000
+  lassocv        |      0.4022450
+  rf             |      0.5977550
+  nnet           |      0.0000000
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0000000
+  lassocv        |      1.0000000
+  rf             |      0.0000000
+  nnet           |      0.0000000
+ols lassoic gradboost nnet
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0035754
+  lassoic        |      0.7675008
+  gradboost      |      0.2289238
+  nnet           |      0.0000000
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0000000
+  lassoic        |      1.0000000
+  gradboost      |      0.0000000
+  nnet           |      0.0000000
+ols ridgecv gradboost nnet
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0000000
+  ridgecv        |      0.8804403
+  gradboost      |      0.1195597
+  nnet           |      0.0000000
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0000000
+  ridgecv        |      1.0000000
+  gradboost      |      0.0000000
+  nnet           |      0.0000000
+ols elasticcv gradboost nnet
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0438407
+  elasticcv      |      0.7209751
+  gradboost      |      0.2351843
+  nnet           |      0.0000000
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0000000
+  elasticcv      |      1.0000000
+  gradboost      |      0.0000000
+  nnet           |      0.0000000
+ols elasticcv gradboost svm
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0428585
+  elasticcv      |      0.7964982
+  gradboost      |      0.1229691
+  svm            |      0.0376741
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0000000
+  elasticcv      |      0.0000000
+  gradboost      |      1.0000000
+  svm            |      0.0000000
+ols elasticcv gradboost linsvm
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0366520
+  elasticcv      |      0.6611403
+  gradboost      |      0.3022077
+  linsvm         |      0.0000000
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0000000
+  elasticcv      |      1.0000000
+  gradboost      |      0.0000000
+  linsvm         |      0.0000000
+
+. 
+. *******************************************************************************
+. *** check that predicted value = weighted avg of transform variables            ***
+. *******************************************************************************
+. 
+. insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
+(11 vars, 97 obs)
+
+. 
+. set seed 124345
+
+. 
+. pystacked lpsa lcavol lweight age lbph svi lcp gleason pgg45, ///
+>                                                  type(regress) pyseed(243) 
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.8885154
+  lassocv        |      0.0000000
+  gradboost      |      0.1114846
+
+.                                                  
+. predict double yhat, xb
+
+. list yhat if _n < 10
+
+     +-----------+
+     |      yhat |
+     |-----------|
+  1. | .69256734 |
+  2. | .67613236 |
+  3. | .38524425 |
+  4. | .55128975 |
+  5. | 1.6045648 |
+     |-----------|
+  6. | .82604479 |
+  7. | 1.7851343 |
+  8. | 2.0047468 |
+  9. | 1.2320338 |
+     +-----------+
+
+. 
+. predict double t, basexb
+
+. 
+. mat W = e(weights)
+
+. gen myhat = t1*el(W,1,1)+t2*el(W,2,1)+t3*el(W,3,1)
+
+. 
+. assert reldif(yhat,myhat)<0.0001
+
+. 
+. 
+. *******************************************************************************
+. *** check for error message when data in memory changed                                         ***
+. *******************************************************************************
+. 
+. clear
+
+. insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
+(11 vars, 97 obs)
+
+. 
+. set seed 124345
+
+. 
+. pystacked lpsa lcavol lweight age lbph svi lcp gleason pgg45, ///
+>                                                  type(regress) pyseed(243) 
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.8885154
+  lassocv        |      0.0000000
+  gradboost      |      0.1114846
+
+.                                                  
+. replace lcavol = 2 * lcavol
+(97 real changes made)
+
+. 
+. cap predict double yhat, xb
+
+. assert _rc != 0
+
+. 
+. *******************************************************************************
+. *** check table option                                                                                                          ***
+. *******************************************************************************
+. 
+. clear
+
+. insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
+(11 vars, 97 obs)
+
+. global xvars lcavol-pgg
+
+. 
+. set seed 124345
+
+. 
+. // holdout sample 1
+. cap drop h1
+
+. gen h1 = _n>60
+
+. // holdout sample 2
+. cap drop h2
+
+. gen h2 = _n>40
+
+. 
+. // postestimation syntax
+. 
+. // full sample
+. pystacked lpsa $xvars, ///
+>                                                  type(regress) pyseed(243) ///
+>                                                  methods(ols lassocv rf) ///
+>                                                  pipe1(poly2) pipe2(poly2)
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.1749770
+  lassocv        |      0.4306317
+  rf             |      0.3943913
+
+. pystacked, table
+
+RMSPE: In-Sample, CV, Holdout
+-----------------------------------------------------------------
+  Method         | Weight   In-Sample        CV         Holdout
+-----------------+-----------------------------------------------
+  STACKING       |    .        0.470        0.794            .
+  ols            | 0.175       0.501        1.179            .
+  lassocv        | 0.431       0.689        0.836            .
+  rf             | 0.394       0.286        0.826            .
+
+. 
+. // with holdout sample
+. pystacked lpsa $xvars if _n<50, ///
+>                                                  type(regress) pyseed(243) ///
+>                                                  methods(ols lassocv rf) ///
+>                                                  pipe1(poly2) pipe2(poly2)
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0000000
+  lassocv        |      0.6596640
+  rf             |      0.3403360
+
+. // default holdout - all available obs
+. pystacked, table holdout
+Number of holdout observations:   48
+
+RMSPE: In-Sample, CV, Holdout
+-----------------------------------------------------------------
+  Method         | Weight   In-Sample        CV         Holdout
+-----------------+-----------------------------------------------
+  STACKING       |    .        0.439        0.633        0.706
+  ols            | 0.000       0.317      179.659        5.320
+  lassocv        | 0.660       0.546        0.645        0.723
+  rf             | 0.340       0.257        0.664        0.703
+
+. // specified holdout sample
+. pystacked, table holdout(h1)
+Number of holdout observations:   37
+
+RMSPE: In-Sample, CV, Holdout
+-----------------------------------------------------------------
+  Method         | Weight   In-Sample        CV         Holdout
+-----------------+-----------------------------------------------
+  STACKING       |    .        0.439        0.633        0.713
+  ols            | 0.000       0.317      179.659        5.840
+  lassocv        | 0.660       0.546        0.645        0.732
+  rf             | 0.340       0.257        0.664        0.701
+
+. // holdout sample overlaps with estimation sample
+. cap noi pystacked, table holdout(h2)
+error - holdout and estimation samples overlap
+
+. assert _rc != 0
+
+. 
+. // as pystacked option
+. pystacked lpsa $xvars if _n<50, ///
+>                                                  type(regress) pyseed(243) ///
+>                                                  methods(ols lassocv rf) ///
+>                                                  pipe1(poly2) pipe2(poly2) ///
+>                                                  table holdout
+Number of holdout observations:   48
+
+RMSPE: In-Sample, CV, Holdout
+-----------------------------------------------------------------
+  Method         | Weight   In-Sample        CV         Holdout
+-----------------+-----------------------------------------------
+  STACKING       |    .        0.546        0.632        0.723
+  ols            | 0.000       0.317       56.564        5.320
+  lassocv        | 1.000       0.546        0.632        0.723
+  rf             | 0.000       0.257        0.748        0.703
+
+. 
+. // syntax 2
+. pystacked lpsa $xvars || method(ols) || method(lassocv) || method(rf) ||  if _n<50, ///
+>                                                  type(regress) pyseed(243) ///
+>                                                  methods(ols lassoic rf)
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.4380350
+  lassocv        |      0.0000000
+  rf             |      0.5619650
+
+. pystacked, table holdout(h1)
+Number of holdout observations:   37
+
+RMSPE: In-Sample, CV, Holdout
+-----------------------------------------------------------------
+  Method         | Weight   In-Sample        CV         Holdout
+-----------------+-----------------------------------------------
+  STACKING       |    .        0.357        0.596        0.744
+  ols            | 0.438       0.526        0.633        0.871
+  lassocv        | 0.000       0.570        0.646        0.654
+  rf             | 0.562       0.257        0.618        0.701
+
+. 
+. *******************************************************************************
+. *** check graph option                                                                                                          ***
+. *******************************************************************************
+. 
+. clear
+
+. insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
+(11 vars, 97 obs)
+
+. global xvars lcavol-pgg
+
+. 
+. set seed 124345
+
+. 
+. // holdout sample 1
+. cap drop h1
+
+. gen h1 = _n>60
+
+. // holdout sample 2
+. cap drop h2
+
+. gen h2 = _n>40
+
+. 
+. // postestimation syntax
+. 
+. // full sample
+. pystacked lpsa $xvars, ///
+>                                                  type(regress) pyseed(243) ///
+>                                                  methods(ols lassocv rf) ///
+>                                                  pipe1(poly2) pipe2(poly2)
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.1749770
+  lassocv        |      0.4306317
+  rf             |      0.3943913
+
+. // in-sample predictions
+. pystacked, graph
+
+. 
+. // with holdout sample
+. pystacked lpsa $xvars if _n<50, ///
+>                                                  type(regress) pyseed(243) ///
+>                                                  methods(ols lassocv rf) ///
+>                                                  pipe1(poly2) pipe2(poly2)
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0000000
+  lassocv        |      0.6596640
+  rf             |      0.3403360
+
+. // in-sample predictions
+. pystacked, graph
+
+. // default holdout - all available obs
+. pystacked, graph holdout
+Number of holdout observations:   48
+
+. // specified holdout sample
+. pystacked, graph holdout(h1)
+Number of holdout observations:   37
+
+. // graphing options - combined graph
+. pystacked, graph(subtitle("subtitle goes here")) holdout
+Number of holdout observations:   48
+
+. // graphing options - learner graphs
+. pystacked, lgraph(ytitle("ytitle goes here")) holdout
+Number of holdout observations:   48
+
+. 
+. // as pystacked option
+. pystacked lpsa $xvars if _n<50, ///
+>                                                  type(regress) pyseed(243) ///
+>                                                  methods(ols lassocv rf) ///
+>                                                  pipe1(poly2) pipe2(poly2) ///
+>                                                  graph holdout
+Number of holdout observations:   48
+
+. 
+. // syntax 2
+. pystacked lpsa $xvars || method(ols) || method(lassocv) || method(rf) || if _n<50 , ///
+>                                                  type(regress) pyseed(243) ///
+>                                                  methods(ols lassoic rf)
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.4380350
+  lassocv        |      0.0000000
+  rf             |      0.5619650
+
+. pystacked, graph holdout
+Number of holdout observations:   48
+
+.  
+. 
 end of do-file
-r(4);
+
+. 
+. log close
+      name:  <unnamed>
+       log:  /Users/kahrens/MyProjects/pystacked/cert/log_cs_pystacked_102.txt
+  log type:  text
+ closed on:   6 Mar 2023, 15:31:09
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------

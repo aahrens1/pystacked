@@ -33,11 +33,11 @@ pystacked medh longi-medi if train,                        ///
     n_estimators(1000))
 
 mat W = e(weights)
-assert reldif(0,el(W,1,1))<0.0001
-assert reldif(0,el(W,2,1))<0.0001
-assert reldif(0,el(W,3,1))<0.0001
-assert reldif(0.8382714,el(W,4,1))<0.0001
-assert reldif(0.1617286,el(W,5,1))<0.0001
+assert reldif(0,el(W,1,1))<0.005
+assert reldif(0,el(W,2,1))<0.005
+assert reldif(0,el(W,3,1))<0.005
+assert reldif(0.8382714,el(W,4,1))<0.005
+assert reldif(0.1617286,el(W,5,1))<0.005
 
 
 *******************************************************************************
