@@ -571,6 +571,8 @@ version 16.0
     ereturn local predict    pystacked_p
     ereturn local depvar    `yvar'
     ereturn local type      `type'
+    if "`voting'"~=""		ereturn local finalest voting
+    else					ereturn local finalest `finalest'
 
     forvalues i = 1(1)`mcount' {
         local opt`i' = stritrim("`opt`i''")

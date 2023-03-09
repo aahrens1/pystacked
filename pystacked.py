@@ -391,7 +391,7 @@ def run_stacked(type, # regression or classification
     elif finalest == "ls1" and type == "class":
         fin_est = ConstrLSClassifier(unit_interval=False)    
     else:
-        sfi.SFIToolkit.stata('di as err "final estimator not supported with type()"')
+        sfi.SFIToolkit.stata('di as err "specified final estimator not supported"')
         #"
         sfi.SFIToolkit.error(198)
 
