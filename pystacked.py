@@ -182,6 +182,7 @@ def run_stacked(type, # regression or classification
     voting,votetype,voteweights, # voting
     njobs, # number of cores
     foldvar, # foldvar
+    prefit, # don't do CV
     bfolds, #
     shuff, #
     idvar, # id var
@@ -241,6 +242,11 @@ def run_stacked(type, # regression or classification
         cvrng=rng
     else: 
         cvrng=None
+
+    if prefit!="":
+        ccv=prefit
+    else:
+        ccv=PredefinedSplit(fid)
 
     ##############################################################
     ### prepare fit                                            ###
@@ -362,7 +368,10 @@ def run_stacked(type, # regression or classification
             sfi.SFIToolkit.stata('di as err "method not known"') 
             #"
             sfi.SFIToolkit.error()
-        est_list.append((methods[m]+str(m),Pipeline(newmethod)))
+        if prefit=="":
+            est_list.append((methods[m]+str(m),Pipeline(newmethod)))
+        else:
+            est_list.append((methods[m]+str(m),Pipeline(newmethod).fit(x,y)))
 
     if finalest == "nnls0" and type == "class": 
         fin_est = LinearRegressionClassifier(fit_intercept=False,positive=True)
@@ -408,14 +417,14 @@ def run_stacked(type, # regression or classification
                        estimators=est_list,
                        final_estimator=fin_est,
                        n_jobs=nj,
-                       cv=PredefinedSplit(fid)
+                       cv=ccv
                 )
     elif voting=="" and type=="class":
         model = StackingClassifier(
                        estimators=est_list,
                        final_estimator=fin_est,
                        n_jobs=nj,
-                       cv=PredefinedSplit(fid)
+                       cv=ccv
                 )
     elif voting!="":
         if voteweights!="":

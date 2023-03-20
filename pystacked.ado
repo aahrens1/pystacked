@@ -244,6 +244,7 @@ version 16.0
                     NJobs(int 0) ///
                     Folds(int 5) ///
                     FOLDVar(varname) ///
+                    PREFit ///
                     BFolds(int 5) ///
                     NORANDOM ///
                     NOSHUFFLE ///
@@ -558,6 +559,7 @@ version 16.0
                         "`voteweights'", ///
                         `njobs' , ///
                         "`fid'", ///
+                        "`prefit'", ///
                         `bfolds', ///
                         `shuffle', ///
                         "`id'", ///
