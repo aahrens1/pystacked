@@ -524,11 +524,17 @@ def run_stacked(type, # regression or classification
 
     if nosavebasexb == "" and (votetype!="hard" or type=="reg"):
         transf = model.transform(x_0)
-        if type=="class":
+        nmethods = len(methods)
+        ntransf = transf.shape[1]
+        if type=="class" and (2*nmethods==ntransf):
             # only use every second column since predicted values for both 0 and 1 are reported
             ncol = transf.shape[1]
             cols=np.linspace(start=1, stop=ncol-1, num=int(ncol/2)).astype(int)
             transf=transf[:,cols]
+        elif type=="class" and (nmethods!=ntransf):
+            sfi.SFIToolkit.stata('di as err "Internal error. Failed to save base learner predicted probabilities."')
+            #"
+            sfi.SFIToolkit.error(198)
         # Set any predictions that should be missing to missing (NaN)
         transf=transf.astype(np.float32)
         transf[x0_hasnan] = np.nan
