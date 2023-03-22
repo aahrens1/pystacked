@@ -522,7 +522,7 @@ def run_stacked(type, # regression or classification
         pred[x0_hasnan] = np.nan
         __main__.predict = pred
 
-    if nosavebasexb == "" and votetype!="hard":
+    if nosavebasexb == "" and (votetype!="hard" or type=="reg"):
         transf = model.transform(x_0)
         if type=="class":
             # only use every second column since predicted values for both 0 and 1 are reported
