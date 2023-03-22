@@ -533,7 +533,6 @@ def run_stacked(type, # regression or classification
         transf=transf.astype(np.float32)
         transf[x0_hasnan] = np.nan
         __main__.transform = transf
-        #if voting=="" and (finalest == "nnls1" or finalest == "singlebest"):
         try:
             __main__.cvalid = model.final_estimator_.cvalid
         except AttributeError:
