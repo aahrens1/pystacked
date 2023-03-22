@@ -477,10 +477,13 @@ def run_stacked(type, # regression or classification
     elif vweights!=None: 
         w = np.array(vweights)
         sfi.Matrix.store("e(weights)",w)
+    elif voting!="" and votetype=="hard":
+        w = np.repeat(np.nan,len(methods))
     else:
         w = np.array([1/len(methods)]*len(methods))
         sfi.Matrix.store("e(weights)",w)
-        
+    
+    # save candidate learners
     sfi.Macro.setGlobal("e(base_est)"," ".join(methods))  
 
     __main__.type = type
@@ -497,34 +500,46 @@ def run_stacked(type, # regression or classification
         __main__.model_xvars = xvars
         __main__.model_methods = methods
 
-    if nosavepred == "":
-        if type=="class" and finalest[0:4]=="nnls":
+    if nosavepred == "" and type =="class":
+        try:
             pred = model.predict_proba(x_0)>0.5
-        else:
+            pred_proba = model.predict_proba(x_0)
+        except AttributeError:
             pred = model.predict(x_0)
+            pred_proba = np.repeat(np.nan,len(pred))
         # Set any predictions that should be missing to missing (NaN)
-        if type=="class":
-            pred = pred.astype(np.float32)
+        pred_proba=pred_proba.astype(np.float32)
+        pred_proba[x0_hasnan] = np.nan
+        pred=pred.astype(np.float32)
+        pred[x0_hasnan] = np.nan
+        __main__.predict = pred
+        __main__.predict_proba = pred_proba
+
+    if nosavepred == "" and type =="reg":
+        pred = model.predict(x_0)
+        # Set any predictions that should be missing to missing (NaN)
+        pred=pred.astype(np.float32)
         pred[x0_hasnan] = np.nan
         __main__.predict = pred
 
-    if nosavepred == "" and type =="class" and votetype!="hard":
-        pred_proba = model.predict_proba(x_0)
-        # Set any predictions that should be missing to missing (NaN)
-        pred[x0_hasnan] = np.nan
-        __main__.predict_proba = pred_proba
-
-    if nosavebasexb == "":
+    if nosavebasexb == "" and votetype!="hard":
         transf = model.transform(x_0)
+        if type=="class":
+            # only use every second column since predicted values for both 0 and 1 are reported
+            ncol = transf.shape[1]
+            cols=np.linspace(start=1, stop=ncol-1, num=int(ncol/2)).astype(int)
+            transf=transf[:,cols]
         # Set any predictions that should be missing to missing (NaN)
+        transf=transf.astype(np.float32)
         transf[x0_hasnan] = np.nan
         __main__.transform = transf
-        if voting=="" and (finalest == "nnls1" or finalest == "singlebest"):
+        #if voting=="" and (finalest == "nnls1" or finalest == "singlebest"):
+        try:
             __main__.cvalid = model.final_estimator_.cvalid
-        else:
-            # values for cvalid unavailable so return array of correct with with all NaNs
-            cv0 = np.shape(x)[0]
-            cv1 = np.shape(transf)[1]
+        except AttributeError:
+            # values for cvalid unavailable so return array of correct dimension with all NaNs
+            cv0 = x.shape[0]
+            cv1 = transf.shape[1]
             __main__.cvalid = np.empty((cv0,cv1))*np.nan
 
     # save versions of Python and packages

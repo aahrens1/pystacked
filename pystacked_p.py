@@ -58,6 +58,7 @@ def post_prediction(pred_var,basexb,cvalid,var_type,touse,pred_type):
 			from __main__ import predict as pred
 		pred[touse==0] = np.nan
 		Data.store(var=pred_var,val=pred,obs=None)
+
 	elif basexb!="" and cvalid=="":
 		# learner predictions
 		from __main__ import transform as transf
@@ -83,6 +84,7 @@ def post_prediction(pred_var,basexb,cvalid,var_type,touse,pred_type):
 			else:
 				Data.setVarLabel(pred_var+str(j+1),"Predicted value"+" "+methods[j])
 			Data.store(var=pred_var+str(j+1),val=pred,obs=None)
+
 	elif basexb!="" and cvalid!="":
 		if len(methods)==1:
 			SFIToolkit.stata('di as err "cvalid not supported with only one learner"')
@@ -109,13 +111,5 @@ def post_prediction(pred_var,basexb,cvalid,var_type,touse,pred_type):
 				Data.addVarFloat(pred_var+str(j+1))
 			pred=transf[:,j]
 			predna =np.isnan(pred)
-			if pred_type=="class":
-				pred=(pred>0.5)*1 
-				pred=pred.astype(float)
-				pred[predna]=np.nan
-				Data.setVarLabel(pred_var+str(j+1),"Predicted class "+" "+methods[j])
-			elif type=="class":
-				Data.setVarLabel(pred_var+str(j+1),"Predicted probability "+" "+methods[j])
-			else:
-				Data.setVarLabel(pred_var+str(j+1),"Predicted value"+" "+methods[j])
+			Data.setVarLabel(pred_var+str(j+1),"Predicted value"+" "+methods[j])
 			Data.store(var=pred_var+str(j+1),val=pred,obs=id)
