@@ -477,7 +477,7 @@ def run_stacked(type, # regression or classification
     elif vweights!=None: 
         w = np.array(vweights)
         sfi.Matrix.store("e(weights)",w)
-    elif voting!="" and votetype=="hard":
+    elif votetype=="hard" and type=="class":
         w = np.repeat(np.nan,len(methods))
     else:
         w = np.array([1/len(methods)]*len(methods))
