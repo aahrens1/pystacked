@@ -14,6 +14,33 @@ use https://statalasso.github.io/dta/cal_housing.dta, clear
 set seed 42
 pystacked medh longi-medi 
 
+
+*******************************************************************************
+*** check that printing the coefficients works						 		***
+*******************************************************************************
+
+clear all
+use https://statalasso.github.io/dta/cal_housing.dta, clear
+set seed 42
+
+foreach meth in lassocv elasticcv ridgecv rf gradboost {
+	pystacked medh longi-medi , m(ols `meth') showc
+}
+
+
+*******************************************************************************
+*** check that printing the options works							 		***
+*******************************************************************************
+
+clear all
+use https://statalasso.github.io/dta/cal_housing.dta, clear
+set seed 42
+
+foreach meth in lassocv elasticcv ridgecv rf gradboost {
+	pystacked medh longi-medi , m(ols `meth') printopt
+}
+
+
 *******************************************************************************
 *** check against SJ paper 											 		***
 *******************************************************************************

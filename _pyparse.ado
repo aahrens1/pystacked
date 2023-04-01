@@ -1,5 +1,5 @@
-*! pystacked v0.7
-*! last edited: 6mar2023
+*! pystacked v0.7.1
+*! last edited: 1april2023
 *! authors: aa/ms
 
 program _pyparse 
@@ -14,6 +14,12 @@ program _pyparse
 		}
 		else {
 			local type class
+		}
+
+		if "`printopt'"!="" {
+			di as text ""
+			di as text "Machine learner: `methods'"
+			di as text ""
 		}
 
 		** v 1.1.2 becomes 101.2
@@ -55,7 +61,7 @@ program _pyparse
 				parse_XGB , `options' 
 			}
 			else {
-				di as err "methods(`methods') unknown"
+				di as err "type(`type') with method(`methods') unknown"
 				exit 198
 			}
 			local optstr `r(optstr)'
@@ -87,6 +93,7 @@ program _pyparse
 				parse_rfClass , `options'
 			}
 			else if "`methods'"=="linsvm" {
+				*parse_LinearSVC , `options'
 				di as err "warning: linsvm not supported with type(class)."
 				exit 198
 			}
@@ -97,7 +104,7 @@ program _pyparse
 				parse_XGB , `options' 
 			}
 			else {
-				di as err "methods(`methods') unknown"
+				di as err "type(`type') with method(`methods') unknown"
 				exit 198
 			}
 			local optstr `r(optstr)'
@@ -117,6 +124,12 @@ program define parse_LinearRegression, rclass
 					POSitive ///
 					PRINTopt /// 
 					]
+
+	if "`printopt'"!="" {
+		di _skip(1) in smcl "{ul on}Stata syntax:{ul off}"
+		di _skip(1) in smcl "{cmdab:nocons:tant} {cmdab:pos:itive}"
+	}
+
 	local optstr 
 
 	** intercept
@@ -152,6 +165,12 @@ program define parse_Logit, rclass
 					penalty(string) ///
 					PRINTopt /// 
 					]
+
+	if "`printopt'"!="" {
+		di _skip(1) in smcl "{ul on}Stata syntax:{ul off}"
+		di _skip(1) in smcl "{cmdab:nocons:tant} {opt penalty(string)}"
+	}
+
 	local optstr 
 	
 	** intercept
@@ -196,11 +215,23 @@ program define parse_LassoLogitCV, rclass
 					tol(real 1e-4) ///
 					max_iter(integer 100) ///
 					n_jobs(integer 0) ///
-					norefit ///
+					NORefit ///
 					intercept_scaling(real 1) ///
 					random_state(integer -1) ///
 					PRINTopt ///
 					]
+
+	if "`printopt'"!="" {
+		di _skip(1) in smcl "{ul on}Stata syntax:{ul off}"
+		di _skip(1) in smcl "{opt c:s(integer)} {opt nocons:tant} " _c
+		di _skip(1) in smcl "{opt penalty(string)} {opt solver(string)} " _c
+		di _skip(1) in smcl "{opt tol(real)} " _c
+		di _skip(1) in smcl "{opt max_iter(integer)} {opt n_jobs(integer)} " 
+		di _skip(1) in smcl "{opt nor:efit}" _c
+		di _skip(1) in smcl "{opt intercept_scaling(real)} " _c
+		di _skip(1) in smcl "{opt random_state(integer)}"
+	}
+
 	local optstr 
 	
 	if `cs'>0 {
@@ -306,6 +337,22 @@ program define parse_ElasticCV, rclass
 					selection(string) ///
 					PRINTopt ///
 					]
+
+	if "`printopt'"!="" {
+		di _skip(1) in smcl "{ul on}Stata syntax:{ul off}"
+		di _skip(1) in smcl "{opt alphas(numlist >0)} " _c
+		di _skip(1) in smcl "{opt l1_ratio(real .5)} " _c
+		di _skip(1) in smcl "{opt eps(real)} " _c
+		di _skip(1) in smcl "{opt n_alphas(integer)} " _c
+		di _skip(1) in smcl "{opt nocons:tant} " _c
+		di _skip(1) in smcl "{opt max_iter(integer)} " _c
+		di _skip(1) in smcl "{opt tol(real)} " 
+		di _skip(1) in smcl "{opt n_jobs(integer)} " _c
+		di _skip(1) in smcl "{opt pos:itive} " _c
+		di _skip(1) in smcl "{opt selection(string)} " _c
+		di _skip(1) in smcl "{opt random_state(integer)} "
+	}
+
 	local optstr 
 
 	** alphas
@@ -406,6 +453,16 @@ program define parse_LassoIC, rclass
 					eps(real -1) ///
 					PRINTopt ///
 					positive ]
+
+	if "`printopt'"!="" {
+		di _skip(1) in smcl "{ul on}Stata syntax:{ul off}"
+		di _skip(1) in smcl "{opt criterion(string)} " _c
+		di _skip(1) in smcl "{opt nocons:tant} " _c
+		di _skip(1) in smcl "{opt max_iter(integer)} " _c
+		di _skip(1) in smcl "{opt eps(real)} " _c
+		di _skip(1) in smcl "{opt positive} "
+	}
+
 	local optstr 
 	
 	** criterion
@@ -470,6 +527,26 @@ program define parse_rfReg, rclass
 					max_samples(real -1) ///  
 					PRINTopt ///
 					]
+
+	if "`printopt'"!="" {
+		di _skip(1) in smcl "{ul on}Stata syntax:{ul off}"
+		di _skip(1) in smcl "{opt n_estimators(integer 100)} " _c
+		di _skip(1) in smcl "{opt criterion(string)} " _c
+		di _skip(1) in smcl "{opt max_depth(integer -1)} " _c
+		di _skip(1) in smcl "{opt min_samples_split(real 2)} " _c
+		di _skip(1) in smcl "{opt min_samples_leaf(real 1)} "  
+		di _skip(1) in smcl "{opt min_weight_fraction_leaf(real 0)} " _c
+		di _skip(1) in smcl "{opt max_features(string)} " _c
+		di _skip(1) in smcl "{opt max_leaf_nodes(integer -1)} " _c
+		di _skip(1) in smcl "{opt min_impurity_decrease(real 0)} " _c
+		di _skip(1) in smcl "{opt bootstrap(string)} " 
+		di _skip(1) in smcl "{opt oob_score} " _c
+		di _skip(1) in smcl "{opt n_jobs(integer 0)} " _c
+		di _skip(1) in smcl "{opt random_state(integer -1)} " _c
+		di _skip(1) in smcl "{opt warm_start} " _c
+		di _skip(1) in smcl "{opt ccp_alpha(real 0)} " _c
+		di _skip(1) in smcl "{opt max_samples(real -1)} " 
+	}
 
 	local optstr 
 
@@ -618,6 +695,26 @@ program define parse_rfClass, rclass
 					max_samples(integer -1) /// only int supported
 					PRINTopt ///
 					]
+
+	if "`printopt'"!="" {
+		di _skip(1) in smcl "{ul on}Stata syntax:{ul off}"
+		di _skip(1) in smcl "{opt n_estimators(integer 100)} " _c 
+		di _skip(1) in smcl "{opt criterion(string)} " _c 
+		di _skip(1) in smcl "{opt max_depth(integer -1)} " _c 
+		di _skip(1) in smcl "{opt min_samples_split(real 2)} "
+		di _skip(1) in smcl "{opt min_samples_leaf(real 1)} "   _c 
+		di _skip(1) in smcl "{opt min_weight_fraction_leaf(real 0)} " _c 
+		di _skip(1) in smcl "{opt max_features(string)} " _c 
+		di _skip(1) in smcl "{opt max_leaf_nodes(integer -1)} " 
+		di _skip(1) in smcl "{opt min_impurity_decrease(real 0)} " _c 
+		di _skip(1) in smcl "{opt bootstrap(string)} "  _c 
+		di _skip(1) in smcl "{opt oob_score} " _c 
+		di _skip(1) in smcl "{opt n_jobs(integer 0)} "    
+		di _skip(1) in smcl "{opt random_state(integer -1)} " _c 
+		di _skip(1) in smcl "{opt warm_start} " _c 
+		di _skip(1) in smcl "{opt ccp_alpha(real 0)} "  _c 
+		di _skip(1) in smcl "{opt max_samples(integer -1)}"
+	}
 
 	local optstr 
 
@@ -770,6 +867,30 @@ program define parse_gradboostReg, rclass
 					ccp_alpha(real 0) ///
 					PRINTopt ///
 					]
+
+	if "`printopt'"!="" {
+		di _skip(1) in smcl "{ul on}Stata syntax:{ul off}"
+		di _skip(1) in smcl "{opt loss(string)} " _c
+		di _skip(1) in smcl "{opt criterion(string)} " _c
+		di _skip(1) in smcl "{opt learning_rate(real 0.1)} " _c
+		di _skip(1) in smcl "{opt n_estimators(integer 100)} " _c
+		di _skip(1) in smcl "{opt subsample(real 1)} "  
+		di _skip(1) in smcl "{opt min_samples_split(real 2)} " _c
+		di _skip(1) in smcl "{opt min_samples_leaf(real 1)} " _c
+		di _skip(1) in smcl "{opt min_weight_fraction_leaf(real 0)} " _c
+		di _skip(1) in smcl "{opt max_depth(integer 3)} "  
+		di _skip(1) in smcl "{opt min_impurity_decrease(real 0)} " _c 
+		di _skip(1) in smcl "{opt init(string)} " _c
+		di _skip(1) in smcl "{opt random_state(integer -1)} " _c
+		di _skip(1) in smcl "{opt max_features(string)} " _c
+		di _skip(1) in smcl "{opt alpha(real 0.9)} "
+		di _skip(1) in smcl "{opt max_leaf_nodes(integer -1)} "   _c
+		di _skip(1) in smcl "{opt warm_start} " _c
+		di _skip(1) in smcl "{opt validation_fraction(real 0.1)} " _c
+		di _skip(1) in smcl "{opt n_iter_no_change(integer -1)} " 
+		di _skip(1) in smcl "{opt tol(real 1e-4)} " _c
+		di _skip(1) in smcl "{opt ccp_alpha(real 0)} " 
+	}
 
 	local optstr 
 
@@ -927,7 +1048,32 @@ program define parse_gradboostClass, rclass
 					ccp_alpha(real 0) ///
 					PRINTopt ///
 					]
+
+	if "`printopt'"!="" {
+		di _skip(1) in smcl "{ul on}Stata syntax:{ul off}"
+		di _skip(1) in smcl "{opt loss(string)} " _c
+		di _skip(1) in smcl "{opt learning_rate(real 0.1)} " _c
+		di _skip(1) in smcl "{opt n_estimators(integer 100)} " _c
+		di _skip(1) in smcl "{opt subsample(real 1)} " _c
+		di _skip(1) in smcl "{opt criterion(string)} "  
+		di _skip(1) in smcl "{opt min_samples_split(real 2)} " _c
+		di _skip(1) in smcl "{opt min_samples_leaf(real 1)} " _c
+		di _skip(1) in smcl "{opt min_weight_fraction_leaf(real 0)} " _c
+		di _skip(1) in smcl "{opt max_depth(integer 3)} " 
+		di _skip(1) in smcl "{opt min_impurity_decrease(real 0)} " _c 
+		di _skip(1) in smcl "{opt init(string)} " _c
+		di _skip(1) in smcl "{opt random_state(integer -1)} " _c
+		di _skip(1) in smcl "{opt max_features(string)} " _c
+		di _skip(1) in smcl "{opt max_leaf_nodes(integer -1)} "
+		di _skip(1) in smcl "{opt warm_start} "  _c
+		di _skip(1) in smcl "{opt validation_fraction(real 0.1)} " _c
+		di _skip(1) in smcl "{opt n_iter_no_change(integer -1)} " _c
+		di _skip(1) in smcl "{opt tol(real 1e-4)} " _c
+		di _skip(1) in smcl "{opt ccp_alpha(real 0)} "
+	}
+
 	local optstr 
+
 	** loss
 	if "`loss'"=="deviance"|"`loss'"=="exponential"|"`loss'"=="log_loss" {
 		local optstr `optstr' 'loss':'`loss'',
@@ -1073,6 +1219,20 @@ program define parse_SVR, rclass
 					PRINTopt ///
 					]
 
+	if "`printopt'"!="" {
+		di _skip(1) in smcl "{ul on}Stata syntax:{ul off}"
+		di _skip(1) in smcl "{opt ker:nel(string)} " _c
+		di _skip(1) in smcl "{opt degree(integer 3)} " _c
+		di _skip(1) in smcl "{opt gam:ma(string)} " _c
+		di _skip(1) in smcl "{opt coef0(real 0)} " _c
+		di _skip(1) in smcl "{opt tol(real 1e-3)} " _c
+		di _skip(1) in smcl "{opt c(real 1)} "  
+		di _skip(1) in smcl "{opt epsilon(real 0.1)} " _c
+		di _skip(1) in smcl "{opt shr:inking(string)} " _c
+		di _skip(1) in smcl "{opt cache_size(real 200)} " _c
+		di _skip(1) in smcl "{opt max_iter(integer -1)}"
+	}
+
 	local optstr 
 
 	** kernel
@@ -1155,6 +1315,19 @@ program define parse_LinearSVR, rclass
 					PRINTopt ///
 					]
 
+	if "`printopt'"!="" {
+		di _skip(1) in smcl "{ul on}Stata syntax:{ul off}"
+		di _skip(1) in smcl "{opt epsilon(real 0)} " _c
+		di _skip(1) in smcl "{opt tol(real 1e-4)} " _c 
+		di _skip(1) in smcl "{opt c(real 1)} " _c
+		di _skip(1) in smcl "{opt loss(string)} " _c
+		di _skip(1) in smcl "{opt nocons:tant} " 
+		di _skip(1) in smcl "{opt intercept_scaling(real 1)} " _c
+		di _skip(1) in smcl "{opt dual(string)} " _c
+		di _skip(1) in smcl "{opt random_state(integer -1)} " _c
+		di _skip(1) in smcl "{opt max_iter(integer 1000)} "
+	}
+
 	local optstr 
 
 	** epsilon
@@ -1234,6 +1407,24 @@ program define parse_SVC, rclass
 					random_state(integer -1) ///
 					PRINTopt ///
 					]
+
+	if "`printopt'"!="" {
+		di _skip(1) in smcl "{ul on}Stata syntax:{ul off}"
+		di _skip(1) in smcl "{opt c(real 1)} " _c
+		di _skip(1) in smcl "{opt ker:nel(string)} " _c
+		di _skip(1) in smcl "{opt degree(integer 3)} " _c
+		di _skip(1) in smcl "{opt gam:ma(string)} "  _c
+		di _skip(1) in smcl "{opt coef0(real 0)} "  _c
+		di _skip(1) in smcl "{opt probability(string)} "  
+		di _skip(1) in smcl "{opt tol(real 1e-3)} " _c
+		di _skip(1) in smcl "{opt epsilon(real 0.1)} " _c
+		di _skip(1) in smcl "{opt shr:inking(string)} " _c
+		di _skip(1) in smcl "{opt cache_size(real 200)} " _c
+		di _skip(1) in smcl "{opt max_iter(integer -1)} " 
+		di _skip(1) in smcl "{opt decision_function_shape(string)} " _c
+		di _skip(1) in smcl "{opt break_ties} " _c
+		di _skip(1) in smcl "{opt random_state(integer -1)}"
+	}
 
 	local optstr 
 
@@ -1334,6 +1525,19 @@ program define parse_LinearSVC, rclass
 					PRINTopt ///
 					]
 
+	if "`printopt'"!="" {
+		di _skip(1) in smcl "{ul on}Stata syntax:{ul off}"
+		di _skip(1) in smcl "{opt penalty(string)} " _c
+		di _skip(1) in smcl "{opt loss(string)} " _c
+		di _skip(1) in smcl "{opt primal} " _c
+		di _skip(1) in smcl "{opt tol(real 1e-4)} " _c
+		di _skip(1) in smcl "{opt c(real 1)} " _c
+		di _skip(1) in smcl "{opt nocons:tant} "  
+		di _skip(1) in smcl "{opt intercept_scaling(real 1)} " _c
+		di _skip(1) in smcl "{opt random_state(integer -1)} " _c
+		di _skip(1) in smcl "{opt max_iter(integer 1000)}"
+	}
+
 	local optstr
 	** penalty
 	if "`penalty'"=="l1"|"`penalty'"=="l2" {
@@ -1422,6 +1626,33 @@ program define parse_MLPReg, rclass
 						max_fun(integer -1) ///
 						PRINTopt ///
 					]
+
+	if "`printopt'"!="" {
+		di _skip(1) in smcl "{ul on}Stata syntax:{ul off}"
+		di _skip(1) in smcl "{opt hidden_layer_sizes(numlist >0 integer)} " _c
+		di _skip(1) in smcl "{opt activation(string)} " _c
+		di _skip(1) in smcl "{opt solver(string)} " _c
+		di _skip(1) in smcl "{opt alpha(real -1)} " _c
+		di _skip(1) in smcl "{opt batch_size(integer -1)} " 
+		di _skip(1) in smcl "{opt learning_rate(string)} " _c
+		di _skip(1) in smcl "{opt learning_rate_init(real -1)} " _c
+		di _skip(1) in smcl "{opt power_t(real -1)} " _c
+		di _skip(1) in smcl "{opt max_iter(integer -1)} " _c
+		di _skip(1) in smcl "{opt shuffle(string)} "  
+		di _skip(1) in smcl "{opt random_state(integer -1)} " _c
+		di _skip(1) in smcl "{opt tol(real -1)} " _c
+		di _skip(1) in smcl "{opt verbose} " _c
+		di _skip(1) in smcl "{opt warm_start} " _c
+		di _skip(1) in smcl "{opt momentum(real -1)} "  
+		di _skip(1) in smcl "{opt nonest:erovs_momentum} " _c
+		di _skip(1) in smcl "{opt early_stopping} " _c
+		di _skip(1) in smcl "{opt validation_fraction(real -1)} " _c
+		di _skip(1) in smcl "{opt beta_1(real -1)} " _c
+		di _skip(1) in smcl "{opt beta_2(real -1)} "  
+		di _skip(1) in smcl "{opt epsilon(real -1)} " _c
+		di _skip(1) in smcl "{opt n_iter_no_change(integer -1)} " _c
+		di _skip(1) in smcl "{opt max_fun(integer -1)}" 
+	}
 
 	local optstr
 	*** hidden layer sizes
@@ -1629,6 +1860,33 @@ program define parse_MLPClass, rclass
 						max_fun(integer -1) ///
 						PRINTopt ///
 					]
+
+	if "`printopt'"!="" {
+		di _skip(1) in smcl "{ul on}Stata syntax:{ul off}"
+		di _skip(1) in smcl "{opt hidden_layer_sizes(numlist >0 integer)} " _c
+		di _skip(1) in smcl "{opt activation(string)} " _c
+		di _skip(1) in smcl "{opt solver(string)} " _c
+		di _skip(1) in smcl "{opt alpha(real -1)} " _c
+		di _skip(1) in smcl "{opt batch_size(integer -1)} "  
+		di _skip(1) in smcl "{opt learning_rate(string)} " _c
+		di _skip(1) in smcl "{opt learning_rate_init(real -1)} " _c
+		di _skip(1) in smcl "{opt power_t(real -1)} " _c
+		di _skip(1) in smcl "{opt max_iter(integer -1)} " _c
+		di _skip(1) in smcl "{opt shuffle(string)} " 
+		di _skip(1) in smcl "{opt random_state(integer -1)} " _c
+		di _skip(1) in smcl "{opt tol(real -1)} " _c
+		di _skip(1) in smcl "{opt verbose} " _c
+		di _skip(1) in smcl "{opt warm_start} " _c
+		di _skip(1) in smcl "{opt momentum(real -1)} "  
+		di _skip(1) in smcl "{opt nonest:erovs_momentum} " _c
+		di _skip(1) in smcl "{opt early_stopping} " _c
+		di _skip(1) in smcl "{opt validation_fraction(real -1)} " _c
+		di _skip(1) in smcl "{opt beta_1(real -1)} " _c
+		di _skip(1) in smcl "{opt beta_2(real -1)} "  
+		di _skip(1) in smcl "{opt epsilon(real -1)} " _c
+		di _skip(1) in smcl "{opt n_iter_no_change(integer -1)} " _c
+		di _skip(1) in smcl "{opt max_fun(integer -1)} " 
+	}
 
 	local optstr
 	*** hidden layer sizes
@@ -1910,7 +2168,8 @@ program define parse_XGB, rclass
 end
 
 program _print_tool 
-    di "Default options: " 
+	di ""
+    di _skip(1) in smcl "{ul:Specified options are translated to:} " 
 	local str `0'
 	local str = subinstr("`str'","':","(",.)
 	local str = subinstr("`str'",",'",") ",.)
@@ -1926,13 +2185,14 @@ program _print_tool
 	local j = 1
 	local i = 1
 	while ("``j''"!="") {
-		if mod(`i',7)==0 {
-			di as text "``j'') "
+		if mod(`i',6)==0 {
+			di _skip(1) as text "``j'') "
 		}
 		else {
-			di as text "``j'') " _c
+			di _skip(1) as text "``j'') " _c
 		}
 		local i = `i'+1
 		local j = `j'+2
 	}
+	di ""
 end

@@ -1,5 +1,5 @@
-#! pystacked v0.7
-#! last edited: 6mar2023
+#! pystacked v0.7.1
+#! last edited: 1april2023
 #! authors: aa/ms
 
 # Import required Python modules
@@ -283,7 +283,7 @@ def run_stacked(type, # regression or classification
             if methods[m]=="lassoic":
                 opt =allopt[m]
                 newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
-                newmethod.append(('lassolarsic',LassoLarsIC(**opt)))
+                newmethod.append(('lassoic',LassoLarsIC(**opt)))
             if methods[m]=="lassocv":
                 opt =allopt[m]
                 newmethod= build_pipeline(allpipe[m],xvars,allxvar_sel[m])
@@ -291,11 +291,11 @@ def run_stacked(type, # regression or classification
             if methods[m]=="ridgecv":
                 opt =allopt[m]
                 newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
-                newmethod.append(('lassocv',ElasticNetCV(**opt,cv=KFold(n_splits=bfolds,shuffle=shuff,random_state=cvrng))))
+                newmethod.append(('ridgecv',ElasticNetCV(**opt,cv=KFold(n_splits=bfolds,shuffle=shuff,random_state=cvrng))))
             if methods[m]=="elasticcv":
                 opt =allopt[m]
                 newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
-                newmethod.append(('lassocv',ElasticNetCV(**opt,cv=KFold(n_splits=bfolds,shuffle=shuff,random_state=cvrng))))
+                newmethod.append(('elasticcv',ElasticNetCV(**opt,cv=KFold(n_splits=bfolds,shuffle=shuff,random_state=cvrng))))
             if methods[m]=="rf":
                 opt =allopt[m]
                 newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
@@ -303,7 +303,7 @@ def run_stacked(type, # regression or classification
             if methods[m]=="gradboost":
                 opt =allopt[m]
                 newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
-                newmethod.append(('gbr',GradientBoostingRegressor(**opt)))
+                newmethod.append(('gradboost',GradientBoostingRegressor(**opt)))
             if methods[m]=="svm":
                 opt =allopt[m]
                 newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
@@ -315,11 +315,11 @@ def run_stacked(type, # regression or classification
             if methods[m]=="nnet":    
                 opt =allopt[m]
                 newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
-                newmethod.append(('mlp',MLPRegressor(**opt)))
+                newmethod.append(('nnet',MLPRegressor(**opt)))
             if methods[m]=="xgb":    
                 opt =allopt[m]
                 newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
-                newmethod.append(('mlp',xgb.XGBRegressor(**opt)))
+                newmethod.append(('xgb',xgb.XGBRegressor(**opt)))
         elif type=="class":
             if methods[m]=="logit":
                 opt =allopt[m]
@@ -335,11 +335,11 @@ def run_stacked(type, # regression or classification
             if methods[m]=="ridgecv":
                 opt =allopt[m]
                 newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
-                newmethod.append(('lassocv',LogisticRegressionCV(**opt,cv=StratifiedKFold(n_splits=bfolds,shuffle=shuff,random_state=cvrng))))
+                newmethod.append(('ridgecv',LogisticRegressionCV(**opt,cv=StratifiedKFold(n_splits=bfolds,shuffle=shuff,random_state=cvrng))))
             if methods[m]=="elasticcv":
                 opt =allopt[m]
                 newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
-                newmethod.append(('lassocv',LogisticRegressionCV(**opt,cv=StratifiedKFold(n_splits=bfolds,shuffle=shuff,random_state=cvrng))))
+                newmethod.append(('elasticcv',LogisticRegressionCV(**opt,cv=StratifiedKFold(n_splits=bfolds,shuffle=shuff,random_state=cvrng))))
             if methods[m]=="rf":
                 opt =allopt[m]
                 newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
@@ -359,11 +359,11 @@ def run_stacked(type, # regression or classification
             if methods[m]=="nnet":    
                 opt =allopt[m]
                 newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
-                newmethod.append(('mlp',MLPClassifier(**opt)))
+                newmethod.append(('nnet',MLPClassifier(**opt)))
             if methods[m]=="xgb":    
                 opt =allopt[m]
                 newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
-                newmethod.append(('mlp',xgb.XGBClassifier(**opt)))
+                newmethod.append(('xgb',xgb.XGBClassifier(**opt)))
         else: 
             sfi.SFIToolkit.stata('di as err "method not known"') 
             #"
@@ -482,6 +482,28 @@ def run_stacked(type, # regression or classification
     else:
         w = np.array([1/len(methods)]*len(methods))
         sfi.Matrix.store("e(weights)",w)
+
+    for i in range(len(methods)):
+        method0=methods[i]+str(i)
+        coefmatname = "e(coefs"+str(i+1)+")"
+        if methods[i] in ['ols','lassocv','lassoic','logit','ridgecv','elasticcv']:
+            w = model.named_estimators_[method0].named_steps[methods[i]].coef_
+            has_intercept=model.named_estimators_[method0].named_steps[methods[i]].fit_intercept
+            if has_intercept:
+                w0 = model.named_estimators_[method0].named_steps[methods[i]].intercept_
+                w=np.append(w,w0)
+                sfi.Scalar.setValue("e(has_intercept"+str(i+1)+")",1,vtype='hidden')
+            else:
+                sfi.Scalar.setValue("e(has_intercept"+str(i+1)+")",0,vtype='hidden')
+            sfi.Matrix.store(coefmatname,w)
+            sfi.Scalar.setValue("e(has_coefs"+str(i+1)+")",1,vtype='hidden')
+        elif methods[i] in ['rf','gradboost']:
+            w = model.named_estimators_[method0].named_steps[methods[i]].feature_importances_
+            sfi.Matrix.store(coefmatname,w)
+            sfi.Scalar.setValue("e(has_intercept"+str(i+1)+")",0,vtype='hidden')
+            sfi.Scalar.setValue("e(has_coefs"+str(i+1)+")",1,vtype='hidden')
+        else:
+            sfi.Scalar.setValue("e(has_coefs"+str(i+1)+")",0,vtype='hidden')
     
     # save candidate learners
     sfi.Macro.setGlobal("e(base_est)"," ".join(methods))  

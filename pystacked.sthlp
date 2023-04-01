@@ -1,7 +1,7 @@
 {smcl}
-{* *! version 6mar2023}{...}
+{* *! version 1april2023}{...}
 {hline}
-{cmd:help pystacked}{right: v0.7}
+{cmd:help pystacked}{right: v0.7.1}
 {hline}
 
 {title:Title}
@@ -256,6 +256,11 @@ converts predictor matrix to a sparse matrix. This will only lead to speed impro
 if the predictor matrix is sufficiently sparse. Not all learners support sparse matrices
 and not all learners will benefit from sparse matrices in the same way. You can also 
 use the sparse pipeline to use sparse matrices for some learners, but not for others.
+{p_end}
+{synopt:{opt showc:oefs}} 
+shows, for each base learner, the coefficient estimates (in the case of ols, 
+logit, regularized regression) or variable importance measures 
+(random forests and gradient boosting)
 {p_end}
 {synopt:{opt pyseed(int)}} 
 set the Python seed. Note that since {cmd:pystacked} uses

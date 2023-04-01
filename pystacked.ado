@@ -1,197 +1,243 @@
-*! pystacked v0.7
-*! last edited: 6mar2023
+*! pystacked v0.7.1
+*! last edited: 1april2023
 *! authors: aa/ms
 
 // parent program
 program define pystacked, eclass
     version 16.0
 
-    // only print options
-    tokenize `"`0'"', parse(",")
-    local beforecomma `1'
-    macro shift
-    local restargs `*'
-    if (strpos("`restargs'","print"))==0 {
-
-        if ~replay() {
-            // no replay - must estimate
-            _pystacked `0'
-        }
-        else {
-            // replay - check that pystacked estimation is in memory
-            if "`e(cmd)'"~="pystacked" {
-                di as err "last estimates not found"
-                exit 301
-            }
-        }
-
-        // save for display results
-        tempname weights_mat
-        mat `weights_mat'=e(weights)
-        local base_est `e(base_est)'
-        local nlearners    = e(mcount)
-
-        // parse and check for graph/table options
-        // code borrowed from _pstacked below - needed to accommodate syntax #2
-        if ~replay() {
-            tokenize "`0'", parse(",")
-            local beforecomma `1'
-            macro shift
-            local restargs `*'
-            local 0 `beforecomma'
-            syntax anything(name=beforeifinweight) [if] [in] [aweight fweight]
-            if "`weight'"!="" {
-                local ifinweight `if' `in' [`weight' `exp']
-            }
-            else {
-                local ifinweight `if' `in' `weight' `exp'
-            }
-            tokenize `beforeifinweight', parse("|")
-            local mainargs `1'
-            local 0 `mainargs' `ifinweight' `restargs'
-        }
-        syntax [anything]  [if] [in] [aweight fweight] ,    ///
-                    [                                       ///
-                        GRAPH1                              /// vanilla option, abbreviates to "graph"
-                        HISTogram                           /// report histogram instead of default ROC
-                        graph(string asis)                  /// for passing options to graph combine
-                        lgraph(string asis)                 /// for passing options to the graphs of the learners
-                        TABLE1                              ///
-                        table(string)                       /// rmspe or confusion
-                        HOLDOUT1                            /// vanilla option, abbreviates to "holdout"
-                        holdout(varname)                    ///
-                        CValid                              ///
-                        NOESTIMATE                          /// suppress call to run_stacked; no estimates, only parses
-                        *                                   ///
-                    ]
-        
-        // default reg table = rmspe
-        // default class table = confusion
-        // table1 = "table" or ""
-        // table = rmspe or confusion
-        if "`table'"~="" & "`table1'"~="" {
-            di as err "error - multiple table options specified"
-            exit 198
-        }
-        if "`table'"~="" & "`table'"~="rmspe" & "`table'"~="confusion" {
-            di as err "error - option table(`table') not supported"
-            exit 198
-        }
-        if "`table'"=="confusion" & "`e(type)'"=="reg" {
-            di as err "error - confusion table available for classification problems only"
-            exit 198
-        }
-        // if table1 and table both blank, set macro table to default type
-        if "`table1'"~="" & "`table'"=="" {
-            if "`e(type)'"=="reg" {
-                local table rmspe
-            }
-            else {
-                local table confusion
-            }           
-        }
-        // from here, table is the macro indicating table type
-        
-        // display results
-        if `"`graph'`graph1'`lgraph'`histogram'`table'`noestimate'"' == "" {
-
-            di
-            di as res "Stacking weights:"
-            di as text "{hline 17}{c TT}{hline 21}"
-            di as text "  Method" _c
-            di as text _col(18) "{c |}      Weight"
-            di as text "{hline 17}{c +}{hline 21}"
-
-            forvalues j=1/`nlearners' {
-                local b : word `j' of `base_est'
-                di as text "  `b'" _c
-                di as text _col(18) "{c |}" _c
-                di as res %15.7f el(`weights_mat',`j',1)
-            }
-        }
-
-        // graph/table block
-        if `"`graph'`graph1'`lgraph'`histogram'`table'"' ~= "" {
-            pystacked_graph_table,                          ///
-                `holdout1' holdout(`holdout')               ///
-                `cvalid'                                    ///
-                `graph1'                                    ///
-                `histogram'                                 ///
-                goptions(`graph') lgoptions(`lgraph')       ///
-                table(`table')
-        }
-        
-        // print RMSPE table if specified
-        if "`table'"=="rmspe" {
-            tempname m w
-            mat `m' = r(m)
-            
-            di
-            di as text "RMSPE: In-Sample, CV, Holdout"
-            di as text "{hline 17}{c TT}{hline 47}"
-            di as text "  Method" _c
-            di as text _col(18) "{c |} Weight   In-Sample        CV         Holdout"
-            di as text "{hline 17}{c +}{hline 47}"
-            
-            di as text "  STACKING" _c
-            di as text _col(18) "{c |}" _c
-            di as text "    .  " _c
-            di as res  _col(30) %7.3f el(`m',1,1) _col(43) %7.3f el(`m',1,2) _col(56) %7.3f el(`m',1,3)
-            
-            forvalues j=1/`nlearners' {
-                local b : word `j' of `base_est'
-                di as text "  `b'" _c
-                di as text _col(18) "{c |}" _c
-                di as res _col(20) %5.3f el(`weights_mat',`j',1) _c
-                di as res _col(30) %7.3f el(`m',`j'+1,1) _col(43) %7.3f el(`m',`j'+1,2) _col(56) %7.3f el(`m',`j'+1,3)
-            }
-    
-            // add to estimation macros
-            ereturn mat rmspe = `m'
-        }
-        
-        // print confusion matrix if specified
-        if "`table'"=="confusion" {
-            tempname m w
-            mat `m' = r(m)
-            
-            di
-            di as text "Confusion matrix: In-Sample, CV, Holdout"
-            di as text "{hline 17}{c TT}{hline 59}"
-            di as text "  Method" _c
-            di as text _col(18) "{c |} Weight      In-Sample             CV             Holdout"
-            di as text _col(18) "{c |}             0       1         0       1         0       1"
-            di as text "{hline 17}{c +}{hline 59}"
-            
-            di as text "  STACKING" _c
-            di as text _col(16) "0 {c |}" _c
-            di as text "    .  " _c
-            di as res  _col(27) %7.0f el(`m',1,1) _col(35) %7.0f el(`m',1,2) _col(45) %7.0f el(`m',1,3) _col(53) %7.0f el(`m',1,4) _col(63) %7.0f el(`m',1,5) _col(71) %7.0f el(`m',1,6)
-            di as text "  STACKING" _c
-            di as text _col(16) "1 {c |}" _c
-            di as text "    .  " _c
-            di as res  _col(27) %7.0f el(`m',2,1) _col(35) %7.0f el(`m',2,2) _col(45) %7.0f el(`m',2,3) _col(53) %7.0f el(`m',2,4) _col(63) %7.0f el(`m',2,5) _col(71) %7.0f el(`m',2,6)
-            
-            forvalues j=1/`nlearners' {
-                local b : word `j' of `base_est'
-                di as text "  `b'" _c
-                di as text _col(16) "0 {c |}" _c
-                di as res  _col(20) %5.3f el(`weights_mat',`j',1) _c
-                local r = 2*`j' + 1
-                di as res  _col(27) %7.0f el(`m',`r',1) _col(35) %7.0f el(`m',`r',2) _col(45) %7.0f el(`m',`r',3) _col(53) %7.0f el(`m',`r',4) _col(63) %7.0f el(`m',`r',5) _col(71) %7.0f el(`m',`r',6)
-                di as text "  `b'" _c
-                di as text _col(16) "1 {c |}" _c
-                di as res  _col(20) %5.3f el(`weights_mat',`j',1) _c
-                local r = 2*`j' + 2
-                di as res  _col(27) %7.0f el(`m',`r',1) _col(35) %7.0f el(`m',`r',2) _col(45) %7.0f el(`m',`r',3) _col(53) %7.0f el(`m',`r',4) _col(63) %7.0f el(`m',`r',5) _col(71) %7.0f el(`m',`r',6)
-            }
-            
-            // add to estimation macros
-            ereturn mat confusion = `m'
-        }
+    if ~replay() {
+        // no replay - must estimate
+        _pystacked `0'
     }
     else {
-        _pyparse `0'
+        // replay - check that pystacked estimation is in memory
+        if "`e(cmd)'"~="pystacked" {
+            di as err "last estimates not found"
+            exit 301
+        }
+    }
+
+    // save for display results
+    tempname weights_mat
+    mat `weights_mat'=e(weights)
+    local base_est `e(base_est)'
+    local nlearners    = e(mcount)
+
+    // parse and check for graph/table options
+    // code borrowed from _pstacked below - needed to accommodate syntax #2
+    if ~replay() {
+        tokenize "`0'", parse(",")
+        local beforecomma `1'
+        macro shift
+        local restargs `*'
+        local 0 `beforecomma'
+        syntax anything(name=beforeifinweight) [if] [in] [aweight fweight]
+        if "`weight'"!="" {
+            local ifinweight `if' `in' [`weight' `exp']
+        }
+        else {
+            local ifinweight `if' `in' `weight' `exp'
+        }
+        tokenize `beforeifinweight', parse("|")
+        local mainargs `1'
+        local 0 `mainargs' `ifinweight' `restargs'
+    }
+    syntax [anything]  [if] [in] [aweight fweight] ,    ///
+                [                                       ///
+                    GRAPH1                              /// vanilla option, abbreviates to "graph"
+                    HISTogram                           /// report histogram instead of default ROC
+                    graph(string asis)                  /// for passing options to graph combine
+                    lgraph(string asis)                 /// for passing options to the graphs of the learners
+                    TABLE1                              ///
+                    table(string)                       /// rmspe or confusion
+                    HOLDOUT1                            /// vanilla option, abbreviates to "holdout"
+                    holdout(varname)                    ///
+                    CValid                              ///
+                    NOESTIMATE                          /// suppress call to run_stacked; no estimates, only parses
+                    SHOWCoefs                           ///
+                    PRINTopt                            ///
+                    *                                   ///
+                ]
+
+    if "`printopt'"!="" local noestimate noestimate
+    
+    // default reg table = rmspe
+    // default class table = confusion
+    // table1 = "table" or ""
+    // table = rmspe or confusion
+    if "`table'"~="" & "`table1'"~="" {
+        di as err "error - multiple table options specified"
+        exit 198
+    }
+    if "`table'"~="" & "`table'"~="rmspe" & "`table'"~="confusion" {
+        di as err "error - option table(`table') not supported"
+        exit 198
+    }
+    if "`table'"=="confusion" & "`e(type)'"=="reg" {
+        di as err "error - confusion table available for classification problems only"
+        exit 198
+    }
+    // if table1 and table both blank, set macro table to default type
+    if "`table1'"~="" & "`table'"=="" {
+        if "`e(type)'"=="reg" {
+            local table rmspe
+        }
+        else {
+            local table confusion
+        }           
+    }
+    // from here, table is the macro indicating table type
+    
+    // display results
+    if `"`graph'`graph1'`lgraph'`histogram'`table'`noestimate'"' == "" {
+
+        di
+        di as res "Stacking weights:"
+        di as text "{hline 17}{c TT}{hline 21}"
+        di as text "  Method" _c
+        di as text _col(18) "{c |}      Weight"
+        di as text "{hline 17}{c +}{hline 21}"
+
+        forvalues j=1/`nlearners' {
+            local b : word `j' of `base_est'
+            di as text "  `b'" _c
+            di as text _col(18) "{c |}" _c
+            di as res %15.7f el(`weights_mat',`j',1)
+        }
+    }
+
+    // display results
+    if "`showcoefs'"!="" & "`noestimate'" == "" {
+
+        forvalues i = 1(1)`e(mcount)' {
+
+            if (`e(has_coefs`i')') {
+
+                // get learner
+
+                local thislearner : word `i' of `e(base_est)'
+                // get coefficient matrix
+                tempname coefs_mat
+                mat `coefs_mat'=e(coefs`i')
+
+                // add constant as a name if it's there
+                local thexvars `e(xvars_o`i')'
+                if (`e(has_intercept`i')') local thexvars `thexvars' _cons
+
+                // save number of coefficients and number of var names
+                local coef_nums = rowsof(`coefs_mat')
+                local varname_count : word count `thexvars'
+
+                // which type of coefficients are shown
+                local coeftype Coefficients
+                if regexm("rf gradboost","`thislearner'") {
+                    local coeftype Variable importance
+                }
+
+                // only display if # names = # coefs
+                if (`coef_nums' == `varname_count') {
+                    di
+                    di as res "`coeftype' `thislearner'`i':"
+                    di as text "{hline 17}{c TT}{hline 21}"
+                    di as text "  Predictor  " _c
+                    di as text _col(18) "{c |}      Value"
+                    di as text "{hline 17}{c +}{hline 21}"
+
+                    forvalues j=1/`coef_nums' {
+                        local thisxvar : word `j' of `thexvars'
+                        di as text "  `thisxvar'" _c
+                        di as text _col(18) "{c |}" _c
+                        di as res %15.7f el(`coefs_mat',`j',1)
+                    }
+                }
+                if "`e(type)'"=="class" & regexm("lassocv ridgecv elasticcv logit","`thislearner'") {
+                    di "" _c
+                    di as text "Note: " _c
+                    di as text "Coefficients correspond to decision boundary function."
+                }
+            }
+        }   
+    }
+
+    // graph/table block
+    if `"`graph'`graph1'`lgraph'`histogram'`table'"' ~= "" {
+        pystacked_graph_table,                          ///
+            `holdout1' holdout(`holdout')               ///
+            `cvalid'                                    ///
+            `graph1'                                    ///
+            `histogram'                                 ///
+            goptions(`graph') lgoptions(`lgraph')       ///
+            table(`table')
+    }
+    
+    // print RMSPE table if specified
+    if "`table'"=="rmspe" {
+        tempname m w
+        mat `m' = r(m)
+        
+        di
+        di as text "RMSPE: In-Sample, CV, Holdout"
+        di as text "{hline 17}{c TT}{hline 47}"
+        di as text "  Method" _c
+        di as text _col(18) "{c |} Weight   In-Sample        CV         Holdout"
+        di as text "{hline 17}{c +}{hline 47}"
+        
+        di as text "  STACKING" _c
+        di as text _col(18) "{c |}" _c
+        di as text "    .  " _c
+        di as res  _col(30) %7.3f el(`m',1,1) _col(43) %7.3f el(`m',1,2) _col(56) %7.3f el(`m',1,3)
+        
+        forvalues j=1/`nlearners' {
+            local b : word `j' of `base_est'
+            di as text "  `b'" _c
+            di as text _col(18) "{c |}" _c
+            di as res _col(20) %5.3f el(`weights_mat',`j',1) _c
+            di as res _col(30) %7.3f el(`m',`j'+1,1) _col(43) %7.3f el(`m',`j'+1,2) _col(56) %7.3f el(`m',`j'+1,3)
+        }
+
+        // add to estimation macros
+        ereturn mat rmspe = `m'
+    }
+    
+    // print confusion matrix if specified
+    if "`table'"=="confusion" {
+        tempname m w
+        mat `m' = r(m)
+        
+        di
+        di as text "Confusion matrix: In-Sample, CV, Holdout"
+        di as text "{hline 17}{c TT}{hline 59}"
+        di as text "  Method" _c
+        di as text _col(18) "{c |} Weight      In-Sample             CV             Holdout"
+        di as text _col(18) "{c |}             0       1         0       1         0       1"
+        di as text "{hline 17}{c +}{hline 59}"
+        
+        di as text "  STACKING" _c
+        di as text _col(16) "0 {c |}" _c
+        di as text "    .  " _c
+        di as res  _col(27) %7.0f el(`m',1,1) _col(35) %7.0f el(`m',1,2) _col(45) %7.0f el(`m',1,3) _col(53) %7.0f el(`m',1,4) _col(63) %7.0f el(`m',1,5) _col(71) %7.0f el(`m',1,6)
+        di as text "  STACKING" _c
+        di as text _col(16) "1 {c |}" _c
+        di as text "    .  " _c
+        di as res  _col(27) %7.0f el(`m',2,1) _col(35) %7.0f el(`m',2,2) _col(45) %7.0f el(`m',2,3) _col(53) %7.0f el(`m',2,4) _col(63) %7.0f el(`m',2,5) _col(71) %7.0f el(`m',2,6)
+        
+        forvalues j=1/`nlearners' {
+            local b : word `j' of `base_est'
+            di as text "  `b'" _c
+            di as text _col(16) "0 {c |}" _c
+            di as res  _col(20) %5.3f el(`weights_mat',`j',1) _c
+            local r = 2*`j' + 1
+            di as res  _col(27) %7.0f el(`m',`r',1) _col(35) %7.0f el(`m',`r',2) _col(45) %7.0f el(`m',`r',3) _col(53) %7.0f el(`m',`r',4) _col(63) %7.0f el(`m',`r',5) _col(71) %7.0f el(`m',`r',6)
+            di as text "  `b'" _c
+            di as text _col(16) "1 {c |}" _c
+            di as res  _col(20) %5.3f el(`weights_mat',`j',1) _c
+            local r = 2*`j' + 2
+            di as res  _col(27) %7.0f el(`m',`r',1) _col(35) %7.0f el(`m',`r',2) _col(45) %7.0f el(`m',`r',3) _col(53) %7.0f el(`m',`r',4) _col(63) %7.0f el(`m',`r',5) _col(71) %7.0f el(`m',`r',6)
+        }
+        
+        // add to estimation macros
+        ereturn mat confusion = `m'
     }
 end
 
@@ -276,12 +322,16 @@ version 16.0
                     HOLDOUT1                                /// vanilla option, abbreviates to "holdout"
                     holdout(varname)                        ///
                     CValid                                  ///
+                    SHOWCoefs                               ///
                     SParse                                  ///
                     SHOWOPTions                             ///
                     NOESTIMATE                              /// suppress call to run_stacked; no estimates, only parses
                 ]
 
     if `"`methods'"'=="" local methods `methods0'
+    if "`printopt'"!="" {
+        local noestimate noestimate
+    }
 
     ** set data signature for pystacked_p;
     * need to do this before temp vars are created
@@ -412,7 +462,7 @@ version 16.0
 
     if `doublebarsyntax' {
         // Syntax 2
-        syntax_parse `beforeifinweight' , type(`type') touse(`touse') sklearn1(`sklearn_ver1') sklearn2(`sklearn_ver2') sklearn3(`sklearn_ver3')
+        syntax_parse `beforeifinweight' , type(`type') touse(`touse') sklearn1(`sklearn_ver1') sklearn2(`sklearn_ver2') sklearn3(`sklearn_ver3') `printopt'
         local allmethods `r(allmethods)'
         local allpyopt `r(allpyopt)'
         local mcount : word count `allmethods'
@@ -436,7 +486,7 @@ version 16.0
             local method : word `i' of `allmethods'
             if "`method'"!="" {
                 local mcount = `i'
-                _pyparse , `cmdopt`i'' type(`type') method(`method') sklearn1(`sklearn_ver1') sklearn2(`sklearn_ver2') sklearn3(`sklearn_ver3')
+                _pyparse , `cmdopt`i'' type(`type') method(`method') sklearn1(`sklearn_ver1') sklearn2(`sklearn_ver2') sklearn3(`sklearn_ver3') `printopt'
                 if `i'==1 {
                     local allpyopt [`r(optstr)'
                 }
@@ -482,6 +532,7 @@ version 16.0
         if "`xvars`i''"=="" {
             local xvars`i' `xvars'
         }
+        local xvars_orig`i' `xvars`i''
         ** expand each varlist, and strip out variables with "o" and "b" prefix
         fvstrip `xvars`i'' if `touse', dropomit expand
         local xvars`i' `r(varlist)'
@@ -583,6 +634,7 @@ version 16.0
         ereturn local pyopt`i' `pyopt`i''    
         ereturn local pipe`i' `pipe`i''    
         ereturn local xvars`i' `xvars`i''
+        ereturn local xvars_o`i' `xvars_orig`i''
     }
     ereturn scalar mcount = `mcount'
 
@@ -591,7 +643,7 @@ end
 // parses Syntax 2
 program define syntax_parse, rclass
 
-    syntax [anything(everything)] , type(string) touse(varname) sklearn1(real) sklearn2(real) sklearn3(real)
+    syntax [anything(everything)] , type(string) touse(varname) sklearn1(real) sklearn2(real) sklearn3(real) `printopt'
 
     // save y x and if/in    
     tokenize `anything', parse("|")
@@ -621,7 +673,7 @@ program define syntax_parse, rclass
         }
         local pipeline = subinstr("`pipeline'","nostdscaler","",.)
         if "`pipeline'"=="" local pipeline passthrough
-        _pyparse , `options' type(`type') method(`method') sklearn1(`sklearn1') sklearn2(`sklearn2')
+        _pyparse , `options' type(`type') method(`method') sklearn1(`sklearn1') sklearn2(`sklearn2') `printopt'
         return local pyopt`i' `r(optstr)'
         return local pipe`i' `pipeline'
         return local xvars`i' `xvars'

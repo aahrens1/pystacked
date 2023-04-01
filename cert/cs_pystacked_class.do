@@ -26,6 +26,35 @@ gen train=runiform()
 replace train=train<.75
  pystacked v58 v1-v57 
 
+ 
+*******************************************************************************
+*** check that printing the coefficients works						 		***
+*******************************************************************************
+
+ insheet using ///
+ https://archive.ics.uci.edu/ml/machine-learning-databases/spambase/spambase.data, ///
+ clear comma
+set seed 42
+
+foreach meth in lassocv elasticcv ridgecv rf gradboost {
+	pystacked v58 v1-v57, type(class) m(logit `meth') showc
+}
+
+
+*******************************************************************************
+*** check that printing the options works							 		***
+*******************************************************************************
+
+ insheet using ///
+ https://archive.ics.uci.edu/ml/machine-learning-databases/spambase/spambase.data, ///
+ clear comma
+
+foreach meth in lassocv elasticcv ridgecv rf gradboost {
+	pystacked v58 v1-v57, type(class) m(logit `meth') printopt
+}
+
+ 
+ 
 *******************************************************************************
 *** check against SJ paper 											 		***
 *******************************************************************************
