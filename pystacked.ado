@@ -13,11 +13,11 @@ program define pystacked, eclass
     local restargs `*'
     local printopt_on = strpos("`restargs'","print")!=0
 
-    if ~replay() & !`printopt_on' {
+    if ~replay() {
         // no replay - must estimate
         _pystacked `0'
     }
-    else if ~replay() & `printopt_on' {
+    else if replay() & `printopt_on' {
         // just print options and leave
         _pyparse `0'
         exit

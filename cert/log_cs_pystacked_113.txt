@@ -2,7 +2,7 @@
       name:  <unnamed>
        log:  /Users/kahrens/MyProjects/pystacked/cert/log_cs_pystacked_113.txt
   log type:  text
- opened on:   1 Apr 2023, 20:22:04
+ opened on:   1 Apr 2023, 21:51:53
 
 . 
 . do "cs_pystacked_class.do"
@@ -11,8 +11,8 @@
 . 
 . which pystacked 
 /Users/kahrens/MyProjects/pystacked/pystacked.ado
-*! pystacked v0.7
-*! last edited: 6mar2023
+*! pystacked v0.7.1
+*! last edited: 1april2023
 *! authors: aa/ms
 
 . python: import sklearn
@@ -40,7 +40,7 @@
 . gen train2 = u<.75
 
 . save `testdata'
-file /var/folders/0w/r8yclchd52bfwbf8l00fkkrr0000gs/T//S_23898.000001 saved as .dta format
+file /var/folders/0w/r8yclchd52bfwbf8l00fkkrr0000gs/T//S_28101.000001 saved as .dta format
 
 . 
 . *******************************************************************************
@@ -1483,8 +1483,8 @@ end of do-file
 .  
 . which pystacked 
 /Users/kahrens/MyProjects/pystacked/pystacked.ado
-*! pystacked v0.7
-*! last edited: 6mar2023
+*! pystacked v0.7.1
+*! last edited: 1april2023
 *! authors: aa/ms
 
 . python: import sklearn
@@ -1913,8 +1913,8 @@ end of do-file
 . 
 . which pystacked 
 /Users/kahrens/MyProjects/pystacked/pystacked.ado
-*! pystacked v0.7
-*! last edited: 6mar2023
+*! pystacked v0.7.1
+*! last edited: 1april2023
 *! authors: aa/ms
 
 . python: import sklearn
@@ -3139,10 +3139,10 @@ Stacking weights:
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  ols            |      0.0320733
-  elasticcv      |      0.5686382
-  gradboost      |      0.2497345
-  linsvm         |      0.1495541
+  ols            |      0.0366520
+  elasticcv      |      0.6611405
+  gradboost      |      0.3022075
+  linsvm         |      0.0000000
 
 Stacking weights:
 ---------------------------------------
@@ -3502,5 +3502,5 @@ end of do-file
       name:  <unnamed>
        log:  /Users/kahrens/MyProjects/pystacked/cert/log_cs_pystacked_113.txt
   log type:  text
- closed on:   1 Apr 2023, 20:35:51
+ closed on:   1 Apr 2023, 22:05:12
 ------------------------------------------------------------------------------------------------------------------------------------------

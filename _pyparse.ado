@@ -9,6 +9,12 @@ program _pyparse
 
 	if ("`methods'"!="") {
 
+		local mcount : word count `methods'
+		if `mcount'>1 {
+			di as err "only one method allowed"
+			error 198
+		}
+
 		if substr("`type'",1,3)=="reg" {
 			local type reg
 		}
