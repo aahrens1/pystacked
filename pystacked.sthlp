@@ -531,7 +531,7 @@ Methods {it:ols} {break}
 {it:Documentation:} {browse "https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html":linear_model.LinearRegression}
 
 {pstd}
-{stata "_pyparse, type(reg) method(ols) print":Show options}
+{stata "pystacked, type(reg) method(ols) printopt":Show options}
 
 {pstd}
 {ul:Logistic regression} {break}
@@ -540,7 +540,7 @@ Type: {it:class} {break}
 Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html":linear_model.LogisticRegression}
 
 {pstd}
-{stata "_pyparse, type(class) method(logit) print":Show options}
+{stata "pystacked, type(class) method(logit) printopt":Show options}
 
 {pstd}
 {ul:Penalized regression with information criteria} {break}
@@ -549,7 +549,7 @@ Type: {it:reg} {break}
 Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LassoLarsIC.html":linear_model.LassoLarsIC}
 
 {pstd}
-{stata "_pyparse, type(reg) method(lassoic) print":Show options}
+{stata "pystacked, type(reg) method(lassoic) printopt":Show options}
 
 {pstd}
 {ul:Penalized regression with cross-validation} 
@@ -560,9 +560,9 @@ Type: {it:regress} {break}
 Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.ElasticNetCV.html":linear_model.ElasticNetCV}  
 
 {pstd}
-{stata "_pyparse, type(reg) method(lassocv) print":Show lasso options} {break}
-{stata "_pyparse, type(reg) method(ridgecv) print":Show ridge options} {break}
-{stata "_pyparse, type(reg) method(elasticcv) print":Show elastic net options}
+{stata "pystacked, type(reg) method(lassocv) printopt":Show lasso options} {break}
+{stata "pystacked, type(reg) method(ridgecv) printopt":Show ridge options} {break}
+{stata "pystacked, type(reg) method(elasticcv) printopt":Show elastic net options}
 
 {pstd}
 {ul:Penalized logistic regression with cross-validation} {break}
@@ -571,9 +571,9 @@ Type: {it:class} {break}
 Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegressionCV.html":linear_model.LogisticRegressionCV}
 
 {pstd}
-{stata "_pyparse, type(class) method(lassocv) print":Show lasso options} {break}
-{stata "_pyparse, type(class) method(ridgecv) print":Show ridge options} {break}
-{stata "_pyparse, type(class) method(elasticcv) print":Show elastic options}
+{stata "pystacked, type(class) method(lassocv) printopt":Show lasso options} {break}
+{stata "pystacked, type(class) method(ridgecv) printopt":Show ridge options} {break}
+{stata "pystacked, type(class) method(elasticcv) printopt":Show elastic options}
 
 {pstd}
 {ul:Random forest classifier} {break}
@@ -582,7 +582,7 @@ Type: {it:class} {break}
 Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html":ensemble.RandomForestClassifier}
 
 {pstd}
-{stata "_pyparse, type(class) method(rf) print":Show options}
+{stata "pystacked, type(class) method(rf) printopt":Show options}
 
 {pstd}
 {ul:Random forest regressor} {break}
@@ -591,7 +591,7 @@ Type: {it:reg} {break}
 Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestRegressor.html":ensemble.RandomForestRegressor}
 
 {pstd}
-{stata "_pyparse, type(reg) method(rf) print":Show options}
+{stata "pystacked, type(reg) method(rf) printopt":Show options}
 
 {pstd}
 {ul:Gradient boosted regression trees} {break}
@@ -600,7 +600,7 @@ Type: {it:reg} {break}
 Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingRegressor.html":ensemble.GradientBoostingRegressor}
 
 {pstd}
-{stata "_pyparse, type(reg) method(gradboost) print":Show options}
+{stata "pystacked, type(reg) method(gradboost) printopt":Show options}
 
 {pstd}
 {ul:Linear SVM (SVR)} {break}
@@ -609,7 +609,7 @@ Type: {it:reg} {break}
 Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.svm.LinearSVR.html":svm.LinearSVR}
 
 {pstd}
-{stata "_pyparse, type(reg) method(linsvm) print":Show options}
+{stata "pystacked, type(reg) method(linsvm) printopt":Show options}
 
 {pstd}
 {ul:SVM (SVR)} {break}
@@ -618,7 +618,7 @@ Type: {it:class} {break}
 Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVR.html":svm.SVR}
 
 {pstd}
-{stata "_pyparse, type(reg) method(svm) print":Show options}
+{stata "pystacked, type(reg) method(svm) printopt":Show options}
 
 {pstd}
 {ul:SVM (SVC)} {break}
@@ -627,7 +627,7 @@ Type: {it:reg} {break}
 Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html":svm.SVC}
 
 {pstd}
-{stata "_pyparse, type(class) method(svm) print":Show options}
+{stata "pystacked, type(class) method(svm) printopt":Show options}
 
 {pstd}
 {ul:Neural net classifier (Multi-layer Perceptron)} {break}
@@ -636,7 +636,7 @@ Type: {it:class} {break}
 Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.neural_network.MLPClassifier.html":sklearn.neural_network.MLPClassifier}
 
 {pstd}
-{stata "_pyparse, type(class) method(nnet) print":Show options}
+{stata "pystacked, type(class) method(nnet) printopt":Show options}
 
 {pstd}
 {ul:Neural net regressor (Multi-layer Perceptron)} {break}
@@ -645,7 +645,7 @@ Type: {it:reg} {break}
 Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.neural_network.MLPRegressor.html":sklearn.neural_network.MLPRegressor}
 
 {pstd}
-{stata "_pyparse, type(reg) method(nnet) print":Show options}
+{stata "pystacked, type(reg) method(nnet) printopt":Show options}
 
 {marker predictors}{...}
 {title:Learner-specific predictors}
@@ -738,11 +738,18 @@ by town{p_end}
 {pstd}
 Stacking regression with lasso, random forest and gradient boosting.
 {p_end}
-{phang2}. {stata "pystacked medv crim-lstat, type(regress) pyseed(123) methods(lassocv rf gradboost)"}{p_end}
+{phang2}. {stata "set seed 123"}{p_end}
+{phang2}. {stata "pystacked medv crim-lstat, type(regress) methods(lassocv rf gradboost)"}{p_end}
 
 {pstd}
 The weights determine how much each base learner contributes
 to the final stacking prediction.{p_end}
+
+{pstd}
+Display for each learner the coefficient estimates (logit, 
+regularized regression, ols) or 
+variable importance measures (random forest, gradient boosting).{p_end}
+{phang2}. {stata "pystacked, showcoef"}{p_end}
 
 {pstd}
 Request the root MSPE table (in-sample only):{p_end}
@@ -753,7 +760,7 @@ Re-estimate using the first 400 observations, and
 request the root MSPE table.
 RMSPEs for both in-sample (both refitted and cross-validated)
 and the default holdout sample (all unused observations) are reported.:{p_end}
-{phang2}. {stata "pystacked medv crim-lstat if _n<=400, type(regress) pyseed(123) methods(lassocv rf gradboost)"}{p_end}
+{phang2}. {stata "pystacked medv crim-lstat if _n<=400, type(regress) methods(lassocv rf gradboost)"}{p_end}
 {phang2}. {stata "pystacked, table holdout"}{p_end}
 
 {pstd}
@@ -782,12 +789,13 @@ linear estimators might perform better if interactions are
 provided as inputs. Here, we use interactions and 2nd-order polynomials
 for the lasso, but not for the other base learners. 
 {p_end}
-{phang2}. {stata "pystacked medv crim-lstat, type(regress) pyseed(123) methods(ols lassocv rf) xvars2(c.(crim-lstat)# #c.(crim-lstat))"}{p_end}
+{phang2}. {stata "set seed 123"}{p_end}
+{phang2}. {stata "pystacked medv crim-lstat, type(regress) methods(ols lassocv rf) xvars2(c.(crim-lstat)# #c.(crim-lstat))"}{p_end}
 
 {pstd}
 The same can be achieved using pipelines which create polynomials on-the-fly in Python. 
 {p_end}
-{phang2}. {stata "pystacked medv crim-lstat, type(regress) pyseed(123) methods(ols lassocv rf) pipe2(poly2)"}{p_end}
+{phang2}. {stata "pystacked medv crim-lstat, type(regress) methods(ols lassocv rf) pipe2(poly2)"}{p_end}
 
 {pstd}
 {ul:Learner-specific predictors (Syntax 2)}
@@ -795,8 +803,8 @@ The same can be achieved using pipelines which create polynomials on-the-fly in 
 {pstd}
 We demonstrate the same using the alternative syntax, which is often more handy:
 
-{phang2}. {stata "pystacked medv crim-lstat || m(ols) || m(lassocv) xvars(c.(crim-lstat)# #c.(crim-lstat)) || m(rf) || , type(regress) pyseed(123)"}{p_end}
-{phang2}. {stata "pystacked medv crim-lstat || m(ols) || m(lassocv) pipe(poly2) || m(rf) || , type(regress) pyseed(123)"}{p_end}
+{phang2}. {stata "pystacked medv crim-lstat || m(ols) || m(lassocv) xvars(c.(crim-lstat)# #c.(crim-lstat)) || m(rf) || , type(regress)"}{p_end}
+{phang2}. {stata "pystacked medv crim-lstat || m(ols) || m(lassocv) pipe(poly2) || m(rf) || , type(regress) "}{p_end}
 
 {pstd}
 {ul:Options of base learners (Syntax 1)}
@@ -807,7 +815,7 @@ we change the maximum tree depth for the random forest. Since random forest is
 the third base learner, we use {opt cmdopt3(max_depth(3))}.
 {p_end}
 
-{phang2}. {stata "pystacked medv crim-lstat, type(regress) pyseed(123) methods(ols lassocv rf) pipe1(poly2) pipe2(poly2) cmdopt3(max_depth(3))"}{p_end}
+{phang2}. {stata "pystacked medv crim-lstat, type(regress) methods(ols lassocv rf) pipe1(poly2) pipe2(poly2) cmdopt3(max_depth(3))"}{p_end}
 
 {pstd}
 You can verify that the option has been passed to Python correctly:
@@ -822,7 +830,7 @@ The same results as above can be achieved using the alternative syntax, which
 imposes no limit on the number of base learners.
 {p_end}
 
-{phang2}. {stata "pystacked medv crim-lstat || m(ols) pipe(poly2) || m(lassocv) pipe(poly2) || m(rf) opt(max_depth(3)) , type(regress) pyseed(123)"}{p_end}
+{phang2}. {stata "pystacked medv crim-lstat || m(ols) pipe(poly2) || m(lassocv) pipe(poly2) || m(rf) opt(max_depth(3)) , type(regress)"}{p_end}
 
 {pstd}
 {ul:Single base learners}
@@ -832,7 +840,18 @@ You can use {cmd:pystacked} with a single base learner.
 In this example, we are using a conventional random forest:
 {p_end}
 
-{phang2}. {stata "pystacked medv crim-lstat, type(regress) pyseed(123) methods(rf)"}{p_end}
+{phang2}. {stata "set seed 123"}{p_end}
+{phang2}. {stata "pystacked medv crim-lstat, type(regress) methods(rf)"}{p_end}
+
+{pstd}
+Show the variable importance measure by predictor.{p_end}
+{phang2}. {stata "pystacked, showcoef"}{p_end}
+
+{pstd}
+We can also run ordinary least squares, display
+the coefficient estimates and compare to {helpb regress}.{p_end}
+{phang2}. {stata "pystacked medv crim-lstat, type(regress) methods(ols) showcoef"}{p_end}
+{phang2}. {stata "reg medv crim-lstat"}{p_end}
 
 {pstd}
 {ul:Voting}
@@ -841,7 +860,8 @@ In this example, we are using a conventional random forest:
 You can also use pre-defined weights. Here, we assign weights of 0.5 to OLS, 
 .1 to the lasso and, implicitly, .4 to the random foreset.
 {p_end}
-{phang2}. {stata "pystacked medv crim-lstat, type(regress) pyseed(123) methods(ols lassocv rf) pipe1(poly2) pipe2(poly2) voting voteweights(.5 .1)"}{p_end}
+{phang2}. {stata "set seed 123"}{p_end}
+{phang2}. {stata "pystacked medv crim-lstat, type(regress) methods(ols lassocv rf) pipe1(poly2) pipe2(poly2) voting voteweights(.5 .1)"}{p_end}
 
 {marker example_spam}{...}
 {title:Classification Example using Spam data}
@@ -889,7 +909,8 @@ Throughout this example, we add the option {opt njobs(4)}, which enables
 parallelization with 4 cores. 
 
 {pstd}We consider three base learners: logit, random forest and gradient boosting:{p_end}
-{phang2}. {stata "pystacked v58 v1-v57, type(class) pyseed(123) methods(logit rf gradboost) njobs(4) pipe1(poly2)"}{p_end}
+{phang2}. {stata "set seed 123"}{p_end}
+{phang2}. {stata "pystacked v58 v1-v57, type(class) methods(logit rf gradboost) njobs(4) pipe1(poly2)"}{p_end}
 
 {pstd}{ul:Out-of-sample classification.} 
 
@@ -899,7 +920,7 @@ parallelization with 4 cores.
 {phang2}. {stata "sort u"}{p_end}
 
 {pstd}Estimation on the first 2000 observations.{p_end}
-{phang2}. {stata "pystacked v58 v1-v57 if _n<=2000, type(class) pyseed(123) methods(logit rf gradboost) njobs(4) pipe1(poly2)"}{p_end}
+{phang2}. {stata "pystacked v58 v1-v57 if _n<=2000, type(class) methods(logit rf gradboost) njobs(4) pipe1(poly2)"}{p_end}
 
 {pstd}We can get both the predicted probabilities or the predicted class:{p_end}
 {phang2}. {stata "predict spam, class"}{p_end}

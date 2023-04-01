@@ -6,9 +6,21 @@
 program define pystacked, eclass
     version 16.0
 
-    if ~replay() {
+    // exception for printoption which can be called w/o variables
+    tokenize `"`0'"', parse(",")
+    local beforecomma `1'
+    macro shift
+    local restargs `*'
+    local printopt_on = strpos("`restargs'","print")!=0
+
+    if ~replay() & !`printopt_on' {
         // no replay - must estimate
         _pystacked `0'
+    }
+    else if ~replay() & `printopt_on' {
+        // just print options and leave
+        _pyparse `0'
+        exit
     }
     else {
         // replay - check that pystacked estimation is in memory
