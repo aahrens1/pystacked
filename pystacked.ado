@@ -141,6 +141,14 @@ program define pystacked, eclass
                 local coef_nums = rowsof(`coefs_mat')
                 local varname_count : word count `thexvars'
 
+                // get max string length of variables
+                local maxstrlen = 17
+                foreach i in `thexvars' {
+                    local thisstrlen = strlen("`i'")
+                    if (`thisstrlen'>`maxstrlen'-2) local maxstrlen = `thisstrlen'+2
+                }
+                local maxstrlen = `maxstrlen'+2
+
                 // which type of coefficients are shown
                 local coeftype Coefficients
                 if regexm("rf gradboost","`thislearner'") {
@@ -151,15 +159,15 @@ program define pystacked, eclass
                 if (`coef_nums' == `varname_count') {
                     di
                     di as res "`coeftype' `thislearner'`i':"
-                    di as text "{hline 17}{c TT}{hline 21}"
+                    di as text "{hline `=`maxstrlen'-1'}{c TT}{hline 21}"
                     di as text "  Predictor  " _c
-                    di as text _col(18) "{c |}      Value"
-                    di as text "{hline 17}{c +}{hline 21}"
+                    di as text _col(`maxstrlen') "{c |}      Value"
+                    di as text "{hline `=`maxstrlen'-1'}{c +}{hline 21}"
 
                     forvalues j=1/`coef_nums' {
                         local thisxvar : word `j' of `thexvars'
                         di as text "  `thisxvar'" _c
-                        di as text _col(18) "{c |}" _c
+                        di as text _col(`maxstrlen') "{c |}" _c
                         di as res %15.7f el(`coefs_mat',`j',1)
                     }
                 }
