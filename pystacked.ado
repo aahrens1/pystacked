@@ -303,6 +303,8 @@ version 16.0
             local numopts `numopts' cmdopt`i'(string asis) pipe`i'(string asis) xvars`i'(varlist fv)
         }
     }
+    syntax varlist(min=2 fv) [if] [in] [aweight fweight], [*]
+    local globalopt `options'
     syntax varlist(min=2 fv) [if] [in] [aweight fweight], ///
                 [ ///
                     TYpe(string) /// classification or regression
@@ -657,6 +659,7 @@ version 16.0
         ereturn local xvars_o`i' `xvars_orig`i''
     }
     ereturn scalar mcount = `mcount'
+    ereturn local globalopt `globalopt'
 
 end
 
