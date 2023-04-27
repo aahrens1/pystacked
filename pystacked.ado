@@ -982,8 +982,10 @@ program define pystacked_graph_table, rclass
         }
         
         // column for in-sample RMSPE
-        qui sum `stacking_r_cv' if e(sample)
-        mat `m_cv' = r(sd) * sqrt( (r(N)-1)/r(N) )
+        // don't report RMSPE for composite CV prediction
+        // qui sum `stacking_r_cv' if e(sample)
+        // mat `m_cv' = r(sd) * sqrt( (r(N)-1)/r(N) )
+        mat `m_cv' = .
         forvalues i=1/`nlearners' {
             qui sum `stacking_r_cv`i'' if e(sample)
             mat `m_cv' = `m_cv' \ (r(sd) * sqrt( (r(N)-1)/r(N) ))
@@ -1021,10 +1023,13 @@ program define pystacked_graph_table, rclass
             local in_0    = r(N)
             qui count if `y'==1 & `stacking_c'==`r' & e(sample)
             local in_1    = r(N)
-            qui count if `y'==0 & `stacking_c_cv'==`r' & e(sample)
-            local cv_0    = r(N)
-            qui count if `y'==1 & `stacking_c_cv'==`r' & e(sample)
-            local cv_1    = r(N)
+	        // don't report for composite CV prediction
+            // qui count if `y'==0 & `stacking_c_cv'==`r' & e(sample)
+            // local cv_0    = r(N)
+            // qui count if `y'==1 & `stacking_c_cv'==`r' & e(sample)
+            // local cv_1    = r(N)
+            local cv_0 = .
+            local cv_1 = .
             if "`holdout'`holdout1'"~="" {
                 // touse is the holdout indicator
                 qui count if `y'==0 & `stacking_c'==`r' & `touse'
