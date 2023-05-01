@@ -83,6 +83,7 @@ def post_prediction(pred_var,basexb,cvalid,var_type,touse,pred_type):
 				Data.setVarLabel(pred_var+str(j+1),"Predicted probability "+" "+methods[j])
 			else:
 				Data.setVarLabel(pred_var+str(j+1),"Predicted value"+" "+methods[j])
+			pred[touse==0] = np.nan
 			Data.store(var=pred_var+str(j+1),val=pred,obs=None)
 
 	elif basexb!="" and cvalid!="":
@@ -111,5 +112,6 @@ def post_prediction(pred_var,basexb,cvalid,var_type,touse,pred_type):
 				Data.addVarFloat(pred_var+str(j+1))
 			pred=transf[:,j]
 			predna =np.isnan(pred)
+			pred[touse==0] = np.nan
 			Data.setVarLabel(pred_var+str(j+1),"Predicted value"+" "+methods[j])
 			Data.store(var=pred_var+str(j+1),val=pred,obs=id)
