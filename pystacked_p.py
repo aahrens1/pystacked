@@ -105,6 +105,7 @@ def post_prediction(pred_var,basexb,cvalid,var_type,touse,pred_type):
 		id = id -1
 		id = id.tolist()
 		ncol = transf.shape[1]
+		touse =touse[id]
 		for j in range(ncol):
 			if var_type == "double":
 				Data.addVarDouble(pred_var+str(j+1))
