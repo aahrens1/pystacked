@@ -104,6 +104,11 @@ class ConstrLSClassifier(ConstrLS):
     def predict_proba(self, X):
         return self.predict(X)
 
+class SingleBestClassifier(SingleBest):
+    _estimator_type="classifier"
+    def predict_proba(self, X):
+        return self.predict(X)
+
 class LinearRegressionClassifier(LinearRegression):
     _estimator_type="classifier"
     def predict_proba(self, X):
@@ -391,6 +396,8 @@ def run_stacked(type, # regression or classification
         fin_est = RidgeCV()
     elif finalest == "singlebest" and type == "reg": 
         fin_est = SingleBest()
+    elif finalest == "singlebest" and type == "class": 
+        fin_est = SingleBestClassifier
     elif finalest == "ols" and type == "class": 
         fin_est = LinearRegressionClassifier()    
     elif finalest == "ols" and type == "reg": 
