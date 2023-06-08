@@ -397,7 +397,7 @@ def run_stacked(type, # regression or classification
     elif finalest == "singlebest" and type == "reg": 
         fin_est = SingleBest()
     elif finalest == "singlebest" and type == "class": 
-        fin_est = SingleBestClassifier
+        fin_est = SingleBestClassifier()
     elif finalest == "ols" and type == "class": 
         fin_est = LinearRegressionClassifier()    
     elif finalest == "ols" and type == "reg": 
