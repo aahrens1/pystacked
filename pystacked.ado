@@ -392,7 +392,7 @@ version 16.0
     }
 
     * set the Python seed using randomly drawn number 
-    if `pyseed'<0 {
+    if `pyseed'<0 & "`noestimate'"=="" {
         local pyseed = round(runiform()*10^8)
     }
 
@@ -462,7 +462,7 @@ version 16.0
     if "`foldvar'"=="" {
         *** gen folds
         tempvar uni cuni fid
-        if "`norandom'"~="" {
+        if "`norandom'"~="" | "`noestimate'"!="" {
             qui gen `uni' = _n
         }
         else {
