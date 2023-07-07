@@ -211,9 +211,11 @@ Alternatives are {it:nnls0} (non-negative least squares without intercept
 and without the sum-to-one constraint), 
 {it:singlebest} (use base learner with minimum MSE),
 {it:ols} (ordinary least squares),
+{it:avg} for the unweighted average,
 {it:ls1} (least squares without an intercept and with the sum-to-one constraint), or
 {it:ridge} for (logistic) ridge, which is the
-sklearn default. For more information, 
+sklearn default.
+For more information, 
 see {helpb pystacked##section_stacking:here}.
 {p_end}
 {synopt:{opt nosavep:red}} do not save predicted values
