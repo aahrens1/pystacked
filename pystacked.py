@@ -1,5 +1,5 @@
-#! pystacked v0.7.1
-#! last edited: 1april2023
+#! pystacked v0.7.2
+#! last edited: 8july2023
 #! authors: aa/ms
 
 # Import required Python modules
@@ -60,6 +60,23 @@ class SingleBest(BaseEstimator):
         check_is_fitted(self, 'is_fitted_')
         return X[:,self.best]
 
+class AvgEstimator(BaseEstimator):
+    """
+    Avg of learners
+    """
+    _estimator_type="regressor"
+    def fit(self, X, y):
+        X, y = check_X_y(X, y, accept_sparse=True)
+        self.is_fitted_ = True
+        ncols = X.shape[1]
+        self.coef_ = np.repeat(1/ncols,ncols)
+        self.cvalid=X
+        return self
+    def predict(self, X):
+        X = check_array(X, accept_sparse=True)
+        check_is_fitted(self, 'is_fitted_')
+        return X.mean(axis=1)
+
 class ConstrLS(BaseEstimator):
     """
     Constrained least squares, weights sum to 1 and optionally >= 0
@@ -100,6 +117,16 @@ class ConstrLS(BaseEstimator):
         self.unit_interval = unit_interval
 
 class ConstrLSClassifier(ConstrLS):
+    _estimator_type="classifier"
+    def predict_proba(self, X):
+        return self.predict(X)
+
+class AvgClassifier(AvgEstimator):
+    _estimator_type="classifier"
+    def predict_proba(self, X):
+        return self.predict(X)
+
+class SingleBestClassifier(SingleBest):
     _estimator_type="classifier"
     def predict_proba(self, X):
         return self.predict(X)
@@ -389,8 +416,14 @@ def run_stacked(type, # regression or classification
         fin_est = ConstrLS()
     elif finalest == "ridge" and type == "reg": 
         fin_est = RidgeCV()
+    elif finalest == "avg" and type == "reg": 
+        fin_est = AvgEstimator()
+    elif finalest == "avg" and type == "class": 
+        fin_est = AvgClassifier()
     elif finalest == "singlebest" and type == "reg": 
         fin_est = SingleBest()
+    elif finalest == "singlebest" and type == "class": 
+        fin_est = SingleBestClassifier()
     elif finalest == "ols" and type == "class": 
         fin_est = LinearRegressionClassifier()    
     elif finalest == "ols" and type == "reg": 

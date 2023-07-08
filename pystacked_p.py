@@ -1,5 +1,5 @@
-#! pystacked v0.7.1
-#! last edited: 1april2023
+#! pystacked v0.7.2
+#! last edited: 8july2023
 #! authors: aa/ms
 
 
@@ -83,6 +83,7 @@ def post_prediction(pred_var,basexb,cvalid,var_type,touse,pred_type):
 				Data.setVarLabel(pred_var+str(j+1),"Predicted probability "+" "+methods[j])
 			else:
 				Data.setVarLabel(pred_var+str(j+1),"Predicted value"+" "+methods[j])
+			pred[touse==0] = np.nan
 			Data.store(var=pred_var+str(j+1),val=pred,obs=None)
 
 	elif basexb!="" and cvalid!="":
@@ -104,6 +105,7 @@ def post_prediction(pred_var,basexb,cvalid,var_type,touse,pred_type):
 		id = id -1
 		id = id.tolist()
 		ncol = transf.shape[1]
+		touse =touse[id]
 		for j in range(ncol):
 			if var_type == "double":
 				Data.addVarDouble(pred_var+str(j+1))
@@ -111,5 +113,6 @@ def post_prediction(pred_var,basexb,cvalid,var_type,touse,pred_type):
 				Data.addVarFloat(pred_var+str(j+1))
 			pred=transf[:,j]
 			predna =np.isnan(pred)
+			pred[touse==0] = np.nan
 			Data.setVarLabel(pred_var+str(j+1),"Predicted value"+" "+methods[j])
 			Data.store(var=pred_var+str(j+1),val=pred,obs=id)

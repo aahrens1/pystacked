@@ -1,5 +1,5 @@
-*! pystacked v0.7.1
-*! last edited: 1april2023
+*! pystacked v0.7.2
+*! last edited: 8july2023
 *! authors: aa/ms
 
 // parent program
@@ -303,6 +303,8 @@ version 16.0
             local numopts `numopts' cmdopt`i'(string asis) pipe`i'(string asis) xvars`i'(varlist fv)
         }
     }
+    syntax varlist(min=2 fv) [if] [in] [aweight fweight], [*]
+    local globalopt `options'
     syntax varlist(min=2 fv) [if] [in] [aweight fweight], ///
                 [ ///
                     TYpe(string) /// classification or regression
@@ -390,7 +392,7 @@ version 16.0
     }
 
     * set the Python seed using randomly drawn number 
-    if `pyseed'<0 {
+    if `pyseed'<0 & "`noestimate'"=="" {
         local pyseed = round(runiform()*10^8)
     }
 
@@ -460,7 +462,7 @@ version 16.0
     if "`foldvar'"=="" {
         *** gen folds
         tempvar uni cuni fid
-        if "`norandom'"~="" {
+        if "`norandom'"~="" | "`noestimate'"!="" {
             qui gen `uni' = _n
         }
         else {
@@ -657,6 +659,7 @@ version 16.0
         ereturn local xvars_o`i' `xvars_orig`i''
     }
     ereturn scalar mcount = `mcount'
+    ereturn local globalopt `globalopt'
 
 end
 
@@ -979,8 +982,10 @@ program define pystacked_graph_table, rclass
         }
         
         // column for in-sample RMSPE
-        qui sum `stacking_r_cv' if e(sample)
-        mat `m_cv' = r(sd) * sqrt( (r(N)-1)/r(N) )
+        // don't report RMSPE for composite CV prediction
+        // qui sum `stacking_r_cv' if e(sample)
+        // mat `m_cv' = r(sd) * sqrt( (r(N)-1)/r(N) )
+        mat `m_cv' = .
         forvalues i=1/`nlearners' {
             qui sum `stacking_r_cv`i'' if e(sample)
             mat `m_cv' = `m_cv' \ (r(sd) * sqrt( (r(N)-1)/r(N) ))
@@ -1018,10 +1023,13 @@ program define pystacked_graph_table, rclass
             local in_0    = r(N)
             qui count if `y'==1 & `stacking_c'==`r' & e(sample)
             local in_1    = r(N)
-            qui count if `y'==0 & `stacking_c_cv'==`r' & e(sample)
-            local cv_0    = r(N)
-            qui count if `y'==1 & `stacking_c_cv'==`r' & e(sample)
-            local cv_1    = r(N)
+	        // don't report for composite CV prediction
+            // qui count if `y'==0 & `stacking_c_cv'==`r' & e(sample)
+            // local cv_0    = r(N)
+            // qui count if `y'==1 & `stacking_c_cv'==`r' & e(sample)
+            // local cv_1    = r(N)
+            local cv_0 = .
+            local cv_1 = .
             if "`holdout'`holdout1'"~="" {
                 // touse is the holdout indicator
                 qui count if `y'==0 & `stacking_c'==`r' & `touse'
