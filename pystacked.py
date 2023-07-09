@@ -134,7 +134,18 @@ class SingleBestClassifier(SingleBest):
 class LinearRegressionClassifier(LinearRegression):
     _estimator_type="classifier"
     def predict_proba(self, X):
+        self.cvalid=X
         return self.predict(X)
+
+class LinearRegression2(LinearRegression):
+    def fit(self,X,y):
+        self.cvalid=X
+        return LinearRegression.fit(self,X,y)
+
+class RidgeCV2(RidgeCV):
+    def fit(self,X,y):
+        self.cvalid=X
+        return RidgeCV.fit(self,X,y)
 
 class SparseTransformer(TransformerMixin):
     def fit(self, X, y=None, **fit_params):
@@ -306,7 +317,7 @@ def run_stacked(type, # regression or classification
             if methods[m]=="ols":
                 opt =allopt[m]
                 newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
-                newmethod.append(('ols',LinearRegression(**opt)))
+                newmethod.append(('ols',LinearRegression2(**opt)))
             if methods[m]=="lassoic":
                 opt =allopt[m]
                 newmethod = build_pipeline(allpipe[m],xvars,allxvar_sel[m])
@@ -409,13 +420,13 @@ def run_stacked(type, # regression or classification
     elif finalest == "ridge" and type == "class": 
         fin_est = LogisticRegression()
     elif finalest == "nnls0" and type == "reg": 
-        fin_est = LinearRegression(fit_intercept=False,positive=True)
+        fin_est = LinearRegression2(fit_intercept=False,positive=True)
     elif finalest == "nnls_sk" and type == "reg": 
-        fin_est = LinearRegression(fit_intercept=False,positive=True)
+        fin_est = LinearRegression2(fit_intercept=False,positive=True)
     elif finalest == "nnls1" and type == "reg": 
         fin_est = ConstrLS()
     elif finalest == "ridge" and type == "reg": 
-        fin_est = RidgeCV()
+        fin_est = RidgeCV2()
     elif finalest == "avg" and type == "reg": 
         fin_est = AvgEstimator()
     elif finalest == "avg" and type == "class": 
@@ -427,7 +438,7 @@ def run_stacked(type, # regression or classification
     elif finalest == "ols" and type == "class": 
         fin_est = LinearRegressionClassifier()    
     elif finalest == "ols" and type == "reg": 
-        fin_est = LinearRegression()    
+        fin_est = LinearRegression2()    
     elif finalest == "ls1" and type == "reg":
         fin_est = ConstrLS(unit_interval=False)    
     elif finalest == "ls1" and type == "class":
