@@ -1,7 +1,7 @@
 {smcl}
-{* *! version 11july2023}{...}
+{* *! version 23july2023}{...}
 {hline}
-{cmd:help pystacked}{right: v0.7.3}
+{cmd:help pystacked}{right: v0.7.4}
 {hline}
 
 {title:Title}
@@ -244,6 +244,14 @@ integer fold variable for cross-validation.
 number of folds used for {it:base learners} that use 
 cross-validation (e.g. {it:lassocv}); 
 default is 5.  
+{p_end}
+{synopt:{opt cv}} 
+do cross-validation even if only one base learner is provided. 
+By default, {cmd:pystacked} does not conduct cross-valididation 
+if there is only one candidate learner since no stacking is 
+done. If you want to do get the cross-validated predicted values 
+anyway (e.g. to estimate RSMPE), add this option. 
+If there are multiple learners, this option is ignored.
 {p_end}
 {synopt:{opt norandom}} 
 folds are created using the ordering of the data. 
