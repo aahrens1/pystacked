@@ -986,7 +986,7 @@ program define pystacked_graph_table, rclass
         qui sum `stacking_rsq' if e(sample)
         mat `m_in' = sqrt(r(mean))
         forvalues i=1/`nlearners' {
-            sum `stacking_rsq`i'' if e(sample)
+            qui sum `stacking_rsq`i'' if e(sample)
             mat `m_in' = `m_in' \ (sqrt(r(mean)))
         }
         
