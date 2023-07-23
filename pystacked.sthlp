@@ -245,6 +245,14 @@ number of folds used for {it:base learners} that use
 cross-validation (e.g. {it:lassocv}); 
 default is 5.  
 {p_end}
+{synopt:{opt cv}} 
+do cross-validation even if only one base learner is provided. 
+By default, {cmd:pystacked} does not conduct cross-valididation 
+if there is only one candidate learner since no stacking is 
+done. If you want to do get the cross-validated predicted values 
+anyway (e.g. to estimate RSMPE), add this option. 
+If there are multiple learners, this option is ignored.
+{p_end}
 {synopt:{opt norandom}} 
 folds are created using the ordering of the data. 
 {p_end}
