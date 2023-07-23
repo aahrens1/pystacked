@@ -221,6 +221,7 @@ def run_stacked(type, # regression or classification
     njobs, # number of cores
     foldvar, # foldvar
     prefit, # don't do CV
+    cv, # also do CV if there is only one learner
     bfolds, #
     shuff, #
     idvar, # id var
@@ -449,11 +450,11 @@ def run_stacked(type, # regression or classification
         sfi.SFIToolkit.error(198)
 
     # if single base learner, use voting with weight = 1
-    if len(methods)==1:
+    if len(methods)==1 and cv=="":
         voting="voting"
         voteweights=""
         votetype="soft"
-        sfi.SFIToolkit.stata('di as text "Single base learner: no stacking done."')
+        sfi.SFIToolkit.stata('di as text "Single base learner: no stacking or cross-validation done."')
         #"
 
     if voting=="" and type=="reg":
