@@ -1,7 +1,7 @@
 {smcl}
-{* *! version 23july2023}{...}
+{* *! version 7aug2023}{...}
 {hline}
-{cmd:help pystacked}{right: v0.7.4}
+{cmd:help pystacked}{right: v0.7.5}
 {hline}
 
 {title:Title}
@@ -36,7 +36,7 @@ algorithms.
 a Python installation and scikit-learn (0.24 or higher). {opt pystacked}
 has been 
 {browse "https://github.com/aahrens1/pystacked/tree/main/cert":tested} 
-with scikit-learn 0.24.2, 1.0.2, 1.1.3, and 1.2.1.
+with scikit-learn 0.24.2, 1.0.2, 1.1.3, 1.2.1 and 1.3.
 See {helpb python:here} and {browse "https://blog.stata.com/2020/08/18/stata-python-integration-part-1-setting-up-stata-to-use-python/":here} 
 for how to set up Python for Stata on your system.
 

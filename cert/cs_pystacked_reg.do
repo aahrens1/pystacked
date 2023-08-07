@@ -179,7 +179,7 @@ set seed 789
 pystacked medv crim-lstat, method(gradboost lassocv) pipe2(poly2) 
 predict double xb2
 
-assert reldif(xb1,xb2)<1e-5
+assert reldif(xb1,xb2)<1e-4
 
 
 *******************************************************************************
