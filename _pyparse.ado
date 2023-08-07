@@ -1,5 +1,5 @@
-*! pystacked v0.7.4
-*! last edited: 23july2023
+*! pystacked v0.7.5
+*! last edited: 7aug2023
 *! authors: aa/ms
 
 program _pyparse 
@@ -28,7 +28,7 @@ program _pyparse
 			di as text ""
 		}
 
-		** v 1.1.2 becomes 101.2
+		** v 1.1.2 becomes 101.2 (not 112!)
 		local sklearn_ver = `sklearn1'*100+`sklearn2'+`sklearn3'/10
 		local options `options' sklearn_ver(`sklearn_ver') `printopt'
 
@@ -193,7 +193,7 @@ program define parse_Logit, rclass
 	if "`penalty'"!="" {
 		local optstr `optstr' 'penalty':'`penalty'',
 	}
-	else if `sklearn_ver'<120 {
+	else if `sklearn_ver'<102 {
 		local optstr `optstr' 'penalty':'none',
 	} 
 	else {
@@ -1085,7 +1085,7 @@ program define parse_gradboostClass, rclass
 		local optstr `optstr' 'loss':'`loss'',
 	} 
 	else if "`loss'"=="" {
-		if (`sklearn_ver'<110) {
+		if (`sklearn_ver'<101) {
 			local optstr `optstr' 'loss':'deviance',
 		}
 		else {

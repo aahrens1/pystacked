@@ -2,7 +2,7 @@
       name:  <unnamed>
        log:  /Users/kahrens/MyProjects/pystacked/cert/log_cs_pystacked_024.txt
   log type:  text
- opened on:  23 Jul 2023, 16:56:05
+ opened on:   7 Aug 2023, 20:18:11
 
 . 
 . do "cs_pystacked_class.do"
@@ -10,7 +10,7 @@
 . 
 . 
 . which pystacked 
-/Users/kahrens/MyProjects/pystacked/pystacked.ado
+/Users/kahrens/Library/Application Support/Stata/ado/plus/p/pystacked.ado
 *! pystacked v0.7.4
 *! last edited: 23july2023
 *! authors: aa/ms
@@ -40,7 +40,7 @@
 . gen train2 = u<.75
 
 . save `testdata'
-file /var/folders/0w/r8yclchd52bfwbf8l00fkkrr0000gs/T//S_71216.000001 saved as .dta format
+file /var/folders/0w/r8yclchd52bfwbf8l00fkkrr0000gs/T//S_80960.000001 saved as .dta format
 
 . 
 . *******************************************************************************
@@ -1495,7 +1495,7 @@ end of do-file
 
 .  
 . which pystacked 
-/Users/kahrens/MyProjects/pystacked/pystacked.ado
+/Users/kahrens/Library/Application Support/Stata/ado/plus/p/pystacked.ado
 *! pystacked v0.7.4
 *! last edited: 23july2023
 *! authors: aa/ms
@@ -1931,7 +1931,7 @@ end of do-file
 
 . 
 . which pystacked 
-/Users/kahrens/MyProjects/pystacked/pystacked.ado
+/Users/kahrens/Library/Application Support/Stata/ado/plus/p/pystacked.ado
 *! pystacked v0.7.4
 *! last edited: 23july2023
 *! authors: aa/ms
@@ -2681,7 +2681,7 @@ Stacking weights:
 . predict double xb2
 
 . 
-. assert reldif(xb1,xb2)<1e-5
+. assert reldif(xb1,xb2)<1e-4
 
 . 
 . 
@@ -3174,10 +3174,10 @@ Stacking weights:
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  ols            |      0.0366520
-  elasticcv      |      0.6611404
-  gradboost      |      0.3022076
-  linsvm         |      0.0000000
+  ols            |      0.0342116
+  elasticcv      |      0.5059315
+  gradboost      |      0.3036162
+  linsvm         |      0.1562407
 
 Stacking weights:
 ---------------------------------------
@@ -3323,18 +3323,6 @@ Stacking weights:
 
 . pystacked, table
 
-    Variable |        Obs        Mean    Std. dev.       Min        Max
--------------+---------------------------------------------------------
-    __00000A |         97    .2511161    .4291298   .0000103    2.03982
-
-    Variable |        Obs        Mean    Std. dev.       Min        Max
--------------+---------------------------------------------------------
-    __00000E |         97    .4752562    .6577155   .0003267   3.186459
-
-    Variable |        Obs        Mean    Std. dev.       Min        Max
--------------+---------------------------------------------------------
-    __00000I |         97    .0826901    .1184079   8.16e-08   .7199923
-
 RMSPE: In-Sample, CV, Holdout
 -----------------------------------------------------------------
   Method         | Weight   In-Sample        CV         Holdout
@@ -3363,18 +3351,6 @@ Stacking weights:
 . pystacked, table holdout
 Number of holdout observations:   48
 
-    Variable |        Obs        Mean    Std. dev.       Min        Max
--------------+---------------------------------------------------------
-    __00000A |         49    .1007392    .2417956          0   1.188853
-
-    Variable |        Obs        Mean    Std. dev.       Min        Max
--------------+---------------------------------------------------------
-    __00000E |         49    .2977646    .4078352   .0000218   1.652323
-
-    Variable |        Obs        Mean    Std. dev.       Min        Max
--------------+---------------------------------------------------------
-    __00000I |         49    .0665765    .1052038   .0000367   .5717855
-
 RMSPE: In-Sample, CV, Holdout
 -----------------------------------------------------------------
   Method         | Weight   In-Sample        CV         Holdout
@@ -3387,18 +3363,6 @@ RMSPE: In-Sample, CV, Holdout
 . // specified holdout sample
 . pystacked, table holdout(h1)
 Number of holdout observations:   37
-
-    Variable |        Obs        Mean    Std. dev.       Min        Max
--------------+---------------------------------------------------------
-    __000009 |         49    .1007392    .2417956          0   1.188853
-
-    Variable |        Obs        Mean    Std. dev.       Min        Max
--------------+---------------------------------------------------------
-    __00000D |         49    .2977646    .4078352   .0000218   1.652323
-
-    Variable |        Obs        Mean    Std. dev.       Min        Max
--------------+---------------------------------------------------------
-    __00000H |         49    .0665765    .1052038   .0000367   .5717855
 
 RMSPE: In-Sample, CV, Holdout
 -----------------------------------------------------------------
@@ -3423,18 +3387,6 @@ error - holdout and estimation samples overlap
 >                                                  pipe1(poly2) pipe2(poly2) ///
 >                                                  table holdout
 Number of holdout observations:   48
-
-    Variable |        Obs        Mean    Std. dev.       Min        Max
--------------+---------------------------------------------------------
-    __00000A |         49    .1007392    .2417956          0   1.188853
-
-    Variable |        Obs        Mean    Std. dev.       Min        Max
--------------+---------------------------------------------------------
-    __00000E |         49    .2977646    .4078352   .0000218   1.652323
-
-    Variable |        Obs        Mean    Std. dev.       Min        Max
--------------+---------------------------------------------------------
-    __00000I |         49    .0665765    .1052038   .0000367   .5717855
 
 RMSPE: In-Sample, CV, Holdout
 -----------------------------------------------------------------
@@ -3461,18 +3413,6 @@ Stacking weights:
 
 . pystacked, table holdout(h1)
 Number of holdout observations:   37
-
-    Variable |        Obs        Mean    Std. dev.       Min        Max
--------------+---------------------------------------------------------
-    __000009 |         49    .2764929    .3860187   .0000185   1.384001
-
-    Variable |        Obs        Mean    Std. dev.       Min        Max
--------------+---------------------------------------------------------
-    __00000D |         49    .3249782    .4488656   .0000289   1.949586
-
-    Variable |        Obs        Mean    Std. dev.       Min        Max
--------------+---------------------------------------------------------
-    __00000H |         49    .0665765    .1052038   .0000367   .5717855
 
 RMSPE: In-Sample, CV, Holdout
 -----------------------------------------------------------------
@@ -3599,5 +3539,5 @@ end of do-file
       name:  <unnamed>
        log:  /Users/kahrens/MyProjects/pystacked/cert/log_cs_pystacked_024.txt
   log type:  text
- closed on:  23 Jul 2023, 17:11:39
+ closed on:   7 Aug 2023, 20:34:05
 ------------------------------------------------------------------------------------------------------------------
