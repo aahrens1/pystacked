@@ -10,3 +10,5 @@ StataSE -b do cs_pystacked_runall.do 102 &
 StataSE -b do cs_pystacked_runall.do 113 &
 StataSE -b do cs_pystacked_runall.do 121 &
 StataSE -b do cs_pystacked_runall.do 130 &
+StataSE -b do cs_pystacked_runall.do 132 &
+StataSE -b do cs_pystacked_runall.do 140 &

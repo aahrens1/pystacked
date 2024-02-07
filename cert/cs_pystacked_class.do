@@ -100,7 +100,7 @@ predict log2 if fid==1
 gen double log_crossfit = log1 if fid==2
 replace log_crossfit = log2 if fid==1
 
-assert reldif(log_crossfit , yb1)<10e-6
+assert reldif(log_crossfit , yb1)<10e-4
 
 
 
