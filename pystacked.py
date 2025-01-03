@@ -1,5 +1,5 @@
-#! pystacked v0.7.5
-#! last edited: 7aug2023
+#! pystacked v0.7.6
+#! last edited: 3jan2025
 #! authors: aa/ms
 
 # Import required Python modules
@@ -18,7 +18,7 @@ from sklearn.ensemble import StackingRegressor,StackingClassifier
 from sklearn.ensemble import VotingRegressor,VotingClassifier
 from sklearn.ensemble import RandomForestRegressor,RandomForestClassifier
 from sklearn.ensemble import GradientBoostingRegressor,GradientBoostingClassifier
-from sklearn.base import TransformerMixin,BaseEstimator
+from sklearn.base import TransformerMixin,BaseEstimator,ClassifierMixin,RegressorMixin
 from sklearn.svm import LinearSVR,LinearSVC,SVC,SVR
 from sklearn.utils import check_X_y,check_array
 from sklearn.utils.validation import check_is_fitted
@@ -34,16 +34,15 @@ from sklearn.model_selection import PredefinedSplit,KFold,StratifiedKFold
 
 ### Define required Python functions/classes
 
-class SingleBest(BaseEstimator):
+class SingleBest(RegressorMixin,BaseEstimator):
     """
     Select base learner with lowest MSE
     """
-    _estimator_type="regressor"
     def fit(self, X, y):
         X, y = check_X_y(X, y, accept_sparse=True)
         self.is_fitted_ = True
         ncols = X.shape[1]
-        lowest_mse = np.Inf
+        lowest_mse = np.mean((y-np.mean(y)) ** 2)
         for i in range(ncols):
             this_mse=np.mean((y-X[:, i]) ** 2)
             if this_mse < lowest_mse:
@@ -55,16 +54,16 @@ class SingleBest(BaseEstimator):
         self.coef_ = coef
         self.cvalid=X
         return self
+
     def predict(self, X):
         X = check_array(X, accept_sparse=True)
         check_is_fitted(self, 'is_fitted_')
         return X[:,self.best]
 
-class AvgEstimator(BaseEstimator):
+class AvgEstimator(RegressorMixin,BaseEstimator):
     """
     Avg of learners
     """
-    _estimator_type="regressor"
     def fit(self, X, y):
         X, y = check_X_y(X, y, accept_sparse=True)
         self.is_fitted_ = True
@@ -72,16 +71,19 @@ class AvgEstimator(BaseEstimator):
         self.coef_ = np.repeat(1/ncols,ncols)
         self.cvalid=X
         return self
+
     def predict(self, X):
         X = check_array(X, accept_sparse=True)
         check_is_fitted(self, 'is_fitted_')
         return X.mean(axis=1)
 
-class ConstrLS(BaseEstimator):
+class ConstrLS(RegressorMixin,BaseEstimator):
     """
     Constrained least squares, weights sum to 1 and optionally >= 0
     """
-    _estimator_type="regressor"
+    def __init__(self, unit_interval=True):
+        self.unit_interval = unit_interval
+    
     def fit(self, X, y):
 
         X,y = check_X_y(X,y, accept_sparse=True)
@@ -100,39 +102,32 @@ class ConstrLS(BaseEstimator):
             bounds = [[0.0,1.0] for i in range(xdim)] 
         else:
             bounds = None
-
+        
         #Do minimisation
         fit = minimize(fn,coef0,args=(X, y),method='SLSQP',bounds=bounds,constraints=cons)
         self.coef_ = fit.x
         self.is_fitted_ = True
         self.cvalid=X
         return self
-        
+    
     def predict(self, X):
         X = check_array(X, accept_sparse=True)
         check_is_fitted(self, 'is_fitted_')
         return np.matmul(X,self.coef_)
 
-    def __init__(self, unit_interval=True):
-        self.unit_interval = unit_interval
-
-class ConstrLSClassifier(ConstrLS):
-    _estimator_type="classifier"
+class ConstrLSClassifier(ClassifierMixin,ConstrLS):
     def predict_proba(self, X):
         return self.predict(X)
 
-class AvgClassifier(AvgEstimator):
-    _estimator_type="classifier"
+class AvgClassifier(ClassifierMixin,AvgEstimator):
     def predict_proba(self, X):
         return self.predict(X)
 
-class SingleBestClassifier(SingleBest):
-    _estimator_type="classifier"
+class SingleBestClassifier(ClassifierMixin,SingleBest):
     def predict_proba(self, X):
         return self.predict(X)
 
-class LinearRegressionClassifier(LinearRegression):
-    _estimator_type="classifier"
+class LinearRegressionClassifier(ClassifierMixin,LinearRegression):
     def predict_proba(self, X):
         self.cvalid=X
         return self.predict(X)
@@ -230,7 +225,7 @@ def run_stacked(type, # regression or classification
     sparse, # sparse predictor 
     showopt #
     ):
-    
+
     if int(format(sklearn_version).split(".")[1])<24 and int(format(sklearn_version).split(".")[0])<1:
         sfi.SFIToolkit.stata('di as err "pystacked requires sklearn 0.24.0 or higher. Please update sklearn."')
         sfi.SFIToolkit.stata('di as err "See instructions on https://scikit-learn.org/stable/install.html, and in the help file."')

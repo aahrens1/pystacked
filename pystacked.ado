@@ -1,5 +1,5 @@
-*! pystacked v0.7.5
-*! last edited: 7aug2023
+*! pystacked v0.7.6
+*! last edited: 3jan2025
 *! authors: aa/ms
 
 // parent program
@@ -446,11 +446,6 @@ version 16.0
     python: sfi.Macro.setLocal("sklearn_ver1",format(sklearn_version).split(".")[0])
     python: sfi.Macro.setLocal("sklearn_ver2",format(sklearn_version).split(".")[1])
     cap python: sfi.Macro.setLocal("sklearn_ver3",format(sklearn_version).split(".")[2])
-    if (`sklearn_ver2'<24 & `sklearn_ver1'<1) {
-        di as err "pystacked requires sklearn 0.24.0 or higher. Please update sklearn."
-        di as err "See instructions on https://scikit-learn.org/stable/install.html, and in the help file."
-        exit 198
-    }
     if ("`sklearn_ver3'"=="") local sklearn_ver3 = 0
 
     // mark sample 
