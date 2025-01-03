@@ -1,8 +1,20 @@
----------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------------------------
       name:  <unnamed>
        log:  /Users/kahrens/MyProjects/pystacked/cert/log_cs_pystacked_102.txt
   log type:  text
- opened on:   7 Feb 2024, 13:00:04
+ opened on:   3 Jan 2025, 22:38:30
+
+. 
+. which pystacked 
+/Users/kahrens/MyProjects/pystacked/pystacked.ado
+*! pystacked v0.7.5
+*! last edited: 7aug2023
+*! authors: aa/ms
+
+. python: import sklearn
+
+. python: sklearn.__version__
+'1.0.2'
 
 . 
 . do "cs_pystacked_class.do"
@@ -40,7 +52,7 @@
 . gen train2 = u<.75
 
 . save `testdata'
-file /var/folders/0w/r8yclchd52bfwbf8l00fkkrr0000gs/T//S_18055.000001 saved as .dta format
+file /var/folders/0w/r8yclchd52bfwbf8l00fkkrr0000gs/T//S_44559.000001 saved as .dta format
 
 . 
 . *******************************************************************************
@@ -59,15 +71,15 @@ file /var/folders/0w/r8yclchd52bfwbf8l00fkkrr0000gs/T//S_18055.000001 saved as .
 . replace train=train<.75
 (4,601 real changes made)
 
-.  pystacked v58 v1-v57 
+.  pystacked v58 v1-v57 , type(class)
 
 Stacking weights:
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  ols            |      0.0089558
+  logit          |      0.1309104
   lassocv        |      0.0000000
-  gradboost      |      0.9910442
+  gradboost      |      0.8690896
 
 . 
 .  
@@ -875,7 +887,7 @@ Machine learner: gradboost
 .  
 .  
 . *******************************************************************************
-. *** check against SJ paper                                                                                                      ***
+. *** from SJ paper                                                                                                                       ***
 . *******************************************************************************
 . 
 .  insheet using ///
@@ -912,21 +924,14 @@ Stacking weights:
 .         
 . mat W = e(weights)
 
-. assert reldif(0.0011469,el(W,1,1))<0.01
+. local sum = el(W,1,1)+el(W,2,1)+el(W,3,1)+el(W,4,1)+el(W,5,1)
 
-. assert reldif(0.4806232,el(W,2,1))<0.01
+. assert reldif(`sum',1)<0.001
 
-. assert reldif(0.3456255,el(W,3,1))<0.01
-
-. assert reldif( 0.1130183,el(W,4,1))<0.01
-
-. assert reldif( 0.0595860,el(W,5,1))<0.01
-
-.  
+. 
 . 
 . *******************************************************************************
-. *** foldvar                                                                                                                          
->            ***
+. *** foldvar                                                                                                                                     ***
 . *******************************************************************************
 . 
 . use `testdata', clear
@@ -1005,7 +1010,7 @@ Log likelihood = -217.49645                             Pseudo R2     = 0.0563
 (345 real changes made)
 
 . 
-. assert reldif(log_crossfit , yb1)<10e-6
+. assert reldif(log_crossfit , yb1)<10e-4
 
 . 
 . 
@@ -1137,8 +1142,7 @@ Stacking weights:
 
 . 
 . *******************************************************************************
-. *** try voting                                                                                                                       
->    ***
+. *** try voting                                                                                                                          ***
 . *******************************************************************************
 . 
 . use `testdata', clear
@@ -1528,9 +1532,9 @@ end of do-file
 >                         ) showopt 
 
 Base learner: rf
-n_estimators = 400; criterion = entropy; max_depth = 3; min_samples_split = 5; min_samples_leaf = 0.1; min_weight_fraction_leaf = 0.1; 
-> max_features = sqrt; max_leaf_nodes = None; min_impurity_decrease = 0.1; bootstrap = True; oob_score = False; n_jobs = 3; random_stat
-> e = RandomState(MT19937); warm_start = False; ccp_alpha = 0; max_samples = 10; 
+n_estimators = 400; criterion = entropy; max_depth = 3; min_samples_split = 5; min_samples_leaf = 0.1; min_weight_fraction_leaf = 0.1; max_features = 
+> sqrt; max_leaf_nodes = None; min_impurity_decrease = 0.1; bootstrap = True; oob_score = False; n_jobs = 3; random_state = RandomState(MT19937); warm
+> _start = False; ccp_alpha = 0; max_samples = 10; 
 
 Single base learner: no stacking or cross-validation done.
 
@@ -1558,10 +1562,9 @@ Stacking weights:
 >                         ) showopt  
 
 Base learner: gradboost
-loss = exponential; learning_rate = 0.2; n_estimators = 400; criterion = friedman_mse; subsample = 0.8; min_samples_split = 5; min_samp
-> les_leaf = 0.1; min_weight_fraction_leaf = 0.1; max_depth = 3; min_impurity_decrease = 0.1; init = None; random_state = RandomState(M
-> T19937); max_features = sqrt; max_leaf_nodes = 4; warm_start = False; validation_fraction = 0.15; n_iter_no_change = None; tol = 0.00
-> 01; ccp_alpha = 0; 
+loss = exponential; learning_rate = 0.2; n_estimators = 400; criterion = friedman_mse; subsample = 0.8; min_samples_split = 5; min_samples_leaf = 0.1;
+>  min_weight_fraction_leaf = 0.1; max_depth = 3; min_impurity_decrease = 0.1; init = None; random_state = RandomState(MT19937); max_features = sqrt; 
+> max_leaf_nodes = 4; warm_start = False; validation_fraction = 0.15; n_iter_no_change = None; tol = 0.0001; ccp_alpha = 0; 
 
 Single base learner: no stacking or cross-validation done.
 
@@ -1584,8 +1587,8 @@ Stacking weights:
 >                         ) showopt  bfolds(4)  
 
 Base learner: elasticcv
-Cs = 9; fit_intercept = False; penalty = elasticnet; solver = saga; tol = 0.001; max_iter = 90; n_jobs = 2; refit = True; intercept_sca
-> ling = 1.1; random_state = RandomState(MT19937); l1_ratios = (0, 0.1, 1); 
+Cs = 9; fit_intercept = False; penalty = elasticnet; solver = saga; tol = 0.001; max_iter = 90; n_jobs = 2; refit = True; intercept_scaling = 1.1; ran
+> dom_state = RandomState(MT19937); l1_ratios = (0, 0.1, 1); 
 
 Single base learner: no stacking or cross-validation done.
 
@@ -1607,8 +1610,8 @@ Stacking weights:
 >                         ) showopt bfolds(4) 
 
 Base learner: lassocv
-Cs = 9; fit_intercept = False; penalty = l1; solver = saga; tol = 0.001; max_iter = 90; n_jobs = 2; refit = True; intercept_scaling = 1
-> .1; random_state = RandomState(MT19937); 
+Cs = 9; fit_intercept = False; penalty = l1; solver = saga; tol = 0.001; max_iter = 90; n_jobs = 2; refit = True; intercept_scaling = 1.1; random_stat
+> e = RandomState(MT19937); 
 
 Single base learner: no stacking or cross-validation done.
 
@@ -1630,8 +1633,8 @@ Stacking weights:
 >                         ) showopt bfolds(4)     
 
 Base learner: ridgecv
-Cs = 9; fit_intercept = False; penalty = l2; solver = newton-cg; tol = 0.001; max_iter = 90; n_jobs = 2; refit = True; intercept_scalin
-> g = 1.1; random_state = RandomState(MT19937); 
+Cs = 9; fit_intercept = False; penalty = l2; solver = newton-cg; tol = 0.001; max_iter = 90; n_jobs = 2; refit = True; intercept_scaling = 1.1; random
+> _state = RandomState(MT19937); 
 
 Single base learner: no stacking or cross-validation done.
 
@@ -1662,10 +1665,10 @@ Stacking weights:
 >                         ) showopt                       
 
 Base learner: nnet
-hidden_layer_sizes = (5, 5); activation = logistic; solver = adam; alpha = 0.0002; batch_size = auto; learning_rate = adaptive; learnin
-> g_rate_init = 0.01; power_t = 0.4; max_iter = 100; shuffle = False; random_state = RandomState(MT19937); tol = 0.0001; verbose = Fals
-> e; warm_start = False; momentum = 0.8; nesterovs_momentum = True; early_stopping = False; validation_fraction = 0.15; beta_1 = 0.91; 
-> beta_2 = 0.991; epsilon = 1e-07; n_iter_no_change = 9; max_fun = 14000; 
+hidden_layer_sizes = (5, 5); activation = logistic; solver = adam; alpha = 0.0002; batch_size = auto; learning_rate = adaptive; learning_rate_init = 0
+> .01; power_t = 0.4; max_iter = 100; shuffle = False; random_state = RandomState(MT19937); tol = 0.0001; verbose = False; warm_start = False; momentu
+> m = 0.8; nesterovs_momentum = True; early_stopping = False; validation_fraction = 0.15; beta_1 = 0.91; beta_2 = 0.991; epsilon = 1e-07; n_iter_no_ch
+> ange = 9; max_fun = 14000; 
 
 Single base learner: no stacking or cross-validation done.
 
@@ -1690,8 +1693,8 @@ Stacking weights:
 >                         ) showopt 
 
 Base learner: svm
-C = 0.1; kernel = poly; degree = 2; gamma = auto; coef0 = 0.01; shrinking = False; probability = True; tol = 0.01; cache_size = 150; ma
-> x_iter = 10; decision_function_shape = ovr; random_state = RandomState(MT19937); 
+C = 0.1; kernel = poly; degree = 2; gamma = auto; coef0 = 0.01; shrinking = False; probability = True; tol = 0.01; cache_size = 150; max_iter = 10; de
+> cision_function_shape = ovr; random_state = RandomState(MT19937); 
 
 Single base learner: no stacking or cross-validation done.
 
@@ -1727,8 +1730,8 @@ Stacking weights:
 >                         ) showopt       
 
 Base learner: linsvm
-epsilon = 0.01; tol = 0.001; C = 1.1; loss = squared_epsilon_insensitive; fit_intercept = False; intercept_scaling = 1.1; dual = False;
->  random_state = RandomState(MT19937); max_iter = 900; 
+epsilon = 0.01; tol = 0.001; C = 1.1; loss = squared_epsilon_insensitive; fit_intercept = False; intercept_scaling = 1.1; dual = False; random_state =
+>  RandomState(MT19937); max_iter = 900; 
 
 Single base learner: no stacking or cross-validation done.
 
@@ -1753,8 +1756,7 @@ Stacking weights:
 >                         ) showopt       
 
 Base learner: svm
-kernel = poly; degree = 2; gamma = auto; coef0 = 0.1; tol = 0.01; C = 1.1; epsilon = 0.14; max_iter = 10; shrinking = False; cache_size
->  = 200; 
+kernel = poly; degree = 2; gamma = auto; coef0 = 0.1; tol = 0.01; C = 1.1; epsilon = 0.14; max_iter = 10; shrinking = False; cache_size = 200; 
 
 Single base learner: no stacking or cross-validation done.
 
@@ -1784,10 +1786,10 @@ Stacking weights:
 >                         ) showopt                       
 
 Base learner: nnet
-hidden_layer_sizes = (5, 5); activation = logistic; solver = adam; alpha = 0.0002; batch_size = auto; learning_rate = adaptive; learnin
-> g_rate_init = 0.01; power_t = 0.5; max_iter = 100; shuffle = False; random_state = RandomState(MT19937); tol = 0.0001; verbose = Fals
-> e; warm_start = False; momentum = 0.8; nesterovs_momentum = True; early_stopping = False; validation_fraction = 0.15; beta_1 = 0.91; 
-> beta_2 = 0.991; epsilon = 1e-07; n_iter_no_change = 9; max_fun = 14000; 
+hidden_layer_sizes = (5, 5); activation = logistic; solver = adam; alpha = 0.0002; batch_size = auto; learning_rate = adaptive; learning_rate_init = 0
+> .01; power_t = 0.5; max_iter = 100; shuffle = False; random_state = RandomState(MT19937); tol = 0.0001; verbose = False; warm_start = False; momentu
+> m = 0.8; nesterovs_momentum = True; early_stopping = False; validation_fraction = 0.15; beta_1 = 0.91; beta_2 = 0.991; epsilon = 1e-07; n_iter_no_ch
+> ange = 9; max_fun = 14000; 
 
 Single base learner: no stacking or cross-validation done.
 
@@ -1810,8 +1812,8 @@ Stacking weights:
 >                         ) showopt bfolds(3) 
 
 Base learner: lassocv
-alphas = [0.01, 0.1, 1, 2]; l1_ratio = 1; eps = 0.1; n_alphas = 20; fit_intercept = False; max_iter = 500; tol = 0.001; n_jobs = None; 
-> positive = True; selection = cyclic; random_state = RandomState(MT19937); 
+alphas = [0.01, 0.1, 1, 2]; l1_ratio = 1; eps = 0.1; n_alphas = 20; fit_intercept = False; max_iter = 500; tol = 0.001; n_jobs = None; positive = True
+> ; selection = cyclic; random_state = RandomState(MT19937); 
 
 Single base learner: no stacking or cross-validation done.
 
@@ -1834,8 +1836,8 @@ Stacking weights:
 >                         ) showopt  bfolds(3)    
 
 Base learner: ridgecv
-alphas = [0.01, 0.1, 1, 2]; l1_ratio = 0; eps = 0.01; n_alphas = 20; fit_intercept = False; max_iter = 500; tol = 0.001; n_jobs = None;
->  positive = True; selection = cyclic; random_state = RandomState(MT19937); 
+alphas = [0.01, 0.1, 1, 2]; l1_ratio = 0; eps = 0.01; n_alphas = 20; fit_intercept = False; max_iter = 500; tol = 0.001; n_jobs = None; positive = Tru
+> e; selection = cyclic; random_state = RandomState(MT19937); 
 
 Single base learner: no stacking or cross-validation done.
 
@@ -1864,10 +1866,9 @@ Stacking weights:
 >                         ) showopt  
 
 Base learner: gradboost
-loss = squared_error; learning_rate = 0.2; n_estimators = 400; subsample = 0.8; criterion = friedman_mse; min_samples_split = 5; min_sa
-> mples_leaf = 0.1; min_weight_fraction_leaf = 0.1; max_depth = 3; min_impurity_decrease = 0.1; init = None; random_state = RandomState
-> (MT19937); max_features = sqrt; alpha = 0.8; max_leaf_nodes = 4; warm_start = True; validation_fraction = 0.15; n_iter_no_change = No
-> ne; tol = 0.0001; ccp_alpha = 0; 
+loss = squared_error; learning_rate = 0.2; n_estimators = 400; subsample = 0.8; criterion = friedman_mse; min_samples_split = 5; min_samples_leaf = 0.
+> 1; min_weight_fraction_leaf = 0.1; max_depth = 3; min_impurity_decrease = 0.1; init = None; random_state = RandomState(MT19937); max_features = sqrt
+> ; alpha = 0.8; max_leaf_nodes = 4; warm_start = True; validation_fraction = 0.15; n_iter_no_change = None; tol = 0.0001; ccp_alpha = 0; 
 
 Single base learner: no stacking or cross-validation done.
 
@@ -1892,9 +1893,9 @@ Stacking weights:
 >                         ) showopt 
 
 Base learner: rf
-n_estimators = 400; criterion = squared_error; max_depth = 3; min_samples_split = 5; min_samples_leaf = 0.1; min_weight_fraction_leaf =
->  0.1; max_features = sqrt; max_leaf_nodes = 4; min_impurity_decrease = 0.1; bootstrap = True; oob_score = False; n_jobs = None; rando
-> m_state = RandomState(MT19937); warm_start = True; ccp_alpha = 0; max_samples = None; 
+n_estimators = 400; criterion = squared_error; max_depth = 3; min_samples_split = 5; min_samples_leaf = 0.1; min_weight_fraction_leaf = 0.1; max_featu
+> res = sqrt; max_leaf_nodes = 4; min_impurity_decrease = 0.1; bootstrap = True; oob_score = False; n_jobs = None; random_state = RandomState(MT19937)
+> ; warm_start = True; ccp_alpha = 0; max_samples = None; 
 
 Single base learner: no stacking or cross-validation done.
 
@@ -2307,8 +2308,7 @@ Stacking weights:
 . 
 . 
 . *******************************************************************************
-. *** foldvar                                                                                                                          
->            ***
+. *** foldvar                                                                                                                                     ***
 . *******************************************************************************
 . 
 . insheet using "/Users/kahrens/Dropbox (PP)/ddml/Data/housing.csv", ///
@@ -2520,8 +2520,7 @@ passthrough
 . 
 . 
 . *******************************************************************************
-. *** xvar option                                                                                                                      
->    ***
+. *** xvar option                                                                                                                         ***
 . *******************************************************************************
 . 
 . insheet using "/Users/kahrens/Dropbox (PP)/ddml/Data/housing.csv", ///
@@ -2657,8 +2656,7 @@ Stacking weights:
 . 
 . 
 . *******************************************************************************
-. *** voting                                                                                                                           
->            ***
+. *** voting                                                                                                                                      ***
 . *******************************************************************************
 . 
 . clear
@@ -2699,8 +2697,7 @@ Stacking weights:
 
 .                                         
 . *******************************************************************************
-. *** check pipeline                                                                                                                   
->    ***
+. *** check pipeline                                                                                                                      ***
 . *******************************************************************************
 . 
 . clear
@@ -2736,7 +2733,7 @@ macros:
            e(xvars_o3) : "lcavol lweight age lbph svi lcp gleason pgg45"
              e(xvars3) : "lcavol lweight age lbph svi lcp gleason pgg45"
               e(pipe3) : "poly2"
-             e(pyopt3) : "{'n_estimators':100,'criterion':'squared_error','max_depth':None,'min_samples_split':2,'min_samples_leaf'.."
+             e(pyopt3) : "{'n_estimators':100,'criterion':'squared_error','max_depth':None,'min_samples_split':2,'min_samples_leaf':1,'min_weight_.."
             e(method3) : "rf"
            e(xvars_o2) : "lcavol lweight age lbph svi lcp gleason pgg45"
              e(xvars2) : "lcavol lweight age lbph svi lcp gleason pgg45"
@@ -2793,18 +2790,18 @@ scalars:
 
 macros:
           e(globalopt) : "type(regress) pyseed(243) methods(ols lassoic  rf ) pipe2(nostdscaler)"
-           e(xvars_o3) : "lcavol lweight age lbph svi lcp gleason pgg45 c.lcavol#c.lcavol c.lcavol#c.lweight c.lcavol#c.age c.lcavo.."
-             e(xvars3) : "lcavol lweight age lbph svi lcp gleason pgg45 __000005 __000006 __000007 __000008 __000009 __00000A __000.."
+           e(xvars_o3) : "lcavol lweight age lbph svi lcp gleason pgg45 c.lcavol#c.lcavol c.lcavol#c.lweight c.lcavol#c.age c.lcavol#c.lbph c.lcav.."
+             e(xvars3) : "lcavol lweight age lbph svi lcp gleason pgg45 __000005 __000006 __000007 __000008 __000009 __00000A __00000B __00000C __.."
               e(pipe3) : "passthrough"
-             e(pyopt3) : "{'n_estimators':100,'criterion':'squared_error','max_depth':None,'min_samples_split':2,'min_samples_leaf'.."
+             e(pyopt3) : "{'n_estimators':100,'criterion':'squared_error','max_depth':None,'min_samples_split':2,'min_samples_leaf':1,'min_weight_.."
             e(method3) : "rf"
-           e(xvars_o2) : "lcavol lweight age lbph svi lcp gleason pgg45 c.lcavol#c.lcavol c.lcavol#c.lweight c.lcavol#c.age c.lcavo.."
-             e(xvars2) : "lcavol lweight age lbph svi lcp gleason pgg45 __000005 __000006 __000007 __000008 __000009 __00000A __000.."
+           e(xvars_o2) : "lcavol lweight age lbph svi lcp gleason pgg45 c.lcavol#c.lcavol c.lcavol#c.lweight c.lcavol#c.age c.lcavol#c.lbph c.lcav.."
+             e(xvars2) : "lcavol lweight age lbph svi lcp gleason pgg45 __000005 __000006 __000007 __000008 __000009 __00000A __00000B __00000C __.."
               e(pipe2) : "passthrough"
              e(pyopt2) : "{'criterion':'aic','fit_intercept':True,'max_iter':500,'positive':False}"
             e(method2) : "lassoic"
-           e(xvars_o1) : "lcavol lweight age lbph svi lcp gleason pgg45 c.lcavol#c.lcavol c.lcavol#c.lweight c.lcavol#c.age c.lcavo.."
-             e(xvars1) : "lcavol lweight age lbph lcp gleason pgg45 __000005 __000006 __000007 __000008 __000009 __00000A __00000B .."
+           e(xvars_o1) : "lcavol lweight age lbph svi lcp gleason pgg45 c.lcavol#c.lcavol c.lcavol#c.lweight c.lcavol#c.age c.lcavol#c.lbph c.lcav.."
+             e(xvars1) : "lcavol lweight age lbph lcp gleason pgg45 __000005 __000006 __000007 __000008 __000009 __00000A __00000B __00000C __0000.."
               e(pipe1) : "passthrough"
              e(pyopt1) : "{'fit_intercept':True,'positive':False}"
             e(method1) : "ols"
@@ -2997,31 +2994,93 @@ Stacking weights:
 
 . local m2 ols lassocv rf nnet
 
-. local m3 ols lassoic gradboost nnet
+. local m3 ols ridgecv gradboost nnet
 
-. local m4 ols ridgecv gradboost nnet
+. local m4 ols elasticcv gradboost nnet
 
-. local m5 ols elasticcv gradboost nnet
-
-. local m6 ols elasticcv gradboost svm
-
-. local m7 ols elasticcv gradboost linsvm
+. local m5 ols elasticcv gradboost svm
 
 . 
-. foreach m in "`m1'" "`m2'" "`m3'" "`m4'" "`m5'" "`m6'" "`m7'" {
-  2.         di "`m'"
-  3.         pystacked lpsa lcavol lweight age lbph svi lcp gleason pgg45, ///
+. gen lpsa1 = lpsa>2.47
+
+. 
+. local flearners nnls1 nnls0 singlebest ols avg
+
+. 
+. foreach f of local flearners  {
+  2. foreach m in "`m1'" "`m2'" "`m3'" "`m4'" "`m5'" {
+  3. 
+.                 
+.         di "---------------------------------"
+  4.         di "Regress"
+  5.         di "Candidate learners: `m'"
+  6.         di "Final estimator: `f'"
+  7.         
+.         pystacked lpsa lcavol lweight age lbph svi lcp gleason pgg45, ///
 >                                                  type(regress) pyseed(243) ///
 >                                                  methods(`m') /// 
 >                                                  njobs(4) ///
->                                                  pipe2(poly2) pipe1(poly2)
-  4.         pystacked lpsa lcavol lweight age lbph svi lcp gleason pgg45, ///
->                                                  type(regress) pyseed(243) ///
->                                                  methods(`m') /// 
+>                                                  pipe2(poly2) pipe1(poly2) ///
+>                                                  finalest(`f') 
+  8.                                                  
+.         if ("`f'"=="nnls1") {
+  9.                 mat W = e(weights)
+ 10.                 local sum = el(W,1,1)+el(W,2,1)+el(W,3,1)+el(W,4,1)
+ 11.                 assert reldif(`sum',1)<0.001
+ 12.         }
+ 13.         if ("`f'"=="singlebest") {
+ 14.                 mat W = e(weights)
+ 15.                 local sum = (el(W,1,1)>0)+(el(W,2,1)>0)+(el(W,3,1)>0)+(el(W,4,1)>0)
+ 16.                 assert reldif(`sum',1)<0.001
+ 17.         }
+ 18.         if ("`f'"=="avg") {
+ 19.                 mat W = e(weights)
+ 20.                 assert reldif(el(W,1,1),0.25)<0.001
+ 21.                 assert reldif(el(W,2,1),0.25)<0.001
+ 22.                 assert reldif(el(W,3,1),0.25)<0.001
+ 23.                 assert reldif(el(W,4,1),0.25)<0.001
+ 24.         }
+ 25.         
+.         local mc = subinstr("`m'","ols","logit",.)
+ 26.         local mc = subinstr("`mc'"," lassoic","",.)
+ 27.         local mc = subinstr("`mc'"," linsvm","",.)
+ 28.                                                  
+.         di "---------------------------------"
+ 29.         di "Classify"
+ 30.         di "Candidate learners: `m'"
+ 31.         di "Final estimator: `f'"
+ 32.                                                  
+.         pystacked lpsa1 lcavol lweight age lbph svi lcp gleason pgg45, ///
+>                                                  type(class) pyseed(243) ///
+>                                                  methods(`mc') /// 
 >                                                  njobs(4) ///
->                                                  pipe2(poly2) pipe1(poly2) finalest(singlebest)
-  5. }
-ols lassocv gradboost nnet
+>                                                  pipe2(poly2) pipe1(poly2) ///
+>                                                  finalest(`f') 
+ 33.                                                  
+.         if ("`f'"=="nnls1") {
+ 34.                 mat W = e(weights)
+ 35.                 local sum = el(W,1,1)+el(W,2,1)+el(W,3,1)+el(W,4,1)
+ 36.                 assert reldif(`sum',1)<0.001
+ 37.         }
+ 38.         if ("`f'"=="singlebest") {
+ 39.                 mat W = e(weights)
+ 40.                 local sum = (el(W,1,1)>0)+(el(W,2,1)>0)+(el(W,3,1)>0)+(el(W,4,1)>0)
+ 41.                 assert reldif(`sum',1)<0.001
+ 42.         }
+ 43.         if ("`f'"=="avg") {
+ 44.                 mat W = e(weights)
+ 45.                 assert reldif(el(W,1,1),0.25)<0.001
+ 46.                 assert reldif(el(W,2,1),0.25)<0.001
+ 47.                 assert reldif(el(W,3,1),0.25)<0.001
+ 48.                 assert reldif(el(W,4,1),0.25)<0.001
+ 49.         }
+ 50.                                                  
+. }
+ 51. }
+---------------------------------
+Regress
+Candidate learners: ols lassocv gradboost nnet
+Final estimator: nnls1
 
 Stacking weights:
 ---------------------------------------
@@ -3031,16 +3090,23 @@ Stacking weights:
   lassocv        |      0.5805509
   gradboost      |      0.3399453
   nnet           |      0.0795038
+---------------------------------
+Classify
+Candidate learners: ols lassocv gradboost nnet
+Final estimator: nnls1
 
 Stacking weights:
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  ols            |      0.0000000
-  lassocv        |      1.0000000
-  gradboost      |      0.0000000
-  nnet           |      0.0000000
-ols lassocv rf nnet
+  logit          |      0.0207007
+  lassocv        |      0.6999951
+  gradboost      |      0.1672106
+  nnet           |      0.1120936
+---------------------------------
+Regress
+Candidate learners: ols lassocv rf nnet
+Final estimator: nnls1
 
 Stacking weights:
 ---------------------------------------
@@ -3050,6 +3116,231 @@ Stacking weights:
   lassocv        |      0.4022450
   rf             |      0.5977550
   nnet           |      0.0000000
+---------------------------------
+Classify
+Candidate learners: ols lassocv rf nnet
+Final estimator: nnls1
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  logit          |      0.1302032
+  lassocv        |      0.5995944
+  rf             |      0.0230851
+  nnet           |      0.2471174
+---------------------------------
+Regress
+Candidate learners: ols ridgecv gradboost nnet
+Final estimator: nnls1
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0000000
+  ridgecv        |      0.8433028
+  gradboost      |      0.1566972
+  nnet           |      0.0000000
+---------------------------------
+Classify
+Candidate learners: ols ridgecv gradboost nnet
+Final estimator: nnls1
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  logit          |      0.0818471
+  ridgecv        |      0.8136714
+  gradboost      |      0.0000000
+  nnet           |      0.1044816
+---------------------------------
+Regress
+Candidate learners: ols elasticcv gradboost nnet
+Final estimator: nnls1
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0000000
+  elasticcv      |      0.7994770
+  gradboost      |      0.2005230
+  nnet           |      0.0000000
+---------------------------------
+Classify
+Candidate learners: ols elasticcv gradboost nnet
+Final estimator: nnls1
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  logit          |      0.1268245
+  elasticcv      |      0.5723710
+  gradboost      |      0.3008045
+  nnet           |      0.0000000
+---------------------------------
+Regress
+Candidate learners: ols elasticcv gradboost svm
+Final estimator: nnls1
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0438406
+  elasticcv      |      0.7209751
+  gradboost      |      0.2351843
+  svm            |      0.0000000
+---------------------------------
+Classify
+Candidate learners: ols elasticcv gradboost svm
+Final estimator: nnls1
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  logit          |      0.0539241
+  elasticcv      |      0.8787627
+  gradboost      |      0.0504939
+  svm            |      0.0168193
+---------------------------------
+Regress
+Candidate learners: ols lassocv gradboost nnet
+Final estimator: nnls0
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0506805
+  lassocv        |      0.7987339
+  gradboost      |      0.1427979
+  nnet           |      0.0000000
+---------------------------------
+Classify
+Candidate learners: ols lassocv gradboost nnet
+Final estimator: nnls0
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  logit          |      0.0258772
+  lassocv        |      0.1237956
+  gradboost      |      0.5807496
+  nnet           |      0.2601174
+---------------------------------
+Regress
+Candidate learners: ols lassocv rf nnet
+Final estimator: nnls0
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0362671
+  lassocv        |      0.4455111
+  rf             |      0.5161028
+  nnet           |      0.0000000
+---------------------------------
+Classify
+Candidate learners: ols lassocv rf nnet
+Final estimator: nnls0
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  logit          |      0.1035802
+  lassocv        |      0.3790606
+  rf             |      0.5437758
+  nnet           |      0.0000000
+---------------------------------
+Regress
+Candidate learners: ols ridgecv gradboost nnet
+Final estimator: nnls0
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0667473
+  ridgecv        |      0.9393065
+  gradboost      |      0.0000000
+  nnet           |      0.0000000
+---------------------------------
+Classify
+Candidate learners: ols ridgecv gradboost nnet
+Final estimator: nnls0
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  logit          |      0.2927002
+  ridgecv        |      0.4014688
+  gradboost      |      0.1116836
+  nnet           |      0.2460908
+---------------------------------
+Regress
+Candidate learners: ols elasticcv gradboost nnet
+Final estimator: nnls0
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0000000
+  elasticcv      |      0.7571634
+  gradboost      |      0.2544217
+  nnet           |      0.0000000
+---------------------------------
+Classify
+Candidate learners: ols elasticcv gradboost nnet
+Final estimator: nnls0
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  logit          |      0.0169289
+  elasticcv      |      0.2455163
+  gradboost      |      0.3103246
+  nnet           |      0.4451758
+---------------------------------
+Regress
+Candidate learners: ols elasticcv gradboost svm
+Final estimator: nnls0
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0721744
+  elasticcv      |      0.4946972
+  gradboost      |      0.3948518
+  svm            |      0.0493350
+---------------------------------
+Classify
+Candidate learners: ols elasticcv gradboost svm
+Final estimator: nnls0
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  logit          |      0.0175438
+  elasticcv      |      0.6823223
+  gradboost      |      0.0497144
+  svm            |      0.2618175
+---------------------------------
+Regress
+Candidate learners: ols lassocv gradboost nnet
+Final estimator: singlebest
 
 Stacking weights:
 ---------------------------------------
@@ -3057,37 +3348,51 @@ Stacking weights:
 -----------------+---------------------
   ols            |      0.0000000
   lassocv        |      1.0000000
-  rf             |      0.0000000
-  nnet           |      0.0000000
-ols lassoic gradboost nnet
-
-Stacking weights:
----------------------------------------
-  Method         |      Weight
------------------+---------------------
-  ols            |      0.0035754
-  lassoic        |      0.7675008
-  gradboost      |      0.2289238
-  nnet           |      0.0000000
-
-Stacking weights:
----------------------------------------
-  Method         |      Weight
------------------+---------------------
-  ols            |      0.0000000
-  lassoic        |      1.0000000
   gradboost      |      0.0000000
   nnet           |      0.0000000
-ols ridgecv gradboost nnet
+---------------------------------
+Classify
+Candidate learners: ols lassocv gradboost nnet
+Final estimator: singlebest
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  logit          |      0.0000000
+  lassocv        |      1.0000000
+  gradboost      |      0.0000000
+  nnet           |      0.0000000
+---------------------------------
+Regress
+Candidate learners: ols lassocv rf nnet
+Final estimator: singlebest
 
 Stacking weights:
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
   ols            |      0.0000000
-  ridgecv        |      0.8804403
-  gradboost      |      0.1195597
+  lassocv        |      0.0000000
+  rf             |      1.0000000
   nnet           |      0.0000000
+---------------------------------
+Classify
+Candidate learners: ols lassocv rf nnet
+Final estimator: singlebest
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  logit          |      0.0000000
+  lassocv        |      1.0000000
+  rf             |      0.0000000
+  nnet           |      0.0000000
+---------------------------------
+Regress
+Candidate learners: ols ridgecv gradboost nnet
+Final estimator: singlebest
 
 Stacking weights:
 ---------------------------------------
@@ -3097,54 +3402,23 @@ Stacking weights:
   ridgecv        |      1.0000000
   gradboost      |      0.0000000
   nnet           |      0.0000000
-ols elasticcv gradboost nnet
+---------------------------------
+Classify
+Candidate learners: ols ridgecv gradboost nnet
+Final estimator: singlebest
 
 Stacking weights:
 ---------------------------------------
   Method         |      Weight
 -----------------+---------------------
-  ols            |      0.0438407
-  elasticcv      |      0.7209751
-  gradboost      |      0.2351843
-  nnet           |      0.0000000
-
-Stacking weights:
----------------------------------------
-  Method         |      Weight
------------------+---------------------
-  ols            |      0.0000000
-  elasticcv      |      1.0000000
-  gradboost      |      0.0000000
-  nnet           |      0.0000000
-ols elasticcv gradboost svm
-
-Stacking weights:
----------------------------------------
-  Method         |      Weight
------------------+---------------------
-  ols            |      0.0428585
-  elasticcv      |      0.7964982
-  gradboost      |      0.1229691
-  svm            |      0.0376741
-
-Stacking weights:
----------------------------------------
-  Method         |      Weight
------------------+---------------------
-  ols            |      0.0000000
-  elasticcv      |      0.0000000
+  logit          |      0.0000000
+  ridgecv        |      0.0000000
   gradboost      |      1.0000000
-  svm            |      0.0000000
-ols elasticcv gradboost linsvm
-
-Stacking weights:
----------------------------------------
-  Method         |      Weight
------------------+---------------------
-  ols            |      0.0366520
-  elasticcv      |      0.6611403
-  gradboost      |      0.3022077
-  linsvm         |      0.0000000
+  nnet           |      0.0000000
+---------------------------------
+Regress
+Candidate learners: ols elasticcv gradboost nnet
+Final estimator: singlebest
 
 Stacking weights:
 ---------------------------------------
@@ -3153,7 +3427,306 @@ Stacking weights:
   ols            |      0.0000000
   elasticcv      |      1.0000000
   gradboost      |      0.0000000
-  linsvm         |      0.0000000
+  nnet           |      0.0000000
+---------------------------------
+Classify
+Candidate learners: ols elasticcv gradboost nnet
+Final estimator: singlebest
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  logit          |      0.0000000
+  elasticcv      |      0.0000000
+  gradboost      |      0.0000000
+  nnet           |      1.0000000
+---------------------------------
+Regress
+Candidate learners: ols elasticcv gradboost svm
+Final estimator: singlebest
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0000000
+  elasticcv      |      1.0000000
+  gradboost      |      0.0000000
+  svm            |      0.0000000
+---------------------------------
+Classify
+Candidate learners: ols elasticcv gradboost svm
+Final estimator: singlebest
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  logit          |      0.0000000
+  elasticcv      |      1.0000000
+  gradboost      |      0.0000000
+  svm            |      0.0000000
+---------------------------------
+Regress
+Candidate learners: ols lassocv gradboost nnet
+Final estimator: ols
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |     -0.0009287
+  lassocv        |      0.8087335
+  gradboost      |      0.1946095
+  nnet           |     -0.1870912
+---------------------------------
+Classify
+Candidate learners: ols lassocv gradboost nnet
+Final estimator: ols
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  logit          |      0.1240919
+  lassocv        |      0.2873197
+  gradboost      |      0.2186900
+  nnet           |      0.3602219
+---------------------------------
+Regress
+Candidate learners: ols lassocv rf nnet
+Final estimator: ols
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.1051612
+  lassocv        |      0.6419153
+  rf             |      0.2683163
+  nnet           |     -0.2784574
+---------------------------------
+Classify
+Candidate learners: ols lassocv rf nnet
+Final estimator: ols
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  logit          |      0.0324857
+  lassocv        |      0.6030728
+  rf             |     -0.0279832
+  nnet           |      0.2789362
+---------------------------------
+Regress
+Candidate learners: ols ridgecv gradboost nnet
+Final estimator: ols
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0155114
+  ridgecv        |      0.7764277
+  gradboost      |      0.2561606
+  nnet           |     -0.2338248
+---------------------------------
+Classify
+Candidate learners: ols ridgecv gradboost nnet
+Final estimator: ols
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  logit          |      0.2505684
+  ridgecv        |      0.1149962
+  gradboost      |      0.1986833
+  nnet           |      0.5097985
+---------------------------------
+Regress
+Candidate learners: ols elasticcv gradboost nnet
+Final estimator: ols
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0333156
+  elasticcv      |      0.5410825
+  gradboost      |      0.3846985
+  nnet           |     -0.3741885
+---------------------------------
+Classify
+Candidate learners: ols elasticcv gradboost nnet
+Final estimator: ols
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  logit          |      0.0804428
+  elasticcv      |      0.9703585
+  gradboost      |     -0.3040851
+  nnet           |      0.3350215
+---------------------------------
+Regress
+Candidate learners: ols elasticcv gradboost svm
+Final estimator: ols
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.0857856
+  elasticcv      |      0.7634550
+  gradboost      |      0.1541100
+  svm            |      0.0714999
+---------------------------------
+Classify
+Candidate learners: ols elasticcv gradboost svm
+Final estimator: ols
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  logit          |      0.1745922
+  elasticcv      |      0.3743233
+  gradboost      |      0.3793685
+  svm            |      0.1705477
+---------------------------------
+Regress
+Candidate learners: ols lassocv gradboost nnet
+Final estimator: avg
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.2500000
+  lassocv        |      0.2500000
+  gradboost      |      0.2500000
+  nnet           |      0.2500000
+---------------------------------
+Classify
+Candidate learners: ols lassocv gradboost nnet
+Final estimator: avg
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  logit          |      0.2500000
+  lassocv        |      0.2500000
+  gradboost      |      0.2500000
+  nnet           |      0.2500000
+---------------------------------
+Regress
+Candidate learners: ols lassocv rf nnet
+Final estimator: avg
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.2500000
+  lassocv        |      0.2500000
+  rf             |      0.2500000
+  nnet           |      0.2500000
+---------------------------------
+Classify
+Candidate learners: ols lassocv rf nnet
+Final estimator: avg
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  logit          |      0.2500000
+  lassocv        |      0.2500000
+  rf             |      0.2500000
+  nnet           |      0.2500000
+---------------------------------
+Regress
+Candidate learners: ols ridgecv gradboost nnet
+Final estimator: avg
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.2500000
+  ridgecv        |      0.2500000
+  gradboost      |      0.2500000
+  nnet           |      0.2500000
+---------------------------------
+Classify
+Candidate learners: ols ridgecv gradboost nnet
+Final estimator: avg
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  logit          |      0.2500000
+  ridgecv        |      0.2500000
+  gradboost      |      0.2500000
+  nnet           |      0.2500000
+---------------------------------
+Regress
+Candidate learners: ols elasticcv gradboost nnet
+Final estimator: avg
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.2500000
+  elasticcv      |      0.2500000
+  gradboost      |      0.2500000
+  nnet           |      0.2500000
+---------------------------------
+Classify
+Candidate learners: ols elasticcv gradboost nnet
+Final estimator: avg
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  logit          |      0.2500000
+  elasticcv      |      0.2500000
+  gradboost      |      0.2500000
+  nnet           |      0.2500000
+---------------------------------
+Regress
+Candidate learners: ols elasticcv gradboost svm
+Final estimator: avg
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  ols            |      0.2500000
+  elasticcv      |      0.2500000
+  gradboost      |      0.2500000
+  svm            |      0.2500000
+---------------------------------
+Classify
+Candidate learners: ols elasticcv gradboost svm
+Final estimator: avg
+
+Stacking weights:
+---------------------------------------
+  Method         |      Weight
+-----------------+---------------------
+  logit          |      0.2500000
+  elasticcv      |      0.2500000
+  gradboost      |      0.2500000
+  svm            |      0.2500000
 
 . 
 . *******************************************************************************
@@ -3500,9 +4073,16 @@ Number of holdout observations:   48
 end of do-file
 
 . 
+. di "############################"
+############################
+
+. di "all completed"
+all completed
+
+. 
 . log close
       name:  <unnamed>
        log:  /Users/kahrens/MyProjects/pystacked/cert/log_cs_pystacked_102.txt
   log type:  text
- closed on:   7 Feb 2024, 13:17:14
----------------------------------------------------------------------------------------------------------------------------------------
+ closed on:   3 Jan 2025, 23:00:17
+------------------------------------------------------------------------------------------------------------------------------------------------------

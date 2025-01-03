@@ -285,24 +285,83 @@ insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.d
 
 local m1 ols lassocv gradboost nnet
 local m2 ols lassocv rf nnet
-local m3 ols lassoic gradboost nnet
-local m4 ols ridgecv gradboost nnet
-local m5 ols elasticcv gradboost nnet
-local m6 ols elasticcv gradboost svm
-local m7 ols elasticcv gradboost linsvm
+local m3 ols ridgecv gradboost nnet
+local m4 ols elasticcv gradboost nnet
+local m5 ols elasticcv gradboost svm
 
-foreach m in "`m1'" "`m2'" "`m3'" "`m4'" "`m5'" "`m6'" "`m7'" {
-	di "`m'"
+gen lpsa1 = lpsa>2.47
+
+local flearners nnls1 nnls0 singlebest ols avg
+
+foreach f of local flearners  {
+foreach m in "`m1'" "`m2'" "`m3'" "`m4'" "`m5'" {
+
+		
+	di "---------------------------------"
+	di "Regress"
+	di "Candidate learners: `m'"
+	di "Final estimator: `f'"
+	
 	pystacked lpsa lcavol lweight age lbph svi lcp gleason pgg45, ///
 						 type(regress) pyseed(243) ///
 						 methods(`m') /// 
 						 njobs(4) ///
-						 pipe2(poly2) pipe1(poly2)
-	pystacked lpsa lcavol lweight age lbph svi lcp gleason pgg45, ///
-						 type(regress) pyseed(243) ///
-						 methods(`m') /// 
+						 pipe2(poly2) pipe1(poly2) ///
+						 finalest(`f') 
+						 
+	if ("`f'"=="nnls1") {
+		mat W = e(weights)
+		local sum = el(W,1,1)+el(W,2,1)+el(W,3,1)+el(W,4,1)
+		assert reldif(`sum',1)<0.001
+	}
+	if ("`f'"=="singlebest") {
+		mat W = e(weights)
+		local sum = (el(W,1,1)>0)+(el(W,2,1)>0)+(el(W,3,1)>0)+(el(W,4,1)>0)
+		assert reldif(`sum',1)<0.001
+	}
+	if ("`f'"=="avg") {
+		mat W = e(weights)
+		assert reldif(el(W,1,1),0.25)<0.001
+		assert reldif(el(W,2,1),0.25)<0.001
+		assert reldif(el(W,3,1),0.25)<0.001
+		assert reldif(el(W,4,1),0.25)<0.001
+	}
+	
+	local mc = subinstr("`m'","ols","logit",.)
+	local mc = subinstr("`mc'"," lassoic","",.)
+	local mc = subinstr("`mc'"," linsvm","",.)
+						 
+	di "---------------------------------"
+	di "Classify"
+	di "Candidate learners: `m'"
+	di "Final estimator: `f'"
+						 
+	pystacked lpsa1 lcavol lweight age lbph svi lcp gleason pgg45, ///
+						 type(class) pyseed(243) ///
+						 methods(`mc') /// 
 						 njobs(4) ///
-						 pipe2(poly2) pipe1(poly2) finalest(singlebest)
+						 pipe2(poly2) pipe1(poly2) ///
+						 finalest(`f') 
+						 
+	if ("`f'"=="nnls1") {
+		mat W = e(weights)
+		local sum = el(W,1,1)+el(W,2,1)+el(W,3,1)+el(W,4,1)
+		assert reldif(`sum',1)<0.001
+	}
+	if ("`f'"=="singlebest") {
+		mat W = e(weights)
+		local sum = (el(W,1,1)>0)+(el(W,2,1)>0)+(el(W,3,1)>0)+(el(W,4,1)>0)
+		assert reldif(`sum',1)<0.001
+	}
+	if ("`f'"=="avg") {
+		mat W = e(weights)
+		assert reldif(el(W,1,1),0.25)<0.001
+		assert reldif(el(W,2,1),0.25)<0.001
+		assert reldif(el(W,3,1),0.25)<0.001
+		assert reldif(el(W,4,1),0.25)<0.001
+	}
+						 
+}
 }
 
 *******************************************************************************

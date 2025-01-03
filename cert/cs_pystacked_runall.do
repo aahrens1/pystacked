@@ -16,13 +16,20 @@ else {
 
 local ver `0'
 
-python set exec "/Users/kahrens/python_envs/sk`ver'/bin/python3"
+cap python set exec "/Users/kahrens/python_envs/sk`ver'/bin/python3"
 
 cap log close
 log using "log_cs_pystacked_`ver'.txt", text replace
 
+which pystacked 
+python: import sklearn
+python: sklearn.__version__
+
 do "cs_pystacked_class.do"
 do "cs_pystacked_options.do"
 do "cs_pystacked_reg.do"
+
+di "############################"
+di "all completed"
 
 log close

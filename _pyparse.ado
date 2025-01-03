@@ -1,5 +1,5 @@
-*! pystacked v0.7.5
-*! last edited: 7aug2023
+*! pystacked v0.7.6
+*! last edited: 3jan2025
 *! authors: aa/ms
 
 program _pyparse 
@@ -31,6 +31,17 @@ program _pyparse
 		** v 1.1.2 becomes 101.2 (not 112!)
 		local sklearn_ver = `sklearn1'*100+`sklearn2'+`sklearn3'/10
 		local options `options' sklearn_ver(`sklearn_ver') `printopt'
+
+		if (`sklearn_ver'<24) {
+		    di as err "Warning: your sklearn version (`sklearn1'.`sklearn2'.`sklearn3') is not supported."
+	        di as err "pystacked requires at least sklearn 0.24.0."	
+	        exit 198
+		}
+		if (`sklearn_ver'>106) {
+		    di as err "Warning: your sklearn version (`sklearn1'.`sklearn2'.`sklearn3') might not be supported."
+	        di as err "pystacked has only been tested against up to 1.6.0."
+	        di as err "Check for a new pystacked version. If you encounter an error, please contact the authors."	
+		}
 
 		if "`type'"=="reg" {
 			if "`methods'"=="ols" {
