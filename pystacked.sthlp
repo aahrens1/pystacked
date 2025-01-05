@@ -783,10 +783,6 @@ Storing the predicted values:{p_end}
 {phang2}. {stata "predict double yhat, xb"}{p_end}
 
 {pstd}
-Storing the cross-validated predicted values:{p_end}
-{phang2}. {stata "predict double yhat_cv, xb cvalid"}{p_end}
-
-{pstd}
 We can also save the predicted values of each base learner:{p_end}
 {phang2}. {stata "predict double yhat, basexb"}{p_end}
 
