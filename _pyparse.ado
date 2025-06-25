@@ -1,5 +1,5 @@
-*! pystacked v0.7.6
-*! last edited: 3jan2025
+*! pystacked v0.7.7
+*! last edited: 25june2025
 *! authors: aa/ms
 
 program _pyparse 
@@ -37,9 +37,9 @@ program _pyparse
 	        di as err "pystacked requires at least sklearn 0.24.0."	
 	        exit 198
 		}
-		if (`sklearn_ver'>106) {
+		if (`sklearn_ver'>107) {
 		    di as err "Warning: your sklearn version (`sklearn1'.`sklearn2'.`sklearn3') might not be supported."
-	        di as err "pystacked has only been tested against up to 1.6.0."
+	        di as err "pystacked has only been tested against up to 1.7.0."
 	        di as err "Check for a new pystacked version. If you encounter an error, please contact the authors."	
 		}
 
