@@ -1,5 +1,5 @@
-#! pystacked v0.7.6
-#! last edited: 3jan2025
+#! pystacked v0.7.7
+#! last edited: 25june2025
 #! authors: aa/ms
 
 # Import required Python modules
@@ -29,7 +29,11 @@ from sklearn import __version__ as sklearn_version
 from scipy import __version__ as scipy_version
 from numpy import __version__ as numpy_version
 from sys import version as sys_version
-from sklearn.utils import parallel_backend
+try:
+    from sklearn.utils import parallel_backend
+except ImportError:
+    # from 1.7.0 onwards
+    from joblib import parallel_backend
 from sklearn.model_selection import PredefinedSplit,KFold,StratifiedKFold
 
 ### Define required Python functions/classes
