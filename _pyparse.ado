@@ -1,5 +1,5 @@
-*! pystacked v0.7.8
-*! last edited: 30june2025
+*! pystacked v0.7.8b
+*! last edited: 1july2025
 *! authors: aa/ms
 
 program _pyparse 
@@ -1645,9 +1645,10 @@ program define parse_MLPReg, rclass
 						PRINTopt ///
 					]
 
+	di "`sklearn_ver'"
 	if "`printopt'"!="" {
 		di _skip(1) in smcl "{ul on}Stata syntax:{ul off}"
-		if `sklearn_ver' > 107 {
+		if `sklearn_ver' >= 107 {
 			di _skip(1) in smcl "{opt loss(string)} " _c
 		}
 		di _skip(1) in smcl "{opt hidden_layer_sizes(numlist >0 integer)} " _c
@@ -1677,7 +1678,7 @@ program define parse_MLPReg, rclass
 
 	local optstr
 	*** hidden layer sizes
-	if `sklearn_ver' > 107 {
+	if `sklearn_ver' >= 107 {
 		if "`loss'"=="poisson"|"`loss'"=="squared_error" {
 			local optstr `optstr' 'loss':'`loss'',
 		}
