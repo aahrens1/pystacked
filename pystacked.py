@@ -1,5 +1,5 @@
-#! pystacked v0.7.8b
-#! last edited: 1july2025
+#! pystacked v0.7.8c
+#! last edited: 8oct2025
 #! authors: aa/ms
 
 # Import required Python modules

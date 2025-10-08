@@ -1,7 +1,7 @@
 {smcl}
-{* *! version 1july2025}{...}
+{* *! version 8oct2025}{...}
 {hline}
-{cmd:help pystacked}{right: v0.7.8b}
+{cmd:help pystacked}{right: v0.7.8c}
 {hline}
 
 {title:Title}
@@ -295,6 +295,14 @@ prints the options passed on to Python.
 {p_end}
 {synopt:{opt showp:y}} 
 prints Python messages.
+{p_end}
+{synopt:{opt altpython}} 
+Use an alternative method for importing {opt pystacked}'s Python code.
+{opt pystacked}'s default is to use "python: from pystacked import *",
+but very occasionally some Stata installations have trouble with loading this.
+In our experience usually a Stata update will fix this,
+but users can alternatively use the {opt altpython} option,
+which causes {opt pystacked} to use a separate ado file with the Python code inside it.
 {p_end}
 {synoptline}
 
@@ -993,6 +1001,12 @@ For further information, see
 {pstd}
 To install/update {cmd:pystacked}, type {p_end}
 {phang2}. {stata "net install pystacked, from(https://raw.githubusercontent.com/aahrens1/pystacked/main) replace"}{p_end}
+
+{pstd}
+{it:Note:}
+Very occasionally a Stata installation will have trouble loading {opt pystacked}'s Python code.
+Usually a Stata update will fix this, but alternatively you can try calling {opt pystacked} with the {opt altpython} option.
+See above in {help pystacked##otheropts:options}.
 
 {marker misc}{title:Miscellaneous}
 
