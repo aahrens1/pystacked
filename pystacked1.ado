@@ -1,5 +1,5 @@
-*! pystacked v0.7.8c
-*! last edited: 8oct2025
+*! pystacked v0.7.8d
+*! last edited: 14oct2025
 *! authors: aa/ms
 *! pystacked1 = pystacked with core python code loaded from pystacked.py using python import
 // pystacked.py code imported as first line in parent program
@@ -456,11 +456,11 @@ version 16.0
     // mark sample 
     marksample touse
     markout `touse' `varlist' `wvar'
-    qui count if `touse'
-    local N        = r(N)
 
     // generate fold var
-    if "`foldvar'"=="" {
+    cap confirm variable `foldvar'
+    if _rc>0 {
+        // variable either doesn't exist or wasn't provided, so create tempvar fid
         *** gen folds
         tempvar uni cuni fid
         if "`norandom'"~="" | "`noestimate'"!="" {
@@ -474,9 +474,13 @@ version 16.0
     }
     else {
         tempvar fid
-        gen int `fid'=`foldvar'
+        qui gen int `fid'=`foldvar'
+        // provided foldvar may have missing values
+        markout `touse' `foldvar'
     }
 
+    qui count if `touse'
+    local N        = r(N)
     tempvar id 
     gen long `id'=_n
     local shuffle=("`noshuffle'"=="")
@@ -663,6 +667,24 @@ version 16.0
     }
     ereturn scalar mcount = `mcount'
     ereturn local globalopt `globalopt'
+    
+    // if foldvar name was provided and variable exists, save name in e(foldvar)
+    // if foldvar name was provided but variable doesn't exist, create it and save name in e(foldvar)
+    // if foldvar name was not provided, create it and copy/overwrite to variable _pystacked_foldvar
+    if "`foldvar'"=="" {
+    	// create or overwrite _pystacked_foldvar
+    	cap drop _pystacked_foldvar
+    	qui gen int _pystacked_foldvar = `fid'
+    	local foldvar _pystacked_foldvar
+    }
+    else {
+    	qui cap confirm variable `foldvar'
+    	if _rc>0 {
+    		// foldvar name provided but doesn't exist
+    		qui gen int `foldvar' = `fid'
+    	}
+    }
+    ereturn local foldvar `foldvar'
 
 end
 
