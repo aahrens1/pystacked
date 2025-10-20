@@ -1,5 +1,5 @@
-*! pystacked v0.7.8d
-*! last edited: 14oct2025
+*! pystacked v0.7.8e
+*! last edited: 20oct2025
 *! authors: aa/ms
 *! pystacked1 = pystacked with core python code loaded from pystacked.py using python import
 // pystacked.py code imported as first line in parent program
@@ -8,8 +8,6 @@
 program define pystacked1, eclass
     version 16.0
 
-    // load core python code
-    python: from pystacked import *
 
     // exception for printoption which can be called w/o variables
     tokenize `"`0'"', parse(",")
@@ -20,6 +18,19 @@ program define pystacked1, eclass
 
     if ~replay() {
         // no replay - must estimate
+        
+        // load core python code
+        python clear
+        pystacked_check_python
+        qui findfile pystacked.py
+        cap python script "`r(fn)'", global
+        if _rc != 0 {
+            noi disp "Error loading Python Script for pystacked."
+            error 199
+        }
+        python: from pystacked import *
+        // end load core python code
+
         _pystacked `0'
     }
     else if replay() & `printopt_on' {
@@ -74,6 +85,7 @@ program define pystacked1, eclass
                     NOESTIMATE                          /// suppress call to run_stacked; no estimates, only parses
                     SHOWCoefs                           ///
                     PRINTopt                            ///
+                    cvc									/// report cvc test
                     *                                   ///
                 ]
 
@@ -107,7 +119,7 @@ program define pystacked1, eclass
     // from here, table is the macro indicating table type
     
     // display results
-    if `"`graph'`graph1'`lgraph'`histogram'`table'`noestimate'"' == "" {
+    if `"`graph'`graph1'`lgraph'`histogram'`table'`noestimate'`cvc'"' == "" {
 
         di
         di as res "Stacking weights:"
@@ -264,6 +276,47 @@ program define pystacked1, eclass
         // add to estimation macros
         ereturn mat confusion = `m'
     }
+    
+    if "`cvc'"~="" {
+    	// valid only for type=regression
+    	if "`e(type)'"~="reg" {
+    		di as err "error - CVC test available only for regression-type models"
+    		exit 198
+    	}
+    	tempvar stub
+    	predict double `stub', basexb cvalid
+    	// capture in case cvc isn't installed
+    	cap cvc `stub'*, yvar(`e(depvar)') foldvar(`e(foldvar)') all
+    	if _rc==199 {
+    		di as err "error - must install cvc. See ...."
+    		exit 199
+    	}
+    	else if _rc>0 {
+    		di as err "internal pystacked error"
+    		exit _rc
+    	}
+    	tempname pmat
+    	mat `pmat'=r(pmat)
+        di
+        di as res "CVC test p-values:"
+        di as text "{hline 17}{c TT}{hline 21}"
+        di as text "  Method" _c
+        di as text _col(18) "{c |}      p-value"
+        di as text "{hline 17}{c +}{hline 21}"
+
+        forvalues j=1/`nlearners' {
+            local b : word `j' of `base_est'
+            di as text "  `b'" _c
+            di as text _col(18) "{c |}" _c
+            di as res %15.7f el(`pmat',1,`j')
+        }
+        // add to estimation macros
+        mat `pmat' = `pmat''
+        mat rownames `pmat' = `base_est'
+        mat colnames `pmat' = "pval"
+        ereturn mat cvc_p = `pmat'
+    }
+    
 end
 
 
@@ -434,17 +487,21 @@ version 16.0
             di as error "votetype(`votetype') not allowed"
             error 198
         }
-    } 
-
-    python clear
-
-    pystacked_check_python
-    qui findfile pystacked.py
-    cap python script "`r(fn)'", global
-    if _rc != 0 {
-        noi disp "Error loading Python Script for pystacked."
-        error 199
     }
+    
+    // code corresponding to load core pystacked code in pystacked1.ado
+    // copy over from top of pystacked1.ado, comment out python import line
+    // and insert python code from pystacked.py at bottom of pystacked2.ado
+    // python clear
+    // pystacked_check_python
+    // qui findfile pystacked.py
+    // cap python script "`r(fn)'", global
+    // if _rc != 0 {
+    //     noi disp "Error loading Python Script for pystacked."
+    //     error 199
+    // }
+    // python: from pystacked import *
+    // end code corresponding to load core pystacked code in pystacked1
 
     // get sklearn version
     python: from sklearn import __version__ as sklearn_version
