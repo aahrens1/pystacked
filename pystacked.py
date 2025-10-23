@@ -1,5 +1,5 @@
-#! pystacked v0.7.8c
-#! last edited: 8oct2025
+#! pystacked v0.7.8e
+#! last edited: 23oct2025
 #! authors: aa/ms
 
 # Import required Python modules
@@ -612,6 +612,37 @@ def run_stacked(type, # regression or classification
             cv0 = x.shape[0]
             cv1 = transf.shape[1]
             __main__.cvalid = np.empty((cv0,cv1))*np.nan
+
+    # cvc
+    if type=="reg" and len(methods)>0:
+        nobs = len(y)
+        residuals = y[...,None] - __main__.cvalid
+        fid_list = np.unique(fid)
+        cvc_p = [0]*len(methods)
+        for i in range(len(methods)):
+            yhat1 = residuals[:,i]
+            yhat1 = np.repeat(yhat1.reshape(-1,1),len(methods)-1,1)
+            yhat2 = np.delete(residuals,i,1)
+            zeta = np.square(yhat1) - np.square(yhat2)
+            zeta_til = []
+            for j in fid_list:
+                zeta_m_j = np.mean(zeta[(fid==j)],0)
+                zeta_til_j = zeta[(fid==j)] - zeta_m_j
+                if len(zeta_til)==0:
+                    zeta_til = zeta_til_j
+                else:
+                    zeta_til = np.append(zeta_til, zeta_til_j, axis=0)
+            zeta_m = np.mean(zeta,0)
+            zeta_sd = np.sqrt(np.diagonal(np.cov(zeta_til,rowvar=False)))
+            Tx = np.max(np.sqrt(nobs) * zeta_m / zeta_sd)
+            Txb = [0]*500
+            for b in range(0,500):
+                bw = np.random.normal(0, 1, nobs)
+                Tx_b = np.max(1/np.sqrt(nobs)*np.sum((zeta_til / zeta_sd)*bw[...,None]))
+                Txb[b] = Tx_b
+            Pval=np.mean(Txb>Tx)
+            cvc_p[i] = Pval
+        sfi.Matrix.store("e(cvc_p)",cvc_p)
 
     # save versions of Python and packages
     sfi.Macro.setGlobal("e(sklearn_ver)",format(sklearn_version))

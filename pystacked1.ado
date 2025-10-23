@@ -84,7 +84,7 @@ program define pystacked1, eclass
                     NOESTIMATE                          /// suppress call to run_stacked; no estimates, only parses
                     SHOWCoefs                           ///
                     PRINTopt                            ///
-                    cvc                                    /// report cvc test
+                    cvc                                 /// report cvc test
                     *                                   ///
                 ]
 
@@ -118,7 +118,7 @@ program define pystacked1, eclass
     // from here, table is the macro indicating table type
     
     // display results
-    if `"`graph'`graph1'`lgraph'`histogram'`table'`noestimate'`cvc'"' == "" {
+    if `"`graph'`graph1'`lgraph'`histogram'`table'`noestimate'"' == "" {
 
         di
         di as res "Stacking weights:"
@@ -282,20 +282,8 @@ program define pystacked1, eclass
             di as err "error - CVC test available only for regression-type models"
             exit 198
         }
-        tempvar stub
-        predict double `stub', basexb cvalid
-        // capture in case cvc isn't installed
-        cap cvc `stub'*, yvar(`e(depvar)') foldvar(`e(foldvar)') all
-        if _rc==199 {
-            di as err "error - must install cvc. See ...."
-            exit 199
-        }
-        else if _rc>0 {
-            di as err "internal pystacked error"
-            exit _rc
-        }
         tempname pmat
-        mat `pmat'=r(pmat)
+        mat `pmat'=e(cvc_p)
         di
         di as res "CVC test p-values:"
         di as text "{hline 17}{c TT}{hline 21}"
@@ -307,13 +295,8 @@ program define pystacked1, eclass
             local b : word `j' of `base_est'
             di as text "  `b'" _c
             di as text _col(18) "{c |}" _c
-            di as res %15.7f el(`pmat',1,`j')
+            di as res %11.3f el(`pmat',`j',1)
         }
-        // add to estimation macros
-        mat `pmat' = `pmat''
-        mat rownames `pmat' = `base_est'
-        mat colnames `pmat' = "pval"
-        ereturn mat cvc_p = `pmat'
     }
     
 end
@@ -394,7 +377,7 @@ version 16.0
                     backend(string) ///
                     altpython                               /// used for branching to pystacked1 or 2; saved as e(.) macro
                     ///
-                    /// options for graphing; ignore here
+                    /// options for graphing etc; ignore here
                     GRAPH1                                  /// vanilla option, abbreviates to "graph"
                     HISTogram                               /// report histogram instead of default ROC
                     graph(string asis)                      /// for passing options to graph combine
@@ -407,6 +390,7 @@ version 16.0
                     SParse                                  ///
                     SHOWOPTions                             ///
                     NOESTIMATE                              /// suppress call to run_stacked; no estimates, only parses
+                    cvc                                     ///
                 ]
 
     if `"`methods'"'=="" local methods `methods0'
