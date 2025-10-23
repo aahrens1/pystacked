@@ -1,9 +1,10 @@
-*! pystacked v0.7.8c
-*! last edited: 8oct2025
+*! pystacked v0.7.83
+*! last edited: 23oct2025
 *! authors: aa/ms
-*! pystacked1_p = pystacked_p with core python code loaded from pystacked_p.py using python import
-// pystacked_p.py code imported as first line in parent program
+*! pystacked1_p = pystacked_p with core python code loaded from pystacked_p.py
+*!                using python import in parent program pystacked1_p
 
+// parent program
 program define pystacked1_p, rclass
     version 16.0
     syntax namelist(min=1 max=2) [if] [in], [ ///
@@ -20,10 +21,18 @@ program define pystacked1_p, rclass
     python: from pystacked_p import *
 
     if ("`force'"=="") {
-        qui datasignature report
-        //return list
-        if (`r(changed)'!=0) {
+    	// check datasignature based on depvar, xvars and foldvar
+    	qui _datasignature `e(depvar)' `e(allxvars_o)' `e(foldvar)'
+        if "`e(datasignature)'"~="`r(datasignature)'" {
             di as err "error: data in memory has changed since last -pystacked- call"
+            di as err "you are not allowed to change data in memory between -pystacked- fit and -predict-"
+            di as err "use the -force- option to override"
+            exit 198
+        }
+        // check sort order
+        local sortvars : sortedby
+        if "`sortvars'"~="`e(sortvars)'" {
+        	di as err "error: sort order of data in memory has changed since last -pystacked- call"
             di as err "you are not allowed to change data in memory between -pystacked- fit and -predict-"
             exit 198
         }

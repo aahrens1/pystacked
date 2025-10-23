@@ -1,13 +1,12 @@
 *! pystacked v0.7.8e
-*! last edited: 20oct2025
+*! last edited: 23oct2025
 *! authors: aa/ms
-*! pystacked1 = pystacked with core python code loaded from pystacked.py using python import
-// pystacked.py code imported as first line in parent program
+*! pystacked1 = pystacked with core python code loaded from pystacked.py
+*!              using python import in parent program pystacked1
 
 // parent program
 program define pystacked1, eclass
     version 16.0
-
 
     // exception for printoption which can be called w/o variables
     tokenize `"`0'"', parse(",")
@@ -85,7 +84,7 @@ program define pystacked1, eclass
                     NOESTIMATE                          /// suppress call to run_stacked; no estimates, only parses
                     SHOWCoefs                           ///
                     PRINTopt                            ///
-                    cvc									/// report cvc test
+                    cvc                                    /// report cvc test
                     *                                   ///
                 ]
 
@@ -278,25 +277,25 @@ program define pystacked1, eclass
     }
     
     if "`cvc'"~="" {
-    	// valid only for type=regression
-    	if "`e(type)'"~="reg" {
-    		di as err "error - CVC test available only for regression-type models"
-    		exit 198
-    	}
-    	tempvar stub
-    	predict double `stub', basexb cvalid
-    	// capture in case cvc isn't installed
-    	cap cvc `stub'*, yvar(`e(depvar)') foldvar(`e(foldvar)') all
-    	if _rc==199 {
-    		di as err "error - must install cvc. See ...."
-    		exit 199
-    	}
-    	else if _rc>0 {
-    		di as err "internal pystacked error"
-    		exit _rc
-    	}
-    	tempname pmat
-    	mat `pmat'=r(pmat)
+        // valid only for type=regression
+        if "`e(type)'"~="reg" {
+            di as err "error - CVC test available only for regression-type models"
+            exit 198
+        }
+        tempvar stub
+        predict double `stub', basexb cvalid
+        // capture in case cvc isn't installed
+        cap cvc `stub'*, yvar(`e(depvar)') foldvar(`e(foldvar)') all
+        if _rc==199 {
+            di as err "error - must install cvc. See ...."
+            exit 199
+        }
+        else if _rc>0 {
+            di as err "internal pystacked error"
+            exit _rc
+        }
+        tempname pmat
+        mat `pmat'=r(pmat)
         di
         di as res "CVC test p-values:"
         di as text "{hline 17}{c TT}{hline 21}"
@@ -415,13 +414,6 @@ version 16.0
         local noestimate noestimate
     }
 
-    ** set data signature for pystacked_p;
-    * need to do this before temp vars are created
-    if ("`debug'"=="") local dqui qui
-    `dqui' datasignature clear 
-    `dqui'  datasignature set
-    `dqui' datasignature report
-
     if ("`exp'"!="") {
         tempvar wvar
         local wvar_t = subinstr("`exp'","=","",.)
@@ -488,20 +480,6 @@ version 16.0
             error 198
         }
     }
-    
-    // code corresponding to load core pystacked code in pystacked1.ado
-    // copy over from top of pystacked1.ado, comment out python import line
-    // and insert python code from pystacked.py at bottom of pystacked2.ado
-    // python clear
-    // pystacked_check_python
-    // qui findfile pystacked.py
-    // cap python script "`r(fn)'", global
-    // if _rc != 0 {
-    //     noi disp "Error loading Python Script for pystacked."
-    //     error 199
-    // }
-    // python: from pystacked import *
-    // end code corresponding to load core pystacked code in pystacked1
 
     // get sklearn version
     python: from sklearn import __version__ as sklearn_version
@@ -729,19 +707,34 @@ version 16.0
     // if foldvar name was provided but variable doesn't exist, create it and save name in e(foldvar)
     // if foldvar name was not provided, create it and copy/overwrite to variable _pystacked_foldvar
     if "`foldvar'"=="" {
-    	// create or overwrite _pystacked_foldvar
-    	cap drop _pystacked_foldvar
-    	qui gen int _pystacked_foldvar = `fid'
-    	local foldvar _pystacked_foldvar
+        // create or overwrite _pystacked_foldvar
+        cap drop _pystacked_foldvar
+        qui gen int _pystacked_foldvar = `fid'
+        local foldvar _pystacked_foldvar
     }
     else {
-    	qui cap confirm variable `foldvar'
-    	if _rc>0 {
-    		// foldvar name provided but doesn't exist
-    		qui gen int `foldvar' = `fid'
-    	}
+        qui cap confirm variable `foldvar'
+        if _rc>0 {
+            // foldvar name provided but doesn't exist
+            qui gen int `foldvar' = `fid'
+        }
     }
     ereturn local foldvar `foldvar'
+    
+    // set data signature for pystacked_p
+    local allxvars_o
+    forvalues i=1/`mcount' {
+        local allxvars_o `allxvars_o' `xvars_orig`i''
+    }
+    // keep only unique items
+    local allxvars_o : list uniq allxvars_o
+    ereturn local allxvars_o `allxvars_o'
+    // get data signature based on depvar, xvars and foldvar
+    qui _datasignature `yvar' `allxvars_o' `foldvar'
+    ereturn local datasignature `r(datasignature)'
+    // set sort info for pystacked_p
+    local sortvars : sortedby
+    ereturn local sortvars `sortvars'
 
 end
 

@@ -1,8 +1,8 @@
-*! pystacked v0.7.8c
-*! last edited: 8oct2025
+*! pystacked v0.7.8e
+*! last edited: 23oct2025
 *! authors: aa/ms
 *! pystacked2 = pystacked1.ado with core python code pystacked.py directly inserted
-// pystacked.py code appears at the bottom of this ado
+*!              at bottom and python section at top of parent program pystacked2 commented out
 
 // parent program
 program define pystacked2, eclass
@@ -17,6 +17,21 @@ program define pystacked2, eclass
 
     if ~replay() {
         // no replay - must estimate
+        
+        /*
+        // load core python code
+        python clear
+        pystacked_check_python
+        qui findfile pystacked.py
+        cap python script "`r(fn)'", global
+        if _rc != 0 {
+            noi disp "Error loading Python Script for pystacked."
+            error 199
+        }
+        python: from pystacked import *
+        // end load core python code
+        */
+
         _pystacked `0'
     }
     else if replay() & `printopt_on' {
@@ -71,6 +86,7 @@ program define pystacked2, eclass
                     NOESTIMATE                          /// suppress call to run_stacked; no estimates, only parses
                     SHOWCoefs                           ///
                     PRINTopt                            ///
+                    cvc                                    /// report cvc test
                     *                                   ///
                 ]
 
@@ -104,7 +120,7 @@ program define pystacked2, eclass
     // from here, table is the macro indicating table type
     
     // display results
-    if `"`graph'`graph1'`lgraph'`histogram'`table'`noestimate'"' == "" {
+    if `"`graph'`graph1'`lgraph'`histogram'`table'`noestimate'`cvc'"' == "" {
 
         di
         di as res "Stacking weights:"
@@ -261,6 +277,47 @@ program define pystacked2, eclass
         // add to estimation macros
         ereturn mat confusion = `m'
     }
+    
+    if "`cvc'"~="" {
+        // valid only for type=regression
+        if "`e(type)'"~="reg" {
+            di as err "error - CVC test available only for regression-type models"
+            exit 198
+        }
+        tempvar stub
+        predict double `stub', basexb cvalid
+        // capture in case cvc isn't installed
+        cap cvc `stub'*, yvar(`e(depvar)') foldvar(`e(foldvar)') all
+        if _rc==199 {
+            di as err "error - must install cvc. See ...."
+            exit 199
+        }
+        else if _rc>0 {
+            di as err "internal pystacked error"
+            exit _rc
+        }
+        tempname pmat
+        mat `pmat'=r(pmat)
+        di
+        di as res "CVC test p-values:"
+        di as text "{hline 17}{c TT}{hline 21}"
+        di as text "  Method" _c
+        di as text _col(18) "{c |}      p-value"
+        di as text "{hline 17}{c +}{hline 21}"
+
+        forvalues j=1/`nlearners' {
+            local b : word `j' of `base_est'
+            di as text "  `b'" _c
+            di as text _col(18) "{c |}" _c
+            di as res %15.7f el(`pmat',1,`j')
+        }
+        // add to estimation macros
+        mat `pmat' = `pmat''
+        mat rownames `pmat' = `base_est'
+        mat colnames `pmat' = "pval"
+        ereturn mat cvc_p = `pmat'
+    }
+    
 end
 
 
@@ -359,13 +416,6 @@ version 16.0
         local noestimate noestimate
     }
 
-    ** set data signature for pystacked_p;
-    * need to do this before temp vars are created
-    if ("`debug'"=="") local dqui qui
-    `dqui' datasignature clear 
-    `dqui'  datasignature set
-    `dqui' datasignature report
-
     if ("`exp'"!="") {
         tempvar wvar
         local wvar_t = subinstr("`exp'","=","",.)
@@ -431,18 +481,7 @@ version 16.0
             di as error "votetype(`votetype') not allowed"
             error 198
         }
-    } 
-
-    python clear
-
-    pystacked_check_python
-    qui findfile pystacked.py
-    cap python script "`r(fn)'", global
-    if _rc != 0 {
-        noi disp "Error loading Python Script for pystacked."
-        error 199
     }
-    //python: from pystacked import *
 
     // get sklearn version
     python: from sklearn import __version__ as sklearn_version
@@ -454,11 +493,11 @@ version 16.0
     // mark sample 
     marksample touse
     markout `touse' `varlist' `wvar'
-    qui count if `touse'
-    local N        = r(N)
 
     // generate fold var
-    if "`foldvar'"=="" {
+    cap confirm variable `foldvar'
+    if _rc>0 {
+        // variable either doesn't exist or wasn't provided, so create tempvar fid
         *** gen folds
         tempvar uni cuni fid
         if "`norandom'"~="" | "`noestimate'"!="" {
@@ -472,9 +511,13 @@ version 16.0
     }
     else {
         tempvar fid
-        gen int `fid'=`foldvar'
+        qui gen int `fid'=`foldvar'
+        // provided foldvar may have missing values
+        markout `touse' `foldvar'
     }
 
+    qui count if `touse'
+    local N        = r(N)
     tempvar id 
     gen long `id'=_n
     local shuffle=("`noshuffle'"=="")
@@ -661,6 +704,39 @@ version 16.0
     }
     ereturn scalar mcount = `mcount'
     ereturn local globalopt `globalopt'
+    
+    // if foldvar name was provided and variable exists, save name in e(foldvar)
+    // if foldvar name was provided but variable doesn't exist, create it and save name in e(foldvar)
+    // if foldvar name was not provided, create it and copy/overwrite to variable _pystacked_foldvar
+    if "`foldvar'"=="" {
+        // create or overwrite _pystacked_foldvar
+        cap drop _pystacked_foldvar
+        qui gen int _pystacked_foldvar = `fid'
+        local foldvar _pystacked_foldvar
+    }
+    else {
+        qui cap confirm variable `foldvar'
+        if _rc>0 {
+            // foldvar name provided but doesn't exist
+            qui gen int `foldvar' = `fid'
+        }
+    }
+    ereturn local foldvar `foldvar'
+    
+    // set data signature for pystacked_p
+    local allxvars_o
+    forvalues i=1/`mcount' {
+        local allxvars_o `allxvars_o' `xvars_orig`i''
+    }
+    // keep only unique items
+    local allxvars_o : list uniq allxvars_o
+    ereturn local allxvars_o `allxvars_o'
+    // get data signature based on depvar, xvars and foldvar
+    qui _datasignature `yvar' `allxvars_o' `foldvar'
+    ereturn local datasignature `r(datasignature)'
+    // set sort info for pystacked_p
+    local sortvars : sortedby
+    ereturn local sortvars `sortvars'
 
 end
 

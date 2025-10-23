@@ -1,9 +1,10 @@
-*! pystacked v0.7.8c
-*! last edited: 8oct2025
+*! pystacked v0.7.8e
+*! last edited: 23oct2025
 *! authors: aa/ms
 *! pystacked2_p = pystacked1_p.ado with core python code pystacked.py directly inserted
-// pystacked_p.py code appears at the bottom of this ado
+*!                at bottom and python section at top of parent program pystacked2_p commented out
 
+// parent program
 program define pystacked2_p, rclass
     version 16.0
     syntax namelist(min=1 max=2) [if] [in], [ ///
@@ -17,11 +18,21 @@ program define pystacked2_p, rclass
                                                             CValid ///
                                                             ]
 
+    // python: from pystacked_p import *
+
     if ("`force'"=="") {
-        qui datasignature report
-        //return list
-        if (`r(changed)'!=0) {
+    	// check datasignature based on depvar, xvars and foldvar
+    	qui _datasignature `e(depvar)' `e(allxvars_o)' `e(foldvar)'
+        if "`e(datasignature)'"~="`r(datasignature)'" {
             di as err "error: data in memory has changed since last -pystacked- call"
+            di as err "you are not allowed to change data in memory between -pystacked- fit and -predict-"
+            di as err "use the -force- option to override"
+            exit 198
+        }
+        // check sort order
+        local sortvars : sortedby
+        if "`sortvars'"~="`e(sortvars)'" {
+        	di as err "error: sort order of data in memory has changed since last -pystacked- call"
             di as err "you are not allowed to change data in memory between -pystacked- fit and -predict-"
             exit 198
         }
