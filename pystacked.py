@@ -1,5 +1,5 @@
 #! pystacked v0.7.8e
-#! last edited: 23oct2025
+#! last edited: 24oct2025
 #! authors: aa/ms
 
 # Import required Python modules
@@ -635,12 +635,15 @@ def run_stacked(type, # regression or classification
             zeta_m = np.mean(zeta,0)
             zeta_sd = np.sqrt(np.diagonal(np.cov(zeta_til,rowvar=False)))
             Tx = np.max(np.sqrt(nobs) * zeta_m / zeta_sd)
-            Txb = [0]*500
-            for b in range(0,500):
+            Txb_count = 0
+            B = 1
+            while B <= 500:
                 bw = np.random.normal(0, 1, nobs)
-                Tx_b = np.max(1/np.sqrt(nobs)*np.sum((zeta_til / zeta_sd)*bw[...,None]))
-                Txb[b] = Tx_b
-            Pval=np.mean(Txb>Tx)
+                Txb = np.max(1/np.sqrt(nobs)*np.sum((zeta_til / zeta_sd)*bw[...,None]))
+                if Txb > Tx:
+                    Txb_count = Txb_count+1
+                B = B+1
+            pval=Txb_count/B
             cvc_p[i] = Pval
         sfi.Matrix.store("e(cvc_p)",cvc_p)
 
