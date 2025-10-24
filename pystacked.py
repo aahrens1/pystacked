@@ -644,7 +644,7 @@ def run_stacked(type, # regression or classification
                     Txb_count = Txb_count+1
                 B = B+1
             pval=Txb_count/B
-            cvc_p[i] = Pval
+            cvc_p[i] = pval
         sfi.Matrix.store("e(cvc_p)",cvc_p)
 
     # save versions of Python and packages
