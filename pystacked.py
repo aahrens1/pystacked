@@ -224,6 +224,7 @@ def run_stacked(type, # regression or classification
     bfolds, #
     shuff, #
     idvar, # id var
+    cvcbootnum, # number of bootstrap reps for cvc
     showpywarnings, # show warnings?
     parbackend, # backend
     sparse, # sparse predictor 
@@ -637,7 +638,7 @@ def run_stacked(type, # regression or classification
             Tx = np.max(np.sqrt(nobs) * zeta_m / zeta_sd)
             Txb_count = 0
             B = 1
-            while B <= 500:
+            while B <= cvcbootnum:
                 bw = np.random.normal(0, 1, nobs)
                 Txb = np.max(1/np.sqrt(nobs)*np.sum((zeta_til / zeta_sd)*bw[...,None]))
                 if Txb > Tx:

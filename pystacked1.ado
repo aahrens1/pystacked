@@ -84,12 +84,19 @@ program define pystacked1, eclass
                     NOESTIMATE                          /// suppress call to run_stacked; no estimates, only parses
                     SHOWCoefs                           ///
                     PRINTopt                            ///
-                    cvc                                 /// report cvc test
+                    CVC1                                /// vanilla option, abbreviates to "cvc"
+                    cvc(integer 0)                      /// to capture if cvc bootstrap reps were specified
                     *                                   ///
                 ]
 
     if "`printopt'"!="" local noestimate noestimate
     
+    // if non-zero integer for cvc was supplied via cvc(int) option, set cvc1 to non-empty string
+    // if vanilla cvc option has been specified, cvc1 is already non-empty
+    if `cvc' > 0 {
+        local cvc1 cvc1
+    }
+        
     // default reg table = rmspe
     // default class table = confusion
     // table1 = "table" or ""
@@ -276,7 +283,7 @@ program define pystacked1, eclass
         ereturn mat confusion = `m'
     }
     
-    if "`cvc'"~="" {
+    if "`cvc1'"~="" {
         // valid only for type=regression
         if "`e(type)'"~="reg" {
             di as err "error - CVC test available only for regression-type models"
@@ -375,6 +382,8 @@ version 16.0
                     ///
                     SHOWPymessages ///
                     backend(string) ///
+                    CVC1                                    /// vanilla option, abbreviates to cvc; ignored here
+                    cvc(integer 500)                        /// specifies number of bootstrap reps for cvc
                     altpython                               /// used for branching to pystacked1 or 2; saved as e(.) macro
                     ///
                     /// options for graphing etc; ignore here
@@ -390,7 +399,6 @@ version 16.0
                     SParse                                  ///
                     SHOWOPTions                             ///
                     NOESTIMATE                              /// suppress call to run_stacked; no estimates, only parses
-                    cvc                                     ///
                 ]
 
     if `"`methods'"'=="" local methods `methods0'
@@ -661,6 +669,7 @@ version 16.0
                         `bfolds', ///
                         `shuffle', ///
                         "`id'", ///
+                        `cvc', /// has number of bootstrap reps for cvc
                         "`showpymessages'", ///
                         "`backend'", ///
                         "`sparse'", ///
@@ -685,6 +694,7 @@ version 16.0
         ereturn local xvars_o`i' `xvars_orig`i''
     }
     ereturn scalar mcount = `mcount'
+    ereturn scalar cvcbootnum = `cvc'
     ereturn local globalopt `globalopt'
     
     // if foldvar name was provided and variable exists, save name in e(foldvar)
