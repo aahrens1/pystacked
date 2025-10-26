@@ -71,7 +71,7 @@ assert reldif(0.1617286,el(W,5,1))<0.005
 *** foldvar															 		***
 *******************************************************************************
 
-insheet using "/Users/kahrens/Dropbox (PP)/ddml/Data/housing.csv", ///
+insheet using "/Users/kahrens/MyProjects/pystacked/data/housing.csv", ///
 	clear comma
 
 gen fid = 1 + (_n>250)
@@ -107,7 +107,7 @@ assert reldif(xhat1,xhat2)<10e-6
 *** check stdscaler default with regularized linear learners		 		***
 *******************************************************************************
 
-insheet using "/Users/kahrens/Dropbox (PP)/ddml/Data/housing.csv", ///
+insheet using "/Users/kahrens/MyProjects/pystacked/data/housing.csv", ///
 	clear comma
 
 pystacked medv $xvars, method(gradboost lassocv)   
@@ -131,7 +131,7 @@ assert "`e(pipe2)'"=="passthrough"
 *** xvar option 													 		***
 *******************************************************************************
 
-insheet using "/Users/kahrens/Dropbox (PP)/ddml/Data/housing.csv", ///
+insheet using "/Users/kahrens/MyProjects/pystacked/data/housing.csv", ///
 	clear comma
 	
 global xuse c.(crim lstat)##c.(crim lstat)
@@ -168,7 +168,7 @@ assert xb!=xb5
 *** xvar vs pipeline												 		***
 *******************************************************************************
 
-insheet using "/Users/kahrens/Dropbox (PP)/ddml/Data/housing.csv", ///
+insheet using "/Users/kahrens/MyProjects/pystacked/data/housing.csv", ///
 	clear comma
 	
 set seed 789

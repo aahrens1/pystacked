@@ -1,5 +1,5 @@
-#! pystacked v0.7.7
-#! last edited: 25june2025
+#! pystacked v0.7.8c
+#! last edited: 8oct2025
 #! authors: aa/ms
 
 # Import SFI, always with stata 16

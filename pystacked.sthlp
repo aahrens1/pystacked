@@ -1,7 +1,7 @@
 {smcl}
-{* *! version 25june2025}{...}
+{* *! version 26oct2025}{...}
 {hline}
-{cmd:help pystacked}{right: v0.7.7}
+{cmd:help pystacked}{right: v0.7.9}
 {hline}
 
 {title:Title}
@@ -36,8 +36,7 @@ algorithms.
 a Python installation and scikit-learn (0.24 or higher). {opt pystacked}
 has been 
 {browse "https://github.com/aahrens1/pystacked/tree/main/cert":tested} 
-with scikit-learn 0.24.2, 1.0.2, 1.1.3, 
-1.2.1, 1.3.0, 1.3.2, 1.4.0, 1.4.2, 1.5.2, 1.6.0, and 1.7.0.
+with scikit-learn 1.3.0, 1.3.2, 1.4.0, 1.4.2, 1.5.2, 1.6.0, and 1.7.0.
 See {helpb python:here} and {browse "https://blog.stata.com/2020/08/18/stata-python-integration-part-1-setting-up-stata-to-use-python/":here} 
 for how to set up Python for Stata on your system.
 
@@ -295,6 +294,14 @@ prints the options passed on to Python.
 {p_end}
 {synopt:{opt showp:y}} 
 prints Python messages.
+{p_end}
+{synopt:{opt altpython}} 
+Use an alternative method for importing {opt pystacked}'s Python code.
+{opt pystacked}'s default is to use "python: from pystacked import *",
+but very occasionally some Stata installations have trouble with loading this.
+In our experience usually a Stata update will fix this,
+but users can alternatively use the {opt altpython} option,
+which causes {opt pystacked} to use a separate ado file with the Python code inside it.
 {p_end}
 {synoptline}
 
@@ -994,6 +1001,12 @@ For further information, see
 To install/update {cmd:pystacked}, type {p_end}
 {phang2}. {stata "net install pystacked, from(https://raw.githubusercontent.com/aahrens1/pystacked/main) replace"}{p_end}
 
+{pstd}
+{it:Note:}
+Very occasionally a Stata installation will have trouble loading {opt pystacked}'s Python code.
+Usually a Stata update will fix this, but alternatively you can try calling {opt pystacked} with the {opt altpython} option.
+See above in {help pystacked##otheropts:options}.
+
 {marker misc}{title:Miscellaneous}
 
 {title:Website}
@@ -1043,9 +1056,8 @@ can also post on Statalist (please tag @Achim Ahrens).
 {cmd:pystacked} took some inspiration from Michael Droste's 
 {browse "https://github.com/mdroste/stata-pylearn":pylearn}, 
 which implements other scikit-learn programs for Stata.
-Thanks to Jan Ditzen for testing an early version 
-of the program. We also thank Brigham Frandsen and 
-Marco Alfano for feedback. 
+We thank Brigham Frandsen, Jan Ditzen,
+Marco Alfano, Joao Santos Silva and many others for feedback. 
 All remaining errors are our own. 
 
 {title:Citation}
@@ -1064,8 +1076,8 @@ Please also cite scikit-learn; see {browse "https://scikit-learn.org/stable/abou
 {title:Authors}
 
 {pstd}
-Achim Ahrens, Public Policy Group, ETH Zurich, Switzerland {break}
-achim.ahrens@gess.ethz.ch
+Achim Ahrens, CERGE-EI, Prague {break}
+achim.ahrens@cerge-ei.cz
 
 {pstd}
 Christian B. Hansen, University of Chicago, USA {break}

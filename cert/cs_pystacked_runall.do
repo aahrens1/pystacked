@@ -9,14 +9,11 @@ if "`c(username)'"=="kahrens" {
 else if "`c(username)'"=="ecomes" {
 	adopath + "/Users/ecomes/Documents/GitHub/pystacked/cert"
 }
-else {
-	net install pystacked, ///
-		from(https://raw.githubusercontent.com/aahrens1/pystacked/main) replace
-}
 
-local ver `0'
+local ver `1'
+local ver 170
 
-cap python set exec "/Users/kahrens/python_envs/sk`ver'/bin/python3"
+python set exec "/Users/kahrens/python_envs/sk`ver'/bin/python3"
 
 cap log close
 log using "log_cs_pystacked_`ver'.txt", text replace
