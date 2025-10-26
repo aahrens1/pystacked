@@ -7,7 +7,7 @@ python: sklearn.__version__
 tempfile testdata
 set seed 765
 global model v58 v1-v30
-insheet using https://archive.ics.uci.edu/ml/machine-learning-databases/spambase/spambase.data, clear comma
+insheet using ../data/spambase.data, clear comma
 sample 15
 gen u = runiform()
 gen train = u<0.5
@@ -19,7 +19,7 @@ save `testdata'
 *******************************************************************************
 
  insheet using ///
- https://archive.ics.uci.edu/ml/machine-learning-databases/spambase/spambase.data, ///
+ ../data/spambase.data, ///
  clear comma
 set seed 42
 gen train=runiform()
@@ -32,7 +32,7 @@ replace train=train<.75
 *******************************************************************************
 
  insheet using ///
- https://archive.ics.uci.edu/ml/machine-learning-databases/spambase/spambase.data, ///
+ ../data/spambase.data, ///
  clear comma
 set seed 42
 
@@ -46,7 +46,7 @@ foreach meth in lassocv elasticcv ridgecv rf gradboost {
 *******************************************************************************
 
  insheet using ///
- https://archive.ics.uci.edu/ml/machine-learning-databases/spambase/spambase.data, ///
+ ../data/spambase.data, ///
  clear comma
 
 foreach meth in lassocv elasticcv ridgecv rf gradboost {
@@ -60,7 +60,7 @@ foreach meth in lassocv elasticcv ridgecv rf gradboost {
 *******************************************************************************
 
  insheet using ///
- https://archive.ics.uci.edu/ml/machine-learning-databases/spambase/spambase.data, ///
+ ../data/spambase.data, ///
  clear comma
 set seed 42
 gen train=runiform()

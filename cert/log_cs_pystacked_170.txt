@@ -2,13 +2,172 @@
       name:  <unnamed>
        log:  /Users/kahrens/MyProjects/pystacked/cert/log_cs_pystacked_170.txt
   log type:  text
- opened on:  26 Oct 2025, 09:17:06
+ opened on:  26 Oct 2025, 11:19:23
+
+. 
+end of do-file
+
+. do "/var/folders/41/ld3ks1hx60513_z47fz5n33m0000gq/T//SD18978.000000"
+
+. 
+. clear all
+
+. use https://statalasso.github.io/dta/cal_housing.dta, clear
+
+. set seed 42
+
+. pystacked medh longi-medi 
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/Users/kahrens/MyProjects/pystacked/pystacked.py", line 644, in run_stacked
+    print(Tx)
+          ^^
+UnboundLocalError: cannot access local variable 'Tx' where it is not associated with a value
+r(7102);
+
+end of do-file
+
+r(7102);
+
+. dir
+
+total 1760
+-rw-r--r--@ 1 kahrens  staff    7472 Oct 15 21:18 cs_pystacked_class.do
+-rw-r--r--@ 1 kahrens  staff    4985 Oct 15 21:18 cs_pystacked_options.do
+-rw-r--r--@ 1 kahrens  staff   15304 Oct 26 11:18 cs_pystacked_reg.do
+-rw-r--r--@ 1 kahrens  staff     676 Oct 24 13:52 cs_pystacked_runall.do
+-rw-r--r--@ 1 kahrens  staff   26710 Oct 26 09:20 cs_pystacked_runall.log
+-rw-r--r--@ 1 kahrens  staff   61885 Oct 24 12:45 log_cs_pystacked_130.txt
+-rw-r--r--@ 1 kahrens  staff   61885 Oct 24 12:45 log_cs_pystacked_132.txt
+-rw-r--r--@ 1 kahrens  staff  138233 Oct 15 21:18 log_cs_pystacked_140.txt
+-rw-r--r--@ 1 kahrens  staff  138231 Oct 15 21:18 log_cs_pystacked_142.txt
+-rw-r--r--@ 1 kahrens  staff  138231 Oct 15 21:18 log_cs_pystacked_152.txt
+-rw-r--r--@ 1 kahrens  staff  138231 Oct 15 21:18 log_cs_pystacked_160.txt
+-rw-r--r--  1 kahrens  staff     842 Oct 26 11:19 log_cs_pystacked_170.txt
+-rw-r--r--@ 1 kahrens  staff  139143 Oct 23 22:41 log_cs_pystacked_172.txt
+-rw-r--r--@ 1 kahrens  staff     742 Oct 24 11:19 run_cert.sh
+
+. do "/var/folders/41/ld3ks1hx60513_z47fz5n33m0000gq/T//SD18978.000000"
+
+. clear all
+
+. use ../Data/cal_housing.dta, clear
+file ../Data/cal_housing.dta not found
+r(601);
+
+end of do-file
+
+r(601);
+
+. do "/var/folders/41/ld3ks1hx60513_z47fz5n33m0000gq/T//SD18978.000000"
+
+. use ../data/cal_housing.dta, clear
+file ../data/cal_housing.dta not found
+r(601);
+
+end of do-file
+
+r(601);
+
+. dir
+
+total 1760
+-rw-r--r--@ 1 kahrens  staff    7472 Oct 15 21:18 cs_pystacked_class.do
+-rw-r--r--@ 1 kahrens  staff    4985 Oct 15 21:18 cs_pystacked_options.do
+-rw-r--r--@ 1 kahrens  staff   15304 Oct 26 11:18 cs_pystacked_reg.do
+-rw-r--r--@ 1 kahrens  staff     676 Oct 24 13:52 cs_pystacked_runall.do
+-rw-r--r--@ 1 kahrens  staff   26710 Oct 26 09:20 cs_pystacked_runall.log
+-rw-r--r--@ 1 kahrens  staff   61885 Oct 24 12:45 log_cs_pystacked_130.txt
+-rw-r--r--@ 1 kahrens  staff   61885 Oct 24 12:45 log_cs_pystacked_132.txt
+-rw-r--r--@ 1 kahrens  staff  138233 Oct 15 21:18 log_cs_pystacked_140.txt
+-rw-r--r--@ 1 kahrens  staff  138231 Oct 15 21:18 log_cs_pystacked_142.txt
+-rw-r--r--@ 1 kahrens  staff  138231 Oct 15 21:18 log_cs_pystacked_152.txt
+-rw-r--r--@ 1 kahrens  staff  138231 Oct 15 21:18 log_cs_pystacked_160.txt
+-rw-r--r--  1 kahrens  staff    2265 Oct 26 11:20 log_cs_pystacked_170.txt
+-rw-r--r--@ 1 kahrens  staff  139143 Oct 23 22:41 log_cs_pystacked_172.txt
+-rw-r--r--@ 1 kahrens  staff     742 Oct 24 11:19 run_cert.sh
+
+. https://statalasso.github.io/dta/cal_housing.dta, clear
+command https is unrecognized
+r(199);
+
+. do "/var/folders/41/ld3ks1hx60513_z47fz5n33m0000gq/T//SD18978.000000"
+
+. use https://statalasso.github.io/dta/cal_housing.dta, clear
+
+. 
+end of do-file
+
+. save cal_housing.dta
+file cal_housing.dta saved
+
+. do "/var/folders/41/ld3ks1hx60513_z47fz5n33m0000gq/T//SD18978.000000"
+
+. use ../data/cal_housing.dta, clear
+file ../data/cal_housing.dta not found
+r(601);
+
+end of do-file
+
+r(601);
+
+. dir
+
+total 2944
+-rw-r--r--  1 kahrens  staff  604875 Oct 26 11:20 cal_housing.dta
+-rw-r--r--@ 1 kahrens  staff    7472 Oct 15 21:18 cs_pystacked_class.do
+-rw-r--r--@ 1 kahrens  staff    4985 Oct 15 21:18 cs_pystacked_options.do
+-rw-r--r--@ 1 kahrens  staff   15304 Oct 26 11:18 cs_pystacked_reg.do
+-rw-r--r--@ 1 kahrens  staff     676 Oct 24 13:52 cs_pystacked_runall.do
+-rw-r--r--@ 1 kahrens  staff   26710 Oct 26 09:20 cs_pystacked_runall.log
+-rw-r--r--@ 1 kahrens  staff   61885 Oct 24 12:45 log_cs_pystacked_130.txt
+-rw-r--r--@ 1 kahrens  staff   61885 Oct 24 12:45 log_cs_pystacked_132.txt
+-rw-r--r--@ 1 kahrens  staff  138233 Oct 15 21:18 log_cs_pystacked_140.txt
+-rw-r--r--@ 1 kahrens  staff  138231 Oct 15 21:18 log_cs_pystacked_142.txt
+-rw-r--r--@ 1 kahrens  staff  138231 Oct 15 21:18 log_cs_pystacked_152.txt
+-rw-r--r--@ 1 kahrens  staff  138231 Oct 15 21:18 log_cs_pystacked_160.txt
+-rw-r--r--  1 kahrens  staff    3795 Oct 26 11:20 log_cs_pystacked_170.txt
+-rw-r--r--@ 1 kahrens  staff  139143 Oct 23 22:41 log_cs_pystacked_172.txt
+-rw-r--r--@ 1 kahrens  staff     742 Oct 24 11:19 run_cert.sh
+
+. do "/var/folders/41/ld3ks1hx60513_z47fz5n33m0000gq/T//SD18978.000000"
+
+. use ../data/cal_housing.dta, clear
+
+. 
+end of do-file
+
+. do "/var/folders/41/ld3ks1hx60513_z47fz5n33m0000gq/T//SD18978.000000"
+
+. insheet using "../data/prostate.data", tab clear
+(11 vars, 97 obs)
+
+. 
+end of do-file
+
+. do "/var/folders/41/ld3ks1hx60513_z47fz5n33m0000gq/T//SD18978.000000"
+
+. insheet using ../data/housing.csv, clear
+(14 vars, 506 obs)
+
+. 
+end of do-file
+
+. do "/var/folders/41/ld3ks1hx60513_z47fz5n33m0000gq/T//SD18978.000000"
+
+. insheet using ../data/prostate.data,  tab clear
+(11 vars, 97 obs)
+
+. 
+end of do-file
+
+. do "/var/folders/41/ld3ks1hx60513_z47fz5n33m0000gq/T//SD18978.000000"
 
 . 
 . which pystacked 
 /Users/kahrens/MyProjects/pystacked/pystacked.ado
-*! pystacked v0.7.8e
-*! last edited: 23oct2025
+*! pystacked v0.7.9
+*! last edited: 26oct2025
 *! authors: aa/ms
 *! pystacked wrapper - calls pystacked1 (default) or pystacked2 (altpython option)
 
@@ -18,355 +177,4111 @@
 '1.3.0'
 
 . 
-. do "cs_pystacked_class.do"
-
-. 
-. 
-. which pystacked 
-/Users/kahrens/MyProjects/pystacked/pystacked.ado
-*! pystacked v0.7.8e
-*! last edited: 23oct2025
-*! authors: aa/ms
-*! pystacked wrapper - calls pystacked1 (default) or pystacked2 (altpython option)
-
-. python: import sklearn
-
-. python: sklearn.__version__
-'1.3.0'
-
-. 
-. tempfile testdata
-
-. set seed 765
-
-. global model v58 v1-v30
-
-. insheet using https://archive.ics.uci.edu/ml/machine-learning-databases/spambase/spambase.data, clear comma
-(58 vars, 4,601 obs)
-
-. sample 15
-(3,911 observations deleted)
-
-. gen u = runiform()
-
-. gen train = u<0.5
-
-. gen train2 = u<.75
-
-. save `testdata'
-file /var/folders/41/ld3ks1hx60513_z47fz5n33m0000gq/T//S_17411.000001 saved as .dta format
+. global xvars crim-lstat
 
 . 
 . *******************************************************************************
 . *** check that it works without default methods                                                         ***
 . *******************************************************************************
 . 
-.  insheet using ///
->  https://archive.ics.uci.edu/ml/machine-learning-databases/spambase/spambase.data, ///
->  clear comma
-(58 vars, 4,601 obs)
+. clear all
+
+. use ../data/cal_housing.dta, clear
 
 . set seed 42
 
-. gen train=runiform()
+. pystacked medh longi-medi 
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/Users/kahrens/MyProjects/pystacked/pystacked.py", line 644, in run_stacked
+    print(Tx)
+          ^^
+UnboundLocalError: cannot access local variable 'Tx' where it is not associated with a value
+r(7102);
 
-. replace train=train<.75
-(4,601 real changes made)
+end of do-file
 
-.  pystacked v58 v1-v57 , type(class)
+r(7102);
 
-Stacking weights:
----------------------------------------
-  Method         |      Weight
------------------+---------------------
-  logit          |      0.1309122
-  lassocv        |      0.0000000
-  gradboost      |      0.8690878
+. set trace on
 
-. 
-.  
-. *******************************************************************************
-. *** check that printing the coefficients works                                                          ***
-. *******************************************************************************
-. 
-.  insheet using ///
->  https://archive.ics.uci.edu/ml/machine-learning-databases/spambase/spambase.data, ///
->  clear comma
-(58 vars, 4,601 obs)
+. do "/var/folders/41/ld3ks1hx60513_z47fz5n33m0000gq/T//SD18978.000000"
 
-. set seed 42
+. pystacked medh longi-medi 
+  --------------------------------------------------------------------------------------------------------------------------------- begin pystacked ---
+  - tokenize `"`0'"', parse(",")
+  = tokenize `"medh longi-medi"', parse(",")
+  - local beforecomma `1'
+  = local beforecomma medh longi-medi
+  - if "`beforecomma'"=="," | "`beforecomma'"=="" {
+  = if "medh longi-medi"=="," | "medh longi-medi"=="" {
+    local altpython = ("`e(altpython)'"=="altpython")
+    }
+  - else {
+  - local aftercomma `3'
+  = local aftercomma 
+  - local altpython : list posof "altpython" in aftercomma
+  - }
+  - if `altpython' {
+  = if 0 {
+    pystacked2 `0'
+    }
+  - else {
+  - pystacked1 `0'
+  = pystacked1 medh longi-medi
+    ------------------------------------------------------------------------------------------------------------------------------ begin pystacked1 ---
+    - version 16.0
+    - tokenize `"`0'"', parse(",")
+    = tokenize `"medh longi-medi"', parse(",")
+    - local beforecomma `1'
+    = local beforecomma medh longi-medi
+    - macro shift
+    - local restargs `*'
+    = local restargs 
+    - local printopt_on = strpos("`restargs'","print")!=0
+    = local printopt_on = strpos("","print")!=0
+    - if ~replay() {
+    - python clear
+    - pystacked_check_python
+      ----------------------------------------------------------------------------------------------------- begin pystacked1.pystacked_check_python ---
+      - qui {
+      - cap python query
+      - if _rc == 0 {
+      - cap python which numpy
+      - local HasNumpy = _rc
+      - cap python which scipy
+      - local HasScipy = _rc
+      - cap python which sfi
+      - local HasSfi = _rc
+      - cap python which sklearn
+      - local HasSkl = _rc
+      - if `=`HasNumpy'+`HasSfi'+`HasScipy'+`HasSkl'' > 0 {
+      = if 0 > 0 {
+        noi disp as smcl "{cmd:pystacked} option {it:python} requires the following Python packages:"
+        if `HasNumpy' != 0 noi disp "  numpy"
+        if `HasScipy' != 0 noi disp "  scipy"
+        if `HasSfi' != 0 noi disp "  sfi"
+        if `HasSkl' != 0 noi disp "  sklearn"
+        noi disp "Please install them before using the option {it:pystacked}."
+        }
+      - }
+      - else {
+        noi disp as error "Error loading Python."
+        error 199
+        }
+      - }
+      ------------------------------------------------------------------------------------------------------- end pystacked1.pystacked_check_python ---
+    - qui findfile pystacked.py
+      ------------------------------------------------------------------------------------------------------------------------------ begin findfile ---
+      - version 8
+      - gettoken fn 0 : 0, parse(" ,")
+      - syntax [, ALL noDEScend PATH(string)]
+      - if `"`path'"'=="" {
+      = if `""'=="" {
+      - local path `"`c(adopath)'"'
+      = local path `"BASE;SITE;.;PERSONAL;PLUS;OLDPLACE;`"/Users/kahrens/MyProjects/pystacked"'"'
+      - }
+      - local n 0
+      - local subdir : adosubdir `"`fn'"'
+      = local subdir : adosubdir `"pystacked.py"'
+      - if `"`subdir'"' != "" {
+      = if `"py"' != "" {
+      - gettoken d path : path, parse(";")
+      - while `"`d'"'!="" {
+      = while `"BASE"'!="" {
+      - if `"`d'"' != ";" {
+      = if `"BASE"' != ";" {
+      - local d : sysdir `"`d'"'
+      = local d : sysdir `"BASE"'
+      - local ffn `"`d'`fn'"'
+      = local ffn `"/Applications/StataNow/ado/base/pystacked.py"'
+      - capture confirm file `"`ffn'"'
+      = capture confirm file `"/Applications/StataNow/ado/base/pystacked.py"'
+      - if _rc==0 {
+        di as txt `"`ffn'"'
+        if "`all'"=="" {
+        ret local fn `"`ffn'"'
+        exit
+        }
+        if `n' {
+        ret local fn `"`return(fn)' "`ffn'""'
+        }
+        else ret local fn `""`ffn'""'
+        local n 1
+        }
+      - if "`descend'"=="" {
+      = if ""=="" {
+      - local ffn `"`d'`subdir'`c(dirsep)'`fn'"'
+      = local ffn `"/Applications/StataNow/ado/base/py/pystacked.py"'
+      - capture confirm file `"`ffn'"'
+      = capture confirm file `"/Applications/StataNow/ado/base/py/pystacked.py"'
+      - if _rc==0 {
+        di as txt `"`ffn'"'
+        if "`all'"=="" {
+        ret local fn `"`ffn'"'
+        exit
+        }
+        if `n' {
+        ret local fn `"`return(fn)' "`ffn'""'
+        }
+        else ret local fn `"`ffn'"'
+        local n 1
+        }
+      - }
+      - }
+      - gettoken d path : path, parse(" ;")
+      - }
+      - while `"`d'"'!="" {
+      = while `";"'!="" {
+      - if `"`d'"' != ";" {
+      = if `";"' != ";" {
+        local d : sysdir `"`d'"'
+        local ffn `"`d'`fn'"'
+        capture confirm file `"`ffn'"'
+        if _rc==0 {
+        di as txt `"`ffn'"'
+        if "`all'"=="" {
+        ret local fn `"`ffn'"'
+        exit
+        }
+        if `n' {
+        ret local fn `"`return(fn)' "`ffn'""'
+        }
+        else ret local fn `""`ffn'""'
+        local n 1
+        }
+        if "`descend'"=="" {
+        local ffn `"`d'`subdir'`c(dirsep)'`fn'"'
+        capture confirm file `"`ffn'"'
+        if _rc==0 {
+        di as txt `"`ffn'"'
+        if "`all'"=="" {
+        ret local fn `"`ffn'"'
+        exit
+        }
+        if `n' {
+        ret local fn `"`return(fn)' "`ffn'""'
+        }
+        else ret local fn `"`ffn'"'
+        local n 1
+        }
+        }
+        }
+      - gettoken d path : path, parse(" ;")
+      - }
+      - while `"`d'"'!="" {
+      = while `"SITE"'!="" {
+      - if `"`d'"' != ";" {
+      = if `"SITE"' != ";" {
+      - local d : sysdir `"`d'"'
+      = local d : sysdir `"SITE"'
+      - local ffn `"`d'`fn'"'
+      = local ffn `"/Applications/StataNow/ado/site/pystacked.py"'
+      - capture confirm file `"`ffn'"'
+      = capture confirm file `"/Applications/StataNow/ado/site/pystacked.py"'
+      - if _rc==0 {
+        di as txt `"`ffn'"'
+        if "`all'"=="" {
+        ret local fn `"`ffn'"'
+        exit
+        }
+        if `n' {
+        ret local fn `"`return(fn)' "`ffn'""'
+        }
+        else ret local fn `""`ffn'""'
+        local n 1
+        }
+      - if "`descend'"=="" {
+      = if ""=="" {
+      - local ffn `"`d'`subdir'`c(dirsep)'`fn'"'
+      = local ffn `"/Applications/StataNow/ado/site/py/pystacked.py"'
+      - capture confirm file `"`ffn'"'
+      = capture confirm file `"/Applications/StataNow/ado/site/py/pystacked.py"'
+      - if _rc==0 {
+        di as txt `"`ffn'"'
+        if "`all'"=="" {
+        ret local fn `"`ffn'"'
+        exit
+        }
+        if `n' {
+        ret local fn `"`return(fn)' "`ffn'""'
+        }
+        else ret local fn `"`ffn'"'
+        local n 1
+        }
+      - }
+      - }
+      - gettoken d path : path, parse(" ;")
+      - }
+      - while `"`d'"'!="" {
+      = while `";"'!="" {
+      - if `"`d'"' != ";" {
+      = if `";"' != ";" {
+        local d : sysdir `"`d'"'
+        local ffn `"`d'`fn'"'
+        capture confirm file `"`ffn'"'
+        if _rc==0 {
+        di as txt `"`ffn'"'
+        if "`all'"=="" {
+        ret local fn `"`ffn'"'
+        exit
+        }
+        if `n' {
+        ret local fn `"`return(fn)' "`ffn'""'
+        }
+        else ret local fn `""`ffn'""'
+        local n 1
+        }
+        if "`descend'"=="" {
+        local ffn `"`d'`subdir'`c(dirsep)'`fn'"'
+        capture confirm file `"`ffn'"'
+        if _rc==0 {
+        di as txt `"`ffn'"'
+        if "`all'"=="" {
+        ret local fn `"`ffn'"'
+        exit
+        }
+        if `n' {
+        ret local fn `"`return(fn)' "`ffn'""'
+        }
+        else ret local fn `"`ffn'"'
+        local n 1
+        }
+        }
+        }
+      - gettoken d path : path, parse(" ;")
+      - }
+      - while `"`d'"'!="" {
+      = while `"."'!="" {
+      - if `"`d'"' != ";" {
+      = if `"."' != ";" {
+      - local d : sysdir `"`d'"'
+      = local d : sysdir `"."'
+      - local ffn `"`d'`fn'"'
+      = local ffn `"./pystacked.py"'
+      - capture confirm file `"`ffn'"'
+      = capture confirm file `"./pystacked.py"'
+      - if _rc==0 {
+        di as txt `"`ffn'"'
+        if "`all'"=="" {
+        ret local fn `"`ffn'"'
+        exit
+        }
+        if `n' {
+        ret local fn `"`return(fn)' "`ffn'""'
+        }
+        else ret local fn `""`ffn'""'
+        local n 1
+        }
+      - if "`descend'"=="" {
+      = if ""=="" {
+      - local ffn `"`d'`subdir'`c(dirsep)'`fn'"'
+      = local ffn `"./py/pystacked.py"'
+      - capture confirm file `"`ffn'"'
+      = capture confirm file `"./py/pystacked.py"'
+      - if _rc==0 {
+        di as txt `"`ffn'"'
+        if "`all'"=="" {
+        ret local fn `"`ffn'"'
+        exit
+        }
+        if `n' {
+        ret local fn `"`return(fn)' "`ffn'""'
+        }
+        else ret local fn `"`ffn'"'
+        local n 1
+        }
+      - }
+      - }
+      - gettoken d path : path, parse(" ;")
+      - }
+      - while `"`d'"'!="" {
+      = while `";"'!="" {
+      - if `"`d'"' != ";" {
+      = if `";"' != ";" {
+        local d : sysdir `"`d'"'
+        local ffn `"`d'`fn'"'
+        capture confirm file `"`ffn'"'
+        if _rc==0 {
+        di as txt `"`ffn'"'
+        if "`all'"=="" {
+        ret local fn `"`ffn'"'
+        exit
+        }
+        if `n' {
+        ret local fn `"`return(fn)' "`ffn'""'
+        }
+        else ret local fn `""`ffn'""'
+        local n 1
+        }
+        if "`descend'"=="" {
+        local ffn `"`d'`subdir'`c(dirsep)'`fn'"'
+        capture confirm file `"`ffn'"'
+        if _rc==0 {
+        di as txt `"`ffn'"'
+        if "`all'"=="" {
+        ret local fn `"`ffn'"'
+        exit
+        }
+        if `n' {
+        ret local fn `"`return(fn)' "`ffn'""'
+        }
+        else ret local fn `"`ffn'"'
+        local n 1
+        }
+        }
+        }
+      - gettoken d path : path, parse(" ;")
+      - }
+      - while `"`d'"'!="" {
+      = while `"PERSONAL"'!="" {
+      - if `"`d'"' != ";" {
+      = if `"PERSONAL"' != ";" {
+      - local d : sysdir `"`d'"'
+      = local d : sysdir `"PERSONAL"'
+      - local ffn `"`d'`fn'"'
+      = local ffn `"/Users/kahrens/Documents/Stata/ado/personal/pystacked.py"'
+      - capture confirm file `"`ffn'"'
+      = capture confirm file `"/Users/kahrens/Documents/Stata/ado/personal/pystacked.py"'
+      - if _rc==0 {
+        di as txt `"`ffn'"'
+        if "`all'"=="" {
+        ret local fn `"`ffn'"'
+        exit
+        }
+        if `n' {
+        ret local fn `"`return(fn)' "`ffn'""'
+        }
+        else ret local fn `""`ffn'""'
+        local n 1
+        }
+      - if "`descend'"=="" {
+      = if ""=="" {
+      - local ffn `"`d'`subdir'`c(dirsep)'`fn'"'
+      = local ffn `"/Users/kahrens/Documents/Stata/ado/personal/py/pystacked.py"'
+      - capture confirm file `"`ffn'"'
+      = capture confirm file `"/Users/kahrens/Documents/Stata/ado/personal/py/pystacked.py"'
+      - if _rc==0 {
+        di as txt `"`ffn'"'
+        if "`all'"=="" {
+        ret local fn `"`ffn'"'
+        exit
+        }
+        if `n' {
+        ret local fn `"`return(fn)' "`ffn'""'
+        }
+        else ret local fn `"`ffn'"'
+        local n 1
+        }
+      - }
+      - }
+      - gettoken d path : path, parse(" ;")
+      - }
+      - while `"`d'"'!="" {
+      = while `";"'!="" {
+      - if `"`d'"' != ";" {
+      = if `";"' != ";" {
+        local d : sysdir `"`d'"'
+        local ffn `"`d'`fn'"'
+        capture confirm file `"`ffn'"'
+        if _rc==0 {
+        di as txt `"`ffn'"'
+        if "`all'"=="" {
+        ret local fn `"`ffn'"'
+        exit
+        }
+        if `n' {
+        ret local fn `"`return(fn)' "`ffn'""'
+        }
+        else ret local fn `""`ffn'""'
+        local n 1
+        }
+        if "`descend'"=="" {
+        local ffn `"`d'`subdir'`c(dirsep)'`fn'"'
+        capture confirm file `"`ffn'"'
+        if _rc==0 {
+        di as txt `"`ffn'"'
+        if "`all'"=="" {
+        ret local fn `"`ffn'"'
+        exit
+        }
+        if `n' {
+        ret local fn `"`return(fn)' "`ffn'""'
+        }
+        else ret local fn `"`ffn'"'
+        local n 1
+        }
+        }
+        }
+      - gettoken d path : path, parse(" ;")
+      - }
+      - while `"`d'"'!="" {
+      = while `"PLUS"'!="" {
+      - if `"`d'"' != ";" {
+      = if `"PLUS"' != ";" {
+      - local d : sysdir `"`d'"'
+      = local d : sysdir `"PLUS"'
+      - local ffn `"`d'`fn'"'
+      = local ffn `"/Users/kahrens/Library/Application Support/Stata/ado/plus/pystacked.py"'
+      - capture confirm file `"`ffn'"'
+      = capture confirm file `"/Users/kahrens/Library/Application Support/Stata/ado/plus/pystacked.py"'
+      - if _rc==0 {
+        di as txt `"`ffn'"'
+        if "`all'"=="" {
+        ret local fn `"`ffn'"'
+        exit
+        }
+        if `n' {
+        ret local fn `"`return(fn)' "`ffn'""'
+        }
+        else ret local fn `""`ffn'""'
+        local n 1
+        }
+      - if "`descend'"=="" {
+      = if ""=="" {
+      - local ffn `"`d'`subdir'`c(dirsep)'`fn'"'
+      = local ffn `"/Users/kahrens/Library/Application Support/Stata/ado/plus/py/pystacked.py"'
+      - capture confirm file `"`ffn'"'
+      = capture confirm file `"/Users/kahrens/Library/Application Support/Stata/ado/plus/py/pystacked.py"'
+      - if _rc==0 {
+        di as txt `"`ffn'"'
+        if "`all'"=="" {
+        ret local fn `"`ffn'"'
+        exit
+        }
+        if `n' {
+        ret local fn `"`return(fn)' "`ffn'""'
+        }
+        else ret local fn `"`ffn'"'
+        local n 1
+        }
+      - }
+      - }
+      - gettoken d path : path, parse(" ;")
+      - }
+      - while `"`d'"'!="" {
+      = while `";"'!="" {
+      - if `"`d'"' != ";" {
+      = if `";"' != ";" {
+        local d : sysdir `"`d'"'
+        local ffn `"`d'`fn'"'
+        capture confirm file `"`ffn'"'
+        if _rc==0 {
+        di as txt `"`ffn'"'
+        if "`all'"=="" {
+        ret local fn `"`ffn'"'
+        exit
+        }
+        if `n' {
+        ret local fn `"`return(fn)' "`ffn'""'
+        }
+        else ret local fn `""`ffn'""'
+        local n 1
+        }
+        if "`descend'"=="" {
+        local ffn `"`d'`subdir'`c(dirsep)'`fn'"'
+        capture confirm file `"`ffn'"'
+        if _rc==0 {
+        di as txt `"`ffn'"'
+        if "`all'"=="" {
+        ret local fn `"`ffn'"'
+        exit
+        }
+        if `n' {
+        ret local fn `"`return(fn)' "`ffn'""'
+        }
+        else ret local fn `"`ffn'"'
+        local n 1
+        }
+        }
+        }
+      - gettoken d path : path, parse(" ;")
+      - }
+      - while `"`d'"'!="" {
+      = while `"OLDPLACE"'!="" {
+      - if `"`d'"' != ";" {
+      = if `"OLDPLACE"' != ";" {
+      - local d : sysdir `"`d'"'
+      = local d : sysdir `"OLDPLACE"'
+      - local ffn `"`d'`fn'"'
+      = local ffn `"~/ado/pystacked.py"'
+      - capture confirm file `"`ffn'"'
+      = capture confirm file `"~/ado/pystacked.py"'
+      - if _rc==0 {
+        di as txt `"`ffn'"'
+        if "`all'"=="" {
+        ret local fn `"`ffn'"'
+        exit
+        }
+        if `n' {
+        ret local fn `"`return(fn)' "`ffn'""'
+        }
+        else ret local fn `""`ffn'""'
+        local n 1
+        }
+      - if "`descend'"=="" {
+      = if ""=="" {
+      - local ffn `"`d'`subdir'`c(dirsep)'`fn'"'
+      = local ffn `"~/ado/py/pystacked.py"'
+      - capture confirm file `"`ffn'"'
+      = capture confirm file `"~/ado/py/pystacked.py"'
+      - if _rc==0 {
+        di as txt `"`ffn'"'
+        if "`all'"=="" {
+        ret local fn `"`ffn'"'
+        exit
+        }
+        if `n' {
+        ret local fn `"`return(fn)' "`ffn'""'
+        }
+        else ret local fn `"`ffn'"'
+        local n 1
+        }
+      - }
+      - }
+      - gettoken d path : path, parse(" ;")
+      - }
+      - while `"`d'"'!="" {
+      = while `";"'!="" {
+      - if `"`d'"' != ";" {
+      = if `";"' != ";" {
+        local d : sysdir `"`d'"'
+        local ffn `"`d'`fn'"'
+        capture confirm file `"`ffn'"'
+        if _rc==0 {
+        di as txt `"`ffn'"'
+        if "`all'"=="" {
+        ret local fn `"`ffn'"'
+        exit
+        }
+        if `n' {
+        ret local fn `"`return(fn)' "`ffn'""'
+        }
+        else ret local fn `""`ffn'""'
+        local n 1
+        }
+        if "`descend'"=="" {
+        local ffn `"`d'`subdir'`c(dirsep)'`fn'"'
+        capture confirm file `"`ffn'"'
+        if _rc==0 {
+        di as txt `"`ffn'"'
+        if "`all'"=="" {
+        ret local fn `"`ffn'"'
+        exit
+        }
+        if `n' {
+        ret local fn `"`return(fn)' "`ffn'""'
+        }
+        else ret local fn `"`ffn'"'
+        local n 1
+        }
+        }
+        }
+      - gettoken d path : path, parse(" ;")
+      - }
+      - while `"`d'"'!="" {
+      = while `"/Users/kahrens/MyProjects/pystacked"'!="" {
+      - if `"`d'"' != ";" {
+      = if `"/Users/kahrens/MyProjects/pystacked"' != ";" {
+      - local d : sysdir `"`d'"'
+      = local d : sysdir `"/Users/kahrens/MyProjects/pystacked"'
+      - local ffn `"`d'`fn'"'
+      = local ffn `"/Users/kahrens/MyProjects/pystacked/pystacked.py"'
+      - capture confirm file `"`ffn'"'
+      = capture confirm file `"/Users/kahrens/MyProjects/pystacked/pystacked.py"'
+      - if _rc==0 {
+      - di as txt `"`ffn'"'
+      = di as txt `"/Users/kahrens/MyProjects/pystacked/pystacked.py"'
+      - if "`all'"=="" {
+      = if ""=="" {
+      - ret local fn `"`ffn'"'
+      = ret local fn `"/Users/kahrens/MyProjects/pystacked/pystacked.py"'
+      - exit
+      -------------------------------------------------------------------------------------------------------------------------------- end findfile ---
+    - cap python script "`r(fn)'", global
+    = cap python script "/Users/kahrens/MyProjects/pystacked/pystacked.py", global
+    - if _rc != 0 {
+      noi disp "Error loading Python Script for pystacked."
+      error 199
+      }
+    - python: from pystacked import *
+    - _pystacked `0'
+    = _pystacked medh longi-medi
+      ----------------------------------------------------------------------------------------------------------------- begin pystacked1._pystacked ---
+      - version 16.0
+      - tokenize "`0'", parse(",")
+      = tokenize "medh longi-medi", parse(",")
+      - local beforecomma `1'
+      = local beforecomma medh longi-medi
+      - macro shift
+      - local restargs `*'
+      = local restargs 
+      - local 0 `beforecomma'
+      = local 0 medh longi-medi
+      - syntax anything(name=beforeifinweight) [if] [in] [aweight fweight]
+      - if "`weight'"!="" {
+      = if ""!="" {
+        local ifinweight `if' `in' [`weight' `exp']
+        }
+      - else {
+      - local ifinweight `if' `in' `weight' `exp'
+      = local ifinweight    
+      - }
+      - tokenize `beforeifinweight', parse("|")
+      = tokenize medh longi-medi, parse("|")
+      - local mainargs `1'
+      = local mainargs medh longi-medi
+      - local 0 `mainargs' `ifinweight' `restargs'
+      = local 0 medh longi-medi  
+      - local doublebarsyntax = ("`2'"=="|")*("`3'"=="|")
+      = local doublebarsyntax = (""=="|")*(""=="|")
+      - if `doublebarsyntax'==0 {
+      = if 0==0 {
+      - syntax varlist(min=2 fv) [if] [in] [aweight fweight] [, Methods(string) TYpe(string) *]
+      - if ("`type'"=="") {
+      = if (""=="") {
+      - local type reg
+      - local typeopt type(reg)
+      - }
+      - if ("`methods'"=="") {
+      = if (""=="") {
+      - if (substr("`type'",1,5)=="class") {
+      = if (substr("reg",1,5)=="class") {
+        local methods logit lassocv gradboost
+        }
+      - else {
+      - local methods ols lassocv gradboost
+      - }
+      - local methodsopt methods(`methods')
+      = local methodsopt methods(ols lassocv gradboost)
+      - }
+      - forv i = 1/`:list sizeof methods' {
+      = forv i = 1/3 {
+      - local numopts `numopts' cmdopt`i'(string asis) pipe`i'(string asis) xvars`i'(varlist fv)
+      = local numopts  cmdopt1(string asis) pipe1(string asis) xvars1(varlist fv)
+      - }
+      - local numopts `numopts' cmdopt`i'(string asis) pipe`i'(string asis) xvars`i'(varlist fv)
+      = local numopts cmdopt1(string asis) pipe1(string asis) xvars1(varlist fv) cmdopt2(string asis) pipe2(string asis) xvars2(varlist fv)
+      - }
+      - local numopts `numopts' cmdopt`i'(string asis) pipe`i'(string asis) xvars`i'(varlist fv)
+      = local numopts cmdopt1(string asis) pipe1(string asis) xvars1(varlist fv) cmdopt2(string asis) pipe2(string asis) xvars2(varlist fv) cmdopt3(str
+> ing asis) pipe3(string asis) xvars3(varlist fv)
+      - }
+      - }
+      - syntax varlist(min=2 fv) [if] [in] [aweight fweight], [*]
+      - local globalopt `options'
+      = local globalopt 
+      - syntax varlist(min=2 fv) [if] [in] [aweight fweight], [ TYpe(string) FINALest(string) NJobs(int 0) CV Folds(int 5) FOLDVar(varname) PREFit BFol
+> ds(int 5) NORANDOM NOSHUFFLE PYSeed(integer -1) PRINTopt NOSAVEPred NOSAVETransform NOSAVEBasexb VOTing VOTEType(string) VOTEWeights(numlist >0) debu
+> g Methods(string) `numopts' SHOWPymessages backend(string) CVC1 cvc(integer 500) altpython GRAPH1 HISTogram graph(string asis) lgraph(string asis) TA
+> Ble HOLDOUT1 holdout(varname) CValid SHOWCoefs SParse SHOWOPTions NOESTIMATE ]
+      = syntax varlist(min=2 fv) [if] [in] [aweight fweight], [ TYpe(string) FINALest(string) NJobs(int 0) CV Folds(int 5) FOLDVar(varname) PREFit BFol
+> ds(int 5) NORANDOM NOSHUFFLE PYSeed(integer -1) PRINTopt NOSAVEPred NOSAVETransform NOSAVEBasexb VOTing VOTEType(string) VOTEWeights(numlist >0) debu
+> g Methods(string) cmdopt1(string asis) pipe1(string asis) xvars1(varlist fv) cmdopt2(string asis) pipe2(string asis) xvars2(varlist fv) cmdopt3(strin
+> g asis) pipe3(string asis) xvars3(varlist fv) SHOWPymessages backend(string) CVC1 cvc(integer 500) altpython GRAPH1 HISTogram graph(string asis) lgra
+> ph(string asis) TABle HOLDOUT1 holdout(varname) CValid SHOWCoefs SParse SHOWOPTions NOESTIMATE ]
+      - if `"`methods'"'=="" local methods `methods0'
+      = if `""'=="" local methods 
+      - if "`printopt'"!="" {
+      = if ""!="" {
+        local noestimate noestimate
+        }
+      - if ("`exp'"!="") {
+      = if (""!="") {
+        tempvar wvar
+        local wvar_t = subinstr("`exp'","=","",.)
+        local wvar_t = subinstr("`wvar_t'"," ","",.)
+        gen `wvar'=`wvar_t'
+        }
+      - if "`type'"=="" local type reg
+      = if ""=="" local type reg
+      - if substr("`type'",1,3)=="reg" {
+      = if substr("reg",1,3)=="reg" {
+      - local type reg
+      - }
+      - else if substr("`type'",1,5)=="class" {
+      = else if substr("reg",1,5)=="class" {
+        local type class
+        }
+      - else {
+        di as err "type(`type') not recognized"
+        exit 198
+        }
+      - if ("`methods'"=="") {
+      = if (""=="") {
+      - if ("`type'"=="class") {
+      = if ("reg"=="class") {
+        local methods logit lassocv gradboost
+        }
+      - else {
+      - local methods ols lassocv gradboost
+      - }
+      - local methodsopt methods(`methods')
+      = local methodsopt methods(ols lassocv gradboost)
+      - }
+      - if `pyseed'<0 & "`noestimate'"=="" {
+      = if -1<0 & ""=="" {
+      - local pyseed = round(runiform()*10^8)
+      - }
+      - if "`finalest'"=="" {
+      = if ""=="" {
+      - local finalest nnls1
+      - }
+      - if "`nosavetransform'"~="" {
+      = if ""~="" {
+        local nosavebasexb nosavebasexb
+        local nosavetransform
+        }
+      - if "`backend'"=="" local backend threading
+      = if ""=="" local backend threading
+      - if "`backend'"!="loky"&"`backend'"!="multiprocessing"&"`backend'"!="threading" {
+      = if "threading"!="loky"&"threading"!="multiprocessing"&"threading"!="threading" {
+        di as err "backend not supported"
+        exit 198
+        }
+      - if "`votetype'"!="" {
+      = if ""!="" {
+        local voting voting
+        }
+      - if "`voteweights'"!="" {
+      = if ""!="" {
+        local voting voting
+        }
+      - if "`voting'"!="" {
+      = if ""!="" {
+        if "`votetype'"=="" {
+        local votetype hard
+        }
+        else if "`votetype'"!="hard"&"`votetype'"!="soft" {
+        di as error "votetype(`votetype') not allowed"
+        error 198
+        }
+        }
+      - python: from sklearn import __version__ as sklearn_version
+      - python: sfi.Macro.setLocal("sklearn_ver1",format(sklearn_version).split(".")[0])
+      - python: sfi.Macro.setLocal("sklearn_ver2",format(sklearn_version).split(".")[1])
+      - cap python: sfi.Macro.setLocal("sklearn_ver3",format(sklearn_version).split(".")[2])
+      - if ("`sklearn_ver3'"=="") local sklearn_ver3 = 0
+      = if ("0"=="") local sklearn_ver3 = 0
+      - marksample touse
+      - markout `touse' `varlist' `wvar'
+      = markout __000000 medhousevalue longitude latitude houseage rooms bedrooms population households medinc 
+      - cap confirm variable `foldvar'
+      = cap confirm variable 
+      - if _rc>0 {
+      - tempvar uni cuni fid
+      - if "`norandom'"~="" | "`noestimate'"!="" {
+      = if ""~="" | ""!="" {
+        qui gen `uni' = _n
+        }
+      - else {
+      - qui gen double `uni' = runiform() if `touse'
+      = qui gen double __000001 = runiform() if __000000
+      - }
+      - qui cumul `uni' if `touse', gen(`cuni')
+      = qui cumul __000001 if __000000, gen(__000002)
+        ------------------------------------------------------------------------------------------------------------------------------- begin cumul ---
+        - version 6, missing
+        - syntax varname [fw aw/] [if] [in] , Generate(str) [ Freq BY(varlist) EQual ]
+        - confirm new var `generat'
+        = confirm new var __000002
+        - marksample touse
+        - if _by() {
+          if "`by'" != "" {
+          di in red "by prefix and by() option may not be combined"
+          exit 198
+          }
+          local by "`_byvars'"
+          }
+        - if `"`exp'"' != "" {
+        = if `""' != "" {
+          tempvar wgt
+          qui gen double `wgt' = `exp' if `touse'
+          }
+        - else local wgt "1"
+        - tempvar RESULT
+        - if ("`by'"!="") {
+        = if (""!="") {
+          if ("`in'"!="") {
+          di in red "in may not be combined with by()"
+          exit 190
+          }
+          local byf "by `by' :"
+          }
+        - quietly {
+        - sort `by' `varlist'
+        = sort  __000001
+        - `byf' gen float `RESULT' = sum(`wgt'*`touse')
+        =  gen float __000006 = sum(1*__000005)
+        - if "`equal'" != "" {
+        = if "" != "" {
+          by `by' `varlist' : replace `RESULT' = `RESULT'[_N] if `touse'
+          }
+        - if ("`freq'"=="") {
+        = if (""=="") {
+        - `byf' replace `RESULT' = `RESULT' / `RESULT'[_N] if `touse'
+        =  replace __000006 = __000006 / __000006[_N] if __000005
+        - }
+        - replace `RESULT' = . if !`touse'
+        = replace __000006 = . if !__000005
+        - rename `RESULT' `generat'
+        = rename __000006 __000002
+        - label var `generat' "ECDF of `varlist'
+        = label var __000002 "ECDF of __000001
+          ----------------------------------------------------------------------------------------------------------------------------- begin label ---
+          - version 10.0
+          - local vv : display "version " string(_caller()) ", missing:"
+          - gettoken val : 0
+          - if (strpos("`val'", "val") > 0 ) {
+          = if (strpos("var", "val") > 0 ) {
+            gettoken val 0 : 0
+            syntax anything [, nofix]
+            if "`fix'" != "" {
+            local fix ", nofix"
+            }
+            gettoken var rest : anything
+            while `"`rest'"' != "" {
+            gettoken lab rest : rest
+            local label "`lab'"
+            }
+            local vlist : list anything - lab
+            if "`lab'" == "." {
+            local lab ""
+            }
+            foreach var of varlist `vlist' {
+            `vv' _label `val' `var' `lab' `fix'
+            }
+            }
+          - else {
+          - `vv' _label `macval(0)'
+          = version 6, missing: _label var __000002 "ECDF of __000001
+          - }
+          ------------------------------------------------------------------------------------------------------------------------------- end label ---
+        - }
+        --------------------------------------------------------------------------------------------------------------------------------- end cumul ---
+      - qui gen int `fid' = ceil(`folds'*`cuni') if `touse'
+      = qui gen int __000003 = ceil(5*__000002) if __000000
+      - }
+      - else {
+        tempvar fid
+        qui gen int `fid'=`foldvar'
+        markout `touse' `foldvar'
+        }
+      - qui count if `touse'
+      = qui count if __000000
+      - local N = r(N)
+      - tempvar id
+      - gen long `id'=_n
+      = gen long __000004=_n
+      - local shuffle=("`noshuffle'"=="")
+      = local shuffle=(""=="")
+      - if `doublebarsyntax' {
+      = if 0 {
+        syntax_parse `beforeifinweight' , type(`type') touse(`touse') sklearn1(`sklearn_ver1') sklearn2(`sklearn_ver2') sklearn3(`sklearn_ver3') `print
+> opt'
+        local allmethods `r(allmethods)'
+        local allpyopt `r(allpyopt)'
+        local mcount : word count `allmethods'
+        local allpipe (
+        forvalues i = 1(1)`mcount' {
+        local opt`i' `r(opt`i')'
+        local method`i' `r(method`i')'
+        local pyopt`i' `r(pyopt`i')'
+        local pipe`i' `r(pipe`i')'
+        local xvars`i' `r(xvars`i')'
+        local allpipe `allpipe' '`pipe`i''',
+        }
+        local allpipe `allpipe')
+        }
+      - else {
+      - local allmethods `methods'
+      = local allmethods ols lassocv gradboost
+      - local mcount : word count `allmethods'
+      = local mcount : word count ols lassocv gradboost
+      - local allpipe (
+      - forvalues i = 1(1)`mcount' {
+      = forvalues i = 1(1)3 {
+      - local method : word `i' of `allmethods'
+      = local method : word 1 of ols lassocv gradboost
+      - if "`method'"!="" {
+      = if "ols"!="" {
+      - local mcount = `i'
+      = local mcount = 1
+      - _pyparse , `cmdopt`i'' type(`type') method(`method') sklearn1(`sklearn_ver1') sklearn2(`sklearn_ver2') sklearn3(`sklearn_ver3') `printopt'
+      = _pyparse ,  type(reg) method(ols) sklearn1(1) sklearn2(3) sklearn3(0) 
+        ---------------------------------------------------------------------------------------------------------------------------- begin _pyparse ---
+        - syntax [anything] , type(string) Methods(string) [ sklearn1(real 1) sklearn2(real 0) sklearn3(real 0) PRINTopt debug *]
+        - if ("`methods'"!="") {
+        = if ("ols"!="") {
+        - local mcount : word count `methods'
+        = local mcount : word count ols
+        - if `mcount'>1 {
+        = if 1>1 {
+          di as err "only one method allowed"
+          error 198
+          }
+        - if substr("`type'",1,3)=="reg" {
+        = if substr("reg",1,3)=="reg" {
+        - local type reg
+        - }
+        - else {
+          local type class
+          }
+        - if "`printopt'"!="" {
+        = if ""!="" {
+          di as text ""
+          di as text "Machine learner: `methods'"
+          di as text ""
+          }
+        - local sklearn_ver = `sklearn1'*100+`sklearn2'+`sklearn3'/10
+        = local sklearn_ver = 1*100+3+0/10
+        - local options `options' sklearn_ver(`sklearn_ver') `printopt'
+        = local options  sklearn_ver(103) 
+        - if (`sklearn_ver'<24) {
+        = if (103<24) {
+          di as err "Warning: your sklearn version (`sklearn1'.`sklearn2'.`sklearn3') is not supported."
+          di as err "pystacked requires at least sklearn 0.24.0."
+          exit 198
+          }
+        - if (`sklearn_ver'>107) {
+        = if (103>107) {
+          di as err "Warning: your sklearn version (`sklearn1'.`sklearn2'.`sklearn3') might not be supported."
+          di as err "pystacked has only been tested against up to 1.7.0."
+          di as err "Check for a new pystacked version. If you encounter an error, please contact the authors."
+          }
+        - if "`type'"=="reg" {
+        = if "reg"=="reg" {
+        - if "`methods'"=="ols" {
+        = if "ols"=="ols" {
+        - parse_LinearRegression , `options'
+        = parse_LinearRegression , sklearn_ver(103)
+          --------------------------------------------------------------------------------------------------- begin _pyparse.parse_LinearRegression ---
+          - syntax [anything], sklearn_ver(real) [ NOCONStant NORMalize POSitive PRINTopt ]
+          - if "`printopt'"!="" {
+          = if ""!="" {
+            di _skip(1) in smcl "{ul on}Stata syntax:{ul off}"
+            di _skip(1) in smcl "{cmdab:nocons:tant} {cmdab:pos:itive}"
+            }
+          - local optstr
+          - if "`noconstant'"!="" {
+          = if ""!="" {
+            local optstr `optstr' 'fit_intercept':False,
+            }
+          - else {
+          - local optstr `optstr' 'fit_intercept':True,
+          = local optstr  'fit_intercept':True,
+          - }
+          - if ("`normalize'"!="") {
+          = if (""!="") {
+            local optstr `optstr' 'normalize':True,
+            }
+          - if "`positive'"!="" {
+          = if ""!="" {
+            local optstr `optstr' 'positive':True,
+            }
+          - else {
+          - local optstr `optstr' 'positive':False,
+          = local optstr 'fit_intercept':True, 'positive':False,
+          - }
+          - local optstr {`optstr'}
+          = local optstr {'fit_intercept':True, 'positive':False,}
+          - local optstr = subinstr("`optstr'",",}","}",.)
+          = local optstr = subinstr("{'fit_intercept':True, 'positive':False,}",",}","}",.)
+          - local optstr = subinstr("`optstr'"," ","",.)
+          = local optstr = subinstr("{'fit_intercept':True, 'positive':False}"," ","",.)
+          - if "`printopt'"!="" _print_tool `optstr'
+          = if ""!="" _print_tool {'fit_intercept':True,'positive':False}
+          - return local optstr `optstr'
+          = return local optstr {'fit_intercept':True,'positive':False}
+          ----------------------------------------------------------------------------------------------------- end _pyparse.parse_LinearRegression ---
+        - }
+        - else if "`methods'"=="lassoic" {
+        = else if "ols"=="lassoic" {
+          parse_LassoIC , `options'
+          }
+        - else if "`methods'"=="lassocv" {
+        = else if "ols"=="lassocv" {
+          parse_ElasticCV , `options' l1_ratio(1)
+          }
+        - else if "`methods'"=="ridgecv" {
+        = else if "ols"=="ridgecv" {
+          parse_ElasticCV , `options' l1_ratio(0)
+          }
+        - else if "`methods'"=="elasticcv" {
+        = else if "ols"=="elasticcv" {
+          parse_ElasticCV , `options'
+          }
+        - else if "`methods'"=="svm" {
+        = else if "ols"=="svm" {
+          parse_SVR , `options'
+          }
+        - else if "`methods'"=="gradboost" {
+        = else if "ols"=="gradboost" {
+          parse_gradboostReg , `options'
+          }
+        - else if "`methods'"=="rf" {
+        = else if "ols"=="rf" {
+          parse_rfReg , `options'
+          }
+        - else if "`methods'"=="linsvm" {
+        = else if "ols"=="linsvm" {
+          parse_LinearSVR , `options'
+          }
+        - else if "`methods'"=="nnet" {
+        = else if "ols"=="nnet" {
+          parse_MLPReg , `options'
+          }
+        - else if "`methods'"=="xgb" {
+        = else if "ols"=="xgb" {
+          parse_XGB , `options'
+          }
+        - else {
+          di as err "type(`type') with method(`methods') unknown"
+          exit 198
+          }
+        - local optstr `r(optstr)'
+        = local optstr {'fit_intercept':True,'positive':False}
+        - }
+        - else if "`type'"=="class" {
+        = else if "reg"=="class" {
+          if "`methods'"=="logit" {
+          parse_Logit , `options'
+          }
+          else if "`methods'"=="lassocv" {
+          parse_LassoLogitCV , `options' penalty(l1) solver(saga)
+          }
+          else if "`methods'"=="lassoic" {
+          di as err "warning: lassoic not supported with type(class)."
+          exit 198
+          }
+          else if "`methods'"=="elasticcv" {
+          parse_LassoLogitCV , `options' penalty(elasticnet) solver(saga)
+          }
+          else if "`methods'"=="ridgecv" {
+          parse_LassoLogitCV , `options' penalty(l2)
+          }
+          else if "`methods'"=="svm" {
+          parse_SVC , `options'
+          }
+          else if "`methods'"=="gradboost" {
+          parse_gradboostClass , `options'
+          }
+          else if "`methods'"=="rf" {
+          parse_rfClass , `options'
+          }
+          else if "`methods'"=="linsvm" {
+          di as err "warning: linsvm not supported with type(class)."
+          exit 198
+          }
+          else if "`methods'"=="nnet" {
+          parse_MLPClass , `options'
+          }
+          else if "`methods'"=="xgb" {
+          parse_XGB , `options'
+          }
+          else {
+          di as err "type(`type') with method(`methods') unknown"
+          exit 198
+          }
+          local optstr `r(optstr)'
+          }
+        - }
+        - else {
+          return_nothing
+          }
+        - if "`debug'"!="" _printopt_tool `optstr'
+        = if ""!="" _printopt_tool {'fit_intercept':True,'positive':False}
+        ------------------------------------------------------------------------------------------------------------------------------ end _pyparse ---
+      - if `i'==1 {
+      = if 1==1 {
+      - local allpyopt [`r(optstr)'
+      = local allpyopt [{'fit_intercept':True,'positive':False}
+      - }
+      - else {
+        local allpyopt `allpyopt' , `r(optstr)'
+        }
+      - local opt`i' `cmdopt`i''
+      = local opt1 
+      - local method`i' `method'
+      = local method1 ols
+      - local pyopt`i' `r(optstr)'
+      = local pyopt1 {'fit_intercept':True,'positive':False}
+      - if strpos("`pipe`i''","stdscaler")==0 & strpos("lassoic lassocv ridgecv elasticcv logit","`method'")!=0 {
+      = if strpos("","stdscaler")==0 & strpos("lassoic lassocv ridgecv elasticcv logit","ols")!=0 {
+        local pipe`i' `pipe`i'' stdscaler
+        }
+      - local pipe`i' = subinstr("`pipe`i''","nostdscaler","",.)
+      = local pipe1 = subinstr("","nostdscaler","",.)
+      - if "`pipe`i''"=="" local pipe`i' passthrough
+      = if ""=="" local pipe1 passthrough
+      - local allpipe `allpipe' '`pipe`i''',
+      = local allpipe ( 'passthrough',
+      - }
+      - }
+      - local method : word `i' of `allmethods'
+      = local method : word 2 of ols lassocv gradboost
+      - if "`method'"!="" {
+      = if "lassocv"!="" {
+      - local mcount = `i'
+      = local mcount = 2
+      - _pyparse , `cmdopt`i'' type(`type') method(`method') sklearn1(`sklearn_ver1') sklearn2(`sklearn_ver2') sklearn3(`sklearn_ver3') `printopt'
+      = _pyparse ,  type(reg) method(lassocv) sklearn1(1) sklearn2(3) sklearn3(0) 
+        ---------------------------------------------------------------------------------------------------------------------------- begin _pyparse ---
+        - syntax [anything] , type(string) Methods(string) [ sklearn1(real 1) sklearn2(real 0) sklearn3(real 0) PRINTopt debug *]
+        - if ("`methods'"!="") {
+        = if ("lassocv"!="") {
+        - local mcount : word count `methods'
+        = local mcount : word count lassocv
+        - if `mcount'>1 {
+        = if 1>1 {
+          di as err "only one method allowed"
+          error 198
+          }
+        - if substr("`type'",1,3)=="reg" {
+        = if substr("reg",1,3)=="reg" {
+        - local type reg
+        - }
+        - else {
+          local type class
+          }
+        - if "`printopt'"!="" {
+        = if ""!="" {
+          di as text ""
+          di as text "Machine learner: `methods'"
+          di as text ""
+          }
+        - local sklearn_ver = `sklearn1'*100+`sklearn2'+`sklearn3'/10
+        = local sklearn_ver = 1*100+3+0/10
+        - local options `options' sklearn_ver(`sklearn_ver') `printopt'
+        = local options  sklearn_ver(103) 
+        - if (`sklearn_ver'<24) {
+        = if (103<24) {
+          di as err "Warning: your sklearn version (`sklearn1'.`sklearn2'.`sklearn3') is not supported."
+          di as err "pystacked requires at least sklearn 0.24.0."
+          exit 198
+          }
+        - if (`sklearn_ver'>107) {
+        = if (103>107) {
+          di as err "Warning: your sklearn version (`sklearn1'.`sklearn2'.`sklearn3') might not be supported."
+          di as err "pystacked has only been tested against up to 1.7.0."
+          di as err "Check for a new pystacked version. If you encounter an error, please contact the authors."
+          }
+        - if "`type'"=="reg" {
+        = if "reg"=="reg" {
+        - if "`methods'"=="ols" {
+        = if "lassocv"=="ols" {
+          parse_LinearRegression , `options'
+          }
+        - else if "`methods'"=="lassoic" {
+        = else if "lassocv"=="lassoic" {
+          parse_LassoIC , `options'
+          }
+        - else if "`methods'"=="lassocv" {
+        = else if "lassocv"=="lassocv" {
+        - parse_ElasticCV , `options' l1_ratio(1)
+        = parse_ElasticCV , sklearn_ver(103) l1_ratio(1)
+          ---------------------------------------------------------------------------------------------------------- begin _pyparse.parse_ElasticCV ---
+          - syntax [anything], sklearn_ver(real) [ l1_ratio(real .5) eps(real 1e-3) n_alphas(integer 100) alphas(numlist >0) NOCONStant NORMalize max_i
+> ter(integer 1000) tol(real 1e-4) n_jobs(integer 0) POSitive random_state(integer -1) selection(string) PRINTopt ]
+          - if "`printopt'"!="" {
+          = if ""!="" {
+            di _skip(1) in smcl "{ul on}Stata syntax:{ul off}"
+            di _skip(1) in smcl "{opt alphas(numlist >0)} " _c
+            di _skip(1) in smcl "{opt l1_ratio(real .5)} " _c
+            di _skip(1) in smcl "{opt eps(real)} " _c
+            di _skip(1) in smcl "{opt n_alphas(integer)} " _c
+            di _skip(1) in smcl "{opt nocons:tant} " _c
+            di _skip(1) in smcl "{opt max_iter(integer)} " _c
+            di _skip(1) in smcl "{opt tol(real)} "
+            di _skip(1) in smcl "{opt n_jobs(integer)} " _c
+            di _skip(1) in smcl "{opt pos:itive} " _c
+            di _skip(1) in smcl "{opt selection(string)} " _c
+            di _skip(1) in smcl "{opt random_state(integer)} "
+            }
+          - local optstr
+          - if ("`alphas'"==""&`l1_ratio'>0) {
+          = if (""==""&1>0) {
+          - local optstr `optstr' 'alphas':None,
+          = local optstr  'alphas':None,
+          - }
+          - else if ("`alphas'"==""&`l1_ratio'==0) {
+          = else if (""==""&1==0) {
+            local optstr `optstr' 'alphas':[0,1,10],
+            }
+          - else {
+            local allist
+            foreach i of numlist `alphas' {
+            local allist `allist'`i',
+            }
+            local optstr `optstr' 'alphas':[`allist'],
+            }
+          - if `l1_ratio'>=0 & `l1_ratio'<= 1 {
+          = if 1>=0 & 1<= 1 {
+          - local optstr `optstr' 'l1_ratio':`l1_ratio',
+          = local optstr 'alphas':None, 'l1_ratio':1,
+          - }
+          - if (`eps'>0) {
+          = if (.001>0) {
+          - local optstr `optstr' 'eps':`eps',
+          = local optstr 'alphas':None, 'l1_ratio':1, 'eps':.001,
+          - }
+          - if (`n_alphas'>0) {
+          = if (100>0) {
+          - local optstr `optstr' 'n_alphas':`n_alphas',
+          = local optstr 'alphas':None, 'l1_ratio':1, 'eps':.001, 'n_alphas':100,
+          - }
+          - if "`noconstant'"!="" {
+          = if ""!="" {
+            local optstr `optstr' 'fit_intercept':False,
+            }
+          - else {
+          - local optstr `optstr' 'fit_intercept':True,
+          = local optstr 'alphas':None, 'l1_ratio':1, 'eps':.001, 'n_alphas':100, 'fit_intercept':True,
+          - }
+          - if ("`normalize'"!="") {
+          = if (""!="") {
+            local optstr `optstr' 'normalize':True,
+            }
+          - if (`max_iter'>0) {
+          = if (1000>0) {
+          - local optstr `optstr' 'max_iter':`max_iter',
+          = local optstr 'alphas':None, 'l1_ratio':1, 'eps':.001, 'n_alphas':100, 'fit_intercept':True, 'max_iter':1000,
+          - }
+          - if `tol'>=0 {
+          = if .0001>=0 {
+          - local optstr `optstr' 'tol':`tol',
+          = local optstr 'alphas':None, 'l1_ratio':1, 'eps':.001, 'n_alphas':100, 'fit_intercept':True, 'max_iter':1000, 'tol':.0001,
+          - }
+          - if `n_jobs'!=0 {
+          = if 0!=0 {
+            local optstr `optstr' 'n_jobs':`n_jobs',
+            }
+          - else {
+          - local optstr `optstr' 'n_jobs':None,
+          = local optstr 'alphas':None, 'l1_ratio':1, 'eps':.001, 'n_alphas':100, 'fit_intercept':True, 'max_iter':1000, 'tol':.0001, 'n_jobs':None,
+          - }
+          - if "`positive'"!="" {
+          = if ""!="" {
+            local optstr `optstr' 'positive':True,
+            }
+          - else {
+          - local optstr `optstr' 'positive':False,
+          = local optstr 'alphas':None, 'l1_ratio':1, 'eps':.001, 'n_alphas':100, 'fit_intercept':True, 'max_iter':1000, 'tol':.0001, 'n_jobs':None, 'p
+> ositive':False,
+          - }
+          - if "`selection'"=="cyclic"|"`selection'"=="random" {
+          = if ""=="cyclic"|""=="random" {
+            local optstr `optstr' 'selection':'`selection'',
+            }
+          - else {
+          - local optstr `optstr' 'selection':'cyclic',
+          = local optstr 'alphas':None, 'l1_ratio':1, 'eps':.001, 'n_alphas':100, 'fit_intercept':True, 'max_iter':1000, 'tol':.0001, 'n_jobs':None, 'p
+> ositive':False, 'selection':'cyclic',
+          - }
+          - if `random_state'>=0 {
+          = if -1>=0 {
+            local optstr `optstr' 'random_state':`random_state',
+            }
+          - else {
+          - local optstr `optstr' 'random_state':rng,
+          = local optstr 'alphas':None, 'l1_ratio':1, 'eps':.001, 'n_alphas':100, 'fit_intercept':True, 'max_iter':1000, 'tol':.0001, 'n_jobs':None, 'p
+> ositive':False, 'selection':'cyclic', 'random_state':rng,
+          - }
+          - local optstr {`optstr'}
+          = local optstr {'alphas':None, 'l1_ratio':1, 'eps':.001, 'n_alphas':100, 'fit_intercept':True, 'max_iter':1000, 'tol':.0001, 'n_jobs':None, '
+> positive':False, 'selection':'cyclic', 'random_state':rng,}
+          - local optstr = subinstr("`optstr'",",}","}",.)
+          = local optstr = subinstr("{'alphas':None, 'l1_ratio':1, 'eps':.001, 'n_alphas':100, 'fit_intercept':True, 'max_iter':1000, 'tol':.0001, 'n_j
+> obs':None, 'positive':False, 'selection':'cyclic', 'random_state':rng,}",",}","}",.)
+          - local optstr = subinstr("`optstr'"," ","",.)
+          = local optstr = subinstr("{'alphas':None, 'l1_ratio':1, 'eps':.001, 'n_alphas':100, 'fit_intercept':True, 'max_iter':1000, 'tol':.0001, 'n_j
+> obs':None, 'positive':False, 'selection':'cyclic', 'random_state':rng}"," ","",.)
+          - if "`printopt'"!="" _print_tool `optstr'
+          = if ""!="" _print_tool {'alphas':None,'l1_ratio':1,'eps':.001,'n_alphas':100,'fit_intercept':True,'max_iter':1000,'tol':.0001,'n_jobs':None,
+> 'positive':False,'selection':'cyclic','random_state':rng}
+          - return local optstr `optstr'
+          = return local optstr {'alphas':None,'l1_ratio':1,'eps':.001,'n_alphas':100,'fit_intercept':True,'max_iter':1000,'tol':.0001,'n_jobs':None,'p
+> ositive':False,'selection':'cyclic','random_state':rng}
+          ------------------------------------------------------------------------------------------------------------ end _pyparse.parse_ElasticCV ---
+        - }
+        - else if "`methods'"=="ridgecv" {
+        = else if "lassocv"=="ridgecv" {
+          parse_ElasticCV , `options' l1_ratio(0)
+          }
+        - else if "`methods'"=="elasticcv" {
+        = else if "lassocv"=="elasticcv" {
+          parse_ElasticCV , `options'
+          }
+        - else if "`methods'"=="svm" {
+        = else if "lassocv"=="svm" {
+          parse_SVR , `options'
+          }
+        - else if "`methods'"=="gradboost" {
+        = else if "lassocv"=="gradboost" {
+          parse_gradboostReg , `options'
+          }
+        - else if "`methods'"=="rf" {
+        = else if "lassocv"=="rf" {
+          parse_rfReg , `options'
+          }
+        - else if "`methods'"=="linsvm" {
+        = else if "lassocv"=="linsvm" {
+          parse_LinearSVR , `options'
+          }
+        - else if "`methods'"=="nnet" {
+        = else if "lassocv"=="nnet" {
+          parse_MLPReg , `options'
+          }
+        - else if "`methods'"=="xgb" {
+        = else if "lassocv"=="xgb" {
+          parse_XGB , `options'
+          }
+        - else {
+          di as err "type(`type') with method(`methods') unknown"
+          exit 198
+          }
+        - local optstr `r(optstr)'
+        = local optstr {'alphas':None,'l1_ratio':1,'eps':.001,'n_alphas':100,'fit_intercept':True,'max_iter':1000,'tol':.0001,'n_jobs':None,'positive':
+> False,'selection':'cyclic','random_state':rng}
+        - }
+        - else if "`type'"=="class" {
+        = else if "reg"=="class" {
+          if "`methods'"=="logit" {
+          parse_Logit , `options'
+          }
+          else if "`methods'"=="lassocv" {
+          parse_LassoLogitCV , `options' penalty(l1) solver(saga)
+          }
+          else if "`methods'"=="lassoic" {
+          di as err "warning: lassoic not supported with type(class)."
+          exit 198
+          }
+          else if "`methods'"=="elasticcv" {
+          parse_LassoLogitCV , `options' penalty(elasticnet) solver(saga)
+          }
+          else if "`methods'"=="ridgecv" {
+          parse_LassoLogitCV , `options' penalty(l2)
+          }
+          else if "`methods'"=="svm" {
+          parse_SVC , `options'
+          }
+          else if "`methods'"=="gradboost" {
+          parse_gradboostClass , `options'
+          }
+          else if "`methods'"=="rf" {
+          parse_rfClass , `options'
+          }
+          else if "`methods'"=="linsvm" {
+          di as err "warning: linsvm not supported with type(class)."
+          exit 198
+          }
+          else if "`methods'"=="nnet" {
+          parse_MLPClass , `options'
+          }
+          else if "`methods'"=="xgb" {
+          parse_XGB , `options'
+          }
+          else {
+          di as err "type(`type') with method(`methods') unknown"
+          exit 198
+          }
+          local optstr `r(optstr)'
+          }
+        - }
+        - else {
+          return_nothing
+          }
+        - if "`debug'"!="" _printopt_tool `optstr'
+        = if ""!="" _printopt_tool {'alphas':None,'l1_ratio':1,'eps':.001,'n_alphas':100,'fit_intercept':True,'max_iter':1000,'tol':.0001,'n_jobs':None
+> ,'positive':False,'selection':'cyclic','random_state':rng}
+        ------------------------------------------------------------------------------------------------------------------------------ end _pyparse ---
+      - if `i'==1 {
+      = if 2==1 {
+        local allpyopt [`r(optstr)'
+        }
+      - else {
+      - local allpyopt `allpyopt' , `r(optstr)'
+      = local allpyopt [{'fit_intercept':True,'positive':False} , {'alphas':None,'l1_ratio':1,'eps':.001,'n_alphas':100,'fit_intercept':True,'max_iter'
+> :1000,'tol':.0001,'n_jobs':None,'positive':False,'selection':'cyclic','random_state':rng}
+      - }
+      - local opt`i' `cmdopt`i''
+      = local opt2 
+      - local method`i' `method'
+      = local method2 lassocv
+      - local pyopt`i' `r(optstr)'
+      = local pyopt2 {'alphas':None,'l1_ratio':1,'eps':.001,'n_alphas':100,'fit_intercept':True,'max_iter':1000,'tol':.0001,'n_jobs':None,'positive':Fa
+> lse,'selection':'cyclic','random_state':rng}
+      - if strpos("`pipe`i''","stdscaler")==0 & strpos("lassoic lassocv ridgecv elasticcv logit","`method'")!=0 {
+      = if strpos("","stdscaler")==0 & strpos("lassoic lassocv ridgecv elasticcv logit","lassocv")!=0 {
+      - local pipe`i' `pipe`i'' stdscaler
+      = local pipe2  stdscaler
+      - }
+      - local pipe`i' = subinstr("`pipe`i''","nostdscaler","",.)
+      = local pipe2 = subinstr("stdscaler","nostdscaler","",.)
+      - if "`pipe`i''"=="" local pipe`i' passthrough
+      = if "stdscaler"=="" local pipe2 passthrough
+      - local allpipe `allpipe' '`pipe`i''',
+      = local allpipe ( 'passthrough', 'stdscaler',
+      - }
+      - }
+      - local method : word `i' of `allmethods'
+      = local method : word 3 of ols lassocv gradboost
+      - if "`method'"!="" {
+      = if "gradboost"!="" {
+      - local mcount = `i'
+      = local mcount = 3
+      - _pyparse , `cmdopt`i'' type(`type') method(`method') sklearn1(`sklearn_ver1') sklearn2(`sklearn_ver2') sklearn3(`sklearn_ver3') `printopt'
+      = _pyparse ,  type(reg) method(gradboost) sklearn1(1) sklearn2(3) sklearn3(0) 
+        ---------------------------------------------------------------------------------------------------------------------------- begin _pyparse ---
+        - syntax [anything] , type(string) Methods(string) [ sklearn1(real 1) sklearn2(real 0) sklearn3(real 0) PRINTopt debug *]
+        - if ("`methods'"!="") {
+        = if ("gradboost"!="") {
+        - local mcount : word count `methods'
+        = local mcount : word count gradboost
+        - if `mcount'>1 {
+        = if 1>1 {
+          di as err "only one method allowed"
+          error 198
+          }
+        - if substr("`type'",1,3)=="reg" {
+        = if substr("reg",1,3)=="reg" {
+        - local type reg
+        - }
+        - else {
+          local type class
+          }
+        - if "`printopt'"!="" {
+        = if ""!="" {
+          di as text ""
+          di as text "Machine learner: `methods'"
+          di as text ""
+          }
+        - local sklearn_ver = `sklearn1'*100+`sklearn2'+`sklearn3'/10
+        = local sklearn_ver = 1*100+3+0/10
+        - local options `options' sklearn_ver(`sklearn_ver') `printopt'
+        = local options  sklearn_ver(103) 
+        - if (`sklearn_ver'<24) {
+        = if (103<24) {
+          di as err "Warning: your sklearn version (`sklearn1'.`sklearn2'.`sklearn3') is not supported."
+          di as err "pystacked requires at least sklearn 0.24.0."
+          exit 198
+          }
+        - if (`sklearn_ver'>107) {
+        = if (103>107) {
+          di as err "Warning: your sklearn version (`sklearn1'.`sklearn2'.`sklearn3') might not be supported."
+          di as err "pystacked has only been tested against up to 1.7.0."
+          di as err "Check for a new pystacked version. If you encounter an error, please contact the authors."
+          }
+        - if "`type'"=="reg" {
+        = if "reg"=="reg" {
+        - if "`methods'"=="ols" {
+        = if "gradboost"=="ols" {
+          parse_LinearRegression , `options'
+          }
+        - else if "`methods'"=="lassoic" {
+        = else if "gradboost"=="lassoic" {
+          parse_LassoIC , `options'
+          }
+        - else if "`methods'"=="lassocv" {
+        = else if "gradboost"=="lassocv" {
+          parse_ElasticCV , `options' l1_ratio(1)
+          }
+        - else if "`methods'"=="ridgecv" {
+        = else if "gradboost"=="ridgecv" {
+          parse_ElasticCV , `options' l1_ratio(0)
+          }
+        - else if "`methods'"=="elasticcv" {
+        = else if "gradboost"=="elasticcv" {
+          parse_ElasticCV , `options'
+          }
+        - else if "`methods'"=="svm" {
+        = else if "gradboost"=="svm" {
+          parse_SVR , `options'
+          }
+        - else if "`methods'"=="gradboost" {
+        = else if "gradboost"=="gradboost" {
+        - parse_gradboostReg , `options'
+        = parse_gradboostReg , sklearn_ver(103)
+          ------------------------------------------------------------------------------------------------------- begin _pyparse.parse_gradboostReg ---
+          - syntax [anything] , sklearn_ver(real) [ loss(string) criterion(string) learning_rate(real 0.1) n_estimators(integer 100) subsample(real 1) 
+> min_samples_split(real 2) min_samples_leaf(real 1) min_weight_fraction_leaf(real 0) max_depth(integer 3) min_impurity_decrease(real 0) init(string) r
+> andom_state(integer -1) max_features(string) alpha(real 0.9) max_leaf_nodes(integer -1) warm_start validation_fraction(real 0.1) n_iter_no_change(int
+> eger -1) tol(real 1e-4) ccp_alpha(real 0) PRINTopt ]
+          - if "`printopt'"!="" {
+          = if ""!="" {
+            di _skip(1) in smcl "{ul on}Stata syntax:{ul off}"
+            di _skip(1) in smcl "{opt loss(string)} " _c
+            di _skip(1) in smcl "{opt criterion(string)} " _c
+            di _skip(1) in smcl "{opt learning_rate(real 0.1)} " _c
+            di _skip(1) in smcl "{opt n_estimators(integer 100)} " _c
+            di _skip(1) in smcl "{opt subsample(real 1)} "
+            di _skip(1) in smcl "{opt min_samples_split(real 2)} " _c
+            di _skip(1) in smcl "{opt min_samples_leaf(real 1)} " _c
+            di _skip(1) in smcl "{opt min_weight_fraction_leaf(real 0)} " _c
+            di _skip(1) in smcl "{opt max_depth(integer 3)} "
+            di _skip(1) in smcl "{opt min_impurity_decrease(real 0)} " _c
+            di _skip(1) in smcl "{opt init(string)} " _c
+            di _skip(1) in smcl "{opt random_state(integer -1)} " _c
+            di _skip(1) in smcl "{opt max_features(string)} " _c
+            di _skip(1) in smcl "{opt alpha(real 0.9)} "
+            di _skip(1) in smcl "{opt max_leaf_nodes(integer -1)} " _c
+            di _skip(1) in smcl "{opt warm_start} " _c
+            di _skip(1) in smcl "{opt validation_fraction(real 0.1)} " _c
+            di _skip(1) in smcl "{opt n_iter_no_change(integer -1)} "
+            di _skip(1) in smcl "{opt tol(real 1e-4)} " _c
+            di _skip(1) in smcl "{opt ccp_alpha(real 0)} "
+            }
+          - local optstr
+          - if strpos("absolute_error squared_error ls lad huber quantile","`loss'")!=0 & "`loss'"!="" {
+          = if strpos("absolute_error squared_error ls lad huber quantile","")!=0 & ""!="" {
+            local optstr `optstr' 'loss':'`loss'',
+            }
+          - else if "`loss'"=="" & `sklearn_ver'<100 {
+          = else if ""=="" & 103<100 {
+            local optstr `optstr' 'loss':'ls',
+            }
+          - else if "`loss'"=="" & `sklearn_ver'>=100 {
+          = else if ""=="" & 103>=100 {
+          - local optstr `optstr' 'loss':'squared_error',
+          = local optstr  'loss':'squared_error',
+          - }
+          - else {
+            di as err "loss(`loss') not supported"
+            error 197
+            }
+          - if `learning_rate'>=0 {
+          = if .1>=0 {
+          - local optstr `optstr' 'learning_rate':`learning_rate',
+          = local optstr 'loss':'squared_error', 'learning_rate':.1,
+          - }
+          - if `n_estimators'>0 {
+          = if 100>0 {
+          - local optstr `optstr' 'n_estimators':`n_estimators',
+          = local optstr 'loss':'squared_error', 'learning_rate':.1, 'n_estimators':100,
+          - }
+          - if `subsample'>=0 {
+          = if 1>=0 {
+          - local optstr `optstr' 'subsample':`subsample',
+          = local optstr 'loss':'squared_error', 'learning_rate':.1, 'n_estimators':100, 'subsample':1,
+          - }
+          - if strpos("friedman_mse squared_error mse mae","`criterion'")!=0 & "`criterion'"!="" {
+          = if strpos("friedman_mse squared_error mse mae","")!=0 & ""!="" {
+            local optstr `optstr' 'criterion':'`criterion'',
+            }
+          - else if "`criterion'"=="" {
+          = else if ""=="" {
+          - local optstr `optstr' 'criterion':'friedman_mse',
+          = local optstr 'loss':'squared_error', 'learning_rate':.1, 'n_estimators':100, 'subsample':1, 'criterion':'friedman_mse',
+          - }
+          - else {
+            di as err "criterion(`criterion') not allowed"
+            error 197
+            }
+          - if `min_samples_split'>0 {
+          = if 2>0 {
+          - local optstr `optstr' 'min_samples_split':`min_samples_split',
+          = local optstr 'loss':'squared_error', 'learning_rate':.1, 'n_estimators':100, 'subsample':1, 'criterion':'friedman_mse', 'min_samples_split'
+> :2,
+          - }
+          - if `min_samples_leaf'>0 {
+          = if 1>0 {
+          - local optstr `optstr' 'min_samples_leaf':`min_samples_leaf',
+          = local optstr 'loss':'squared_error', 'learning_rate':.1, 'n_estimators':100, 'subsample':1, 'criterion':'friedman_mse', 'min_samples_split'
+> :2, 'min_samples_leaf':1,
+          - }
+          - if `min_weight_fraction_leaf'>=0 {
+          = if 0>=0 {
+          - local optstr `optstr' 'min_weight_fraction_leaf':`min_weight_fraction_leaf',
+          = local optstr 'loss':'squared_error', 'learning_rate':.1, 'n_estimators':100, 'subsample':1, 'criterion':'friedman_mse', 'min_samples_split'
+> :2, 'min_samples_leaf':1, 'min_weight_fraction_leaf':0,
+          - }
+          - if `max_depth'>0 {
+          = if 3>0 {
+          - local optstr `optstr' 'max_depth':`max_depth',
+          = local optstr 'loss':'squared_error', 'learning_rate':.1, 'n_estimators':100, 'subsample':1, 'criterion':'friedman_mse', 'min_samples_split'
+> :2, 'min_samples_leaf':1, 'min_weight_fraction_leaf':0, 'max_depth':3,
+          - }
+          - if `min_impurity_decrease'>=0 {
+          = if 0>=0 {
+          - local optstr `optstr' 'min_impurity_decrease':`min_impurity_decrease',
+          = local optstr 'loss':'squared_error', 'learning_rate':.1, 'n_estimators':100, 'subsample':1, 'criterion':'friedman_mse', 'min_samples_split'
+> :2, 'min_samples_leaf':1, 'min_weight_fraction_leaf':0, 'max_depth':3, 'min_impurity_decrease':0,
+          - }
+          - if "`init'"=="zero" {
+          = if ""=="zero" {
+            local optstr `optstr' 'init':'zero',
+            }
+          - else {
+          - local optstr `optstr' 'init':None,
+          = local optstr 'loss':'squared_error', 'learning_rate':.1, 'n_estimators':100, 'subsample':1, 'criterion':'friedman_mse', 'min_samples_split'
+> :2, 'min_samples_leaf':1, 'min_weight_fraction_leaf':0, 'max_depth':3, 'min_impurity_decrease':0, 'init':None,
+          - }
+          - if `random_state'>=0 {
+          = if -1>=0 {
+            local optstr `optstr' 'random_state':`random_state',
+            }
+          - else {
+          - local optstr `optstr' 'random_state':rng,
+          = local optstr 'loss':'squared_error', 'learning_rate':.1, 'n_estimators':100, 'subsample':1, 'criterion':'friedman_mse', 'min_samples_split'
+> :2, 'min_samples_leaf':1, 'min_weight_fraction_leaf':0, 'max_depth':3, 'min_impurity_decrease':0, 'init':None, 'random_state':rng,
+          - }
+          - if "`max_features'"=="auto"|"`max_features'"=="sqrt"|"`max_features'"=="log2" {
+          = if ""=="auto"|""=="sqrt"|""=="log2" {
+            local optstr `optstr' 'max_features':'`max_features'',
+            }
+          - else if "`max_features'"=="" {
+          = else if ""=="" {
+          - local optstr `optstr' 'max_features':None,
+          = local optstr 'loss':'squared_error', 'learning_rate':.1, 'n_estimators':100, 'subsample':1, 'criterion':'friedman_mse', 'min_samples_split'
+> :2, 'min_samples_leaf':1, 'min_weight_fraction_leaf':0, 'max_depth':3, 'min_impurity_decrease':0, 'init':None, 'random_state':rng, 'max_features':Non
+> e,
+          - }
+          - else {
+            local optstr `optstr' 'max_features':`max_features',
+            }
+          - if `alpha'>=0 {
+          = if .9>=0 {
+          - local optstr `optstr' 'alpha':`alpha',
+          = local optstr 'loss':'squared_error', 'learning_rate':.1, 'n_estimators':100, 'subsample':1, 'criterion':'friedman_mse', 'min_samples_split'
+> :2, 'min_samples_leaf':1, 'min_weight_fraction_leaf':0, 'max_depth':3, 'min_impurity_decrease':0, 'init':None, 'random_state':rng, 'max_features':Non
+> e, 'alpha':.9,
+          - }
+          - if `max_leaf_nodes'>0 {
+          = if -1>0 {
+            local optstr `optstr' 'max_leaf_nodes':`max_leaf_nodes',
+            }
+          - else {
+          - local optstr `optstr' 'max_leaf_nodes':None,
+          = local optstr 'loss':'squared_error', 'learning_rate':.1, 'n_estimators':100, 'subsample':1, 'criterion':'friedman_mse', 'min_samples_split'
+> :2, 'min_samples_leaf':1, 'min_weight_fraction_leaf':0, 'max_depth':3, 'min_impurity_decrease':0, 'init':None, 'random_state':rng, 'max_features':Non
+> e, 'alpha':.9, 'max_leaf_nodes':None,
+          - }
+          - if "`warm_start'"!="" {
+          = if ""!="" {
+            local optstr `optstr' 'warm_start':True,
+            }
+          - else {
+          - local optstr `optstr' 'warm_start':False,
+          = local optstr 'loss':'squared_error', 'learning_rate':.1, 'n_estimators':100, 'subsample':1, 'criterion':'friedman_mse', 'min_samples_split'
+> :2, 'min_samples_leaf':1, 'min_weight_fraction_leaf':0, 'max_depth':3, 'min_impurity_decrease':0, 'init':None, 'random_state':rng, 'max_features':Non
+> e, 'alpha':.9, 'max_leaf_nodes':None, 'warm_start':False,
+          - }
+          - if `validation_fraction'>=0 {
+          = if .1>=0 {
+          - local optstr `optstr' 'validation_fraction':`validation_fraction',
+          = local optstr 'loss':'squared_error', 'learning_rate':.1, 'n_estimators':100, 'subsample':1, 'criterion':'friedman_mse', 'min_samples_split'
+> :2, 'min_samples_leaf':1, 'min_weight_fraction_leaf':0, 'max_depth':3, 'min_impurity_decrease':0, 'init':None, 'random_state':rng, 'max_features':Non
+> e, 'alpha':.9, 'max_leaf_nodes':None, 'warm_start':False, 'validation_fraction':.1,
+          - }
+          - if `n_iter_no_change'>=0 {
+          = if -1>=0 {
+            local optstr `optstr' 'n_iter_no_change':`n_iter_no_change',
+            }
+          - else {
+          - local optstr `optstr' 'n_iter_no_change':None,
+          = local optstr 'loss':'squared_error', 'learning_rate':.1, 'n_estimators':100, 'subsample':1, 'criterion':'friedman_mse', 'min_samples_split'
+> :2, 'min_samples_leaf':1, 'min_weight_fraction_leaf':0, 'max_depth':3, 'min_impurity_decrease':0, 'init':None, 'random_state':rng, 'max_features':Non
+> e, 'alpha':.9, 'max_leaf_nodes':None, 'warm_start':False, 'validation_fraction':.1, 'n_iter_no_change':None,
+          - }
+          - if `tol'>=0 {
+          = if .0001>=0 {
+          - local optstr `optstr' 'tol':`tol',
+          = local optstr 'loss':'squared_error', 'learning_rate':.1, 'n_estimators':100, 'subsample':1, 'criterion':'friedman_mse', 'min_samples_split'
+> :2, 'min_samples_leaf':1, 'min_weight_fraction_leaf':0, 'max_depth':3, 'min_impurity_decrease':0, 'init':None, 'random_state':rng, 'max_features':Non
+> e, 'alpha':.9, 'max_leaf_nodes':None, 'warm_start':False, 'validation_fraction':.1, 'n_iter_no_change':None, 'tol':.0001,
+          - }
+          - if `ccp_alpha'>=0 {
+          = if 0>=0 {
+          - local optstr `optstr' 'ccp_alpha':`ccp_alpha',
+          = local optstr 'loss':'squared_error', 'learning_rate':.1, 'n_estimators':100, 'subsample':1, 'criterion':'friedman_mse', 'min_samples_split'
+> :2, 'min_samples_leaf':1, 'min_weight_fraction_leaf':0, 'max_depth':3, 'min_impurity_decrease':0, 'init':None, 'random_state':rng, 'max_features':Non
+> e, 'alpha':.9, 'max_leaf_nodes':None, 'warm_start':False, 'validation_fraction':.1, 'n_iter_no_change':None, 'tol':.0001, 'ccp_alpha':0,
+          - }
+          - local optstr {`optstr'}
+          = local optstr {'loss':'squared_error', 'learning_rate':.1, 'n_estimators':100, 'subsample':1, 'criterion':'friedman_mse', 'min_samples_split
+> ':2, 'min_samples_leaf':1, 'min_weight_fraction_leaf':0, 'max_depth':3, 'min_impurity_decrease':0, 'init':None, 'random_state':rng, 'max_features':No
+> ne, 'alpha':.9, 'max_leaf_nodes':None, 'warm_start':False, 'validation_fraction':.1, 'n_iter_no_change':None, 'tol':.0001, 'ccp_alpha':0,}
+          - local optstr = subinstr("`optstr'",",}","}",.)
+          = local optstr = subinstr("{'loss':'squared_error', 'learning_rate':.1, 'n_estimators':100, 'subsample':1, 'criterion':'friedman_mse', 'min_s
+> amples_split':2, 'min_samples_leaf':1, 'min_weight_fraction_leaf':0, 'max_depth':3, 'min_impurity_decrease':0, 'init':None, 'random_state':rng, 'max_
+> features':None, 'alpha':.9, 'max_leaf_nodes':None, 'warm_start':False, 'validation_fraction':.1, 'n_iter_no_change':None, 'tol':.0001, 'ccp_alpha':0,
+> }",",}","}",.)
+          - local optstr = subinstr("`optstr'"," ","",.)
+          = local optstr = subinstr("{'loss':'squared_error', 'learning_rate':.1, 'n_estimators':100, 'subsample':1, 'criterion':'friedman_mse', 'min_s
+> amples_split':2, 'min_samples_leaf':1, 'min_weight_fraction_leaf':0, 'max_depth':3, 'min_impurity_decrease':0, 'init':None, 'random_state':rng, 'max_
+> features':None, 'alpha':.9, 'max_leaf_nodes':None, 'warm_start':False, 'validation_fraction':.1, 'n_iter_no_change':None, 'tol':.0001, 'ccp_alpha':0}
+> "," ","",.)
+          - if "`printopt'"!="" _print_tool `optstr'
+          = if ""!="" _print_tool {'loss':'squared_error','learning_rate':.1,'n_estimators':100,'subsample':1,'criterion':'friedman_mse','min_samples_s
+> plit':2,'min_samples_leaf':1,'min_weight_fraction_leaf':0,'max_depth':3,'min_impurity_decrease':0,'init':None,'random_state':rng,'max_features':None,
+> 'alpha':.9,'max_leaf_nodes':None,'warm_start':False,'validation_fraction':.1,'n_iter_no_change':None,'tol':.0001,'ccp_alpha':0}
+          - return local optstr `optstr'
+          = return local optstr {'loss':'squared_error','learning_rate':.1,'n_estimators':100,'subsample':1,'criterion':'friedman_mse','min_samples_spl
+> it':2,'min_samples_leaf':1,'min_weight_fraction_leaf':0,'max_depth':3,'min_impurity_decrease':0,'init':None,'random_state':rng,'max_features':None,'a
+> lpha':.9,'max_leaf_nodes':None,'warm_start':False,'validation_fraction':.1,'n_iter_no_change':None,'tol':.0001,'ccp_alpha':0}
+          --------------------------------------------------------------------------------------------------------- end _pyparse.parse_gradboostReg ---
+        - }
+        - else if "`methods'"=="rf" {
+        = else if "gradboost"=="rf" {
+          parse_rfReg , `options'
+          }
+        - else if "`methods'"=="linsvm" {
+        = else if "gradboost"=="linsvm" {
+          parse_LinearSVR , `options'
+          }
+        - else if "`methods'"=="nnet" {
+        = else if "gradboost"=="nnet" {
+          parse_MLPReg , `options'
+          }
+        - else if "`methods'"=="xgb" {
+        = else if "gradboost"=="xgb" {
+          parse_XGB , `options'
+          }
+        - else {
+          di as err "type(`type') with method(`methods') unknown"
+          exit 198
+          }
+        - local optstr `r(optstr)'
+        = local optstr {'loss':'squared_error','learning_rate':.1,'n_estimators':100,'subsample':1,'criterion':'friedman_mse','min_samples_split':2,'mi
+> n_samples_leaf':1,'min_weight_fraction_leaf':0,'max_depth':3,'min_impurity_decrease':0,'init':None,'random_state':rng,'max_features':None,'alpha':.9,
+> 'max_leaf_nodes':None,'warm_start':False,'validation_fraction':.1,'n_iter_no_change':None,'tol':.0001,'ccp_alpha':0}
+        - }
+        - else if "`type'"=="class" {
+        = else if "reg"=="class" {
+          if "`methods'"=="logit" {
+          parse_Logit , `options'
+          }
+          else if "`methods'"=="lassocv" {
+          parse_LassoLogitCV , `options' penalty(l1) solver(saga)
+          }
+          else if "`methods'"=="lassoic" {
+          di as err "warning: lassoic not supported with type(class)."
+          exit 198
+          }
+          else if "`methods'"=="elasticcv" {
+          parse_LassoLogitCV , `options' penalty(elasticnet) solver(saga)
+          }
+          else if "`methods'"=="ridgecv" {
+          parse_LassoLogitCV , `options' penalty(l2)
+          }
+          else if "`methods'"=="svm" {
+          parse_SVC , `options'
+          }
+          else if "`methods'"=="gradboost" {
+          parse_gradboostClass , `options'
+          }
+          else if "`methods'"=="rf" {
+          parse_rfClass , `options'
+          }
+          else if "`methods'"=="linsvm" {
+          di as err "warning: linsvm not supported with type(class)."
+          exit 198
+          }
+          else if "`methods'"=="nnet" {
+          parse_MLPClass , `options'
+          }
+          else if "`methods'"=="xgb" {
+          parse_XGB , `options'
+          }
+          else {
+          di as err "type(`type') with method(`methods') unknown"
+          exit 198
+          }
+          local optstr `r(optstr)'
+          }
+        - }
+        - else {
+          return_nothing
+          }
+        - if "`debug'"!="" _printopt_tool `optstr'
+        = if ""!="" _printopt_tool {'loss':'squared_error','learning_rate':.1,'n_estimators':100,'subsample':1,'criterion':'friedman_mse','min_samples_
+> split':2,'min_samples_leaf':1,'min_weight_fraction_leaf':0,'max_depth':3,'min_impurity_decrease':0,'init':None,'random_state':rng,'max_features':None
+> ,'alpha':.9,'max_leaf_nodes':None,'warm_start':False,'validation_fraction':.1,'n_iter_no_change':None,'tol':.0001,'ccp_alpha':0}
+        ------------------------------------------------------------------------------------------------------------------------------ end _pyparse ---
+      - if `i'==1 {
+      = if 3==1 {
+        local allpyopt [`r(optstr)'
+        }
+      - else {
+      - local allpyopt `allpyopt' , `r(optstr)'
+      = local allpyopt [{'fit_intercept':True,'positive':False} , {'alphas':None,'l1_ratio':1,'eps':.001,'n_alphas':100,'fit_intercept':True,'max_iter'
+> :1000,'tol':.0001,'n_jobs':None,'positive':False,'selection':'cyclic','random_state':rng} , {'loss':'squared_error','learning_rate':.1,'n_estimators'
+> :100,'subsample':1,'criterion':'friedman_mse','min_samples_split':2,'min_samples_leaf':1,'min_weight_fraction_leaf':0,'max_depth':3,'min_impurity_dec
+> rease':0,'init':None,'random_state':rng,'max_features':None,'alpha':.9,'max_leaf_nodes':None,'warm_start':False,'validation_fraction':.1,'n_iter_no_c
+> hange':None,'tol':.0001,'ccp_alpha':0}
+      - }
+      - local opt`i' `cmdopt`i''
+      = local opt3 
+      - local method`i' `method'
+      = local method3 gradboost
+      - local pyopt`i' `r(optstr)'
+      = local pyopt3 {'loss':'squared_error','learning_rate':.1,'n_estimators':100,'subsample':1,'criterion':'friedman_mse','min_samples_split':2,'min_
+> samples_leaf':1,'min_weight_fraction_leaf':0,'max_depth':3,'min_impurity_decrease':0,'init':None,'random_state':rng,'max_features':None,'alpha':.9,'m
+> ax_leaf_nodes':None,'warm_start':False,'validation_fraction':.1,'n_iter_no_change':None,'tol':.0001,'ccp_alpha':0}
+      - if strpos("`pipe`i''","stdscaler")==0 & strpos("lassoic lassocv ridgecv elasticcv logit","`method'")!=0 {
+      = if strpos("","stdscaler")==0 & strpos("lassoic lassocv ridgecv elasticcv logit","gradboost")!=0 {
+        local pipe`i' `pipe`i'' stdscaler
+        }
+      - local pipe`i' = subinstr("`pipe`i''","nostdscaler","",.)
+      = local pipe3 = subinstr("","nostdscaler","",.)
+      - if "`pipe`i''"=="" local pipe`i' passthrough
+      = if ""=="" local pipe3 passthrough
+      - local allpipe `allpipe' '`pipe`i''',
+      = local allpipe ( 'passthrough', 'stdscaler', 'passthrough',
+      - }
+      - }
+      - local allpyopt `allpyopt']
+      = local allpyopt [{'fit_intercept':True,'positive':False} , {'alphas':None,'l1_ratio':1,'eps':.001,'n_alphas':100,'fit_intercept':True,'max_iter'
+> :1000,'tol':.0001,'n_jobs':None,'positive':False,'selection':'cyclic','random_state':rng} , {'loss':'squared_error','learning_rate':.1,'n_estimators'
+> :100,'subsample':1,'criterion':'friedman_mse','min_samples_split':2,'min_samples_leaf':1,'min_weight_fraction_leaf':0,'max_depth':3,'min_impurity_dec
+> rease':0,'init':None,'random_state':rng,'max_features':None,'alpha':.9,'max_leaf_nodes':None,'warm_start':False,'validation_fraction':.1,'n_iter_no_c
+> hange':None,'tol':.0001,'ccp_alpha':0}]
+      - local allpipe `allpipe')
+      = local allpipe ( 'passthrough', 'stdscaler', 'passthrough',)
+      - }
+      - local yvar : word 1 of `varlist'
+      = local yvar : word 1 of medhousevalue longitude latitude houseage rooms bedrooms population households medinc
+      - local xvars: list varlist - yvar
+      - if ("`debug'"!="") {
+      = if (""!="") {
+        forvalues i = 1(1)`mcount' {
+        di "xvars`i' = `xvars`i''"
+        }
+        }
+      - local xvars_all
+      - local xvars_all_t
+      - local allxvars (
+      - local allxvars_t (
+      - forvalues i = 1(1)`mcount' {
+      = forvalues i = 1(1)3 {
+      - if "`xvars`i''"=="" {
+      = if ""=="" {
+      - local xvars`i' `xvars'
+      = local xvars1 longitude latitude houseage rooms bedrooms population households medinc
+      - }
+      - local xvars_orig`i' `xvars`i''
+      = local xvars_orig1 longitude latitude houseage rooms bedrooms population households medinc
+      - fvstrip `xvars`i'' if `touse', dropomit expand
+      = fvstrip longitude latitude houseage rooms bedrooms population households medinc if __000000, dropomit expand
+        ------------------------------------------------------------------------------------------------------------------ begin pystacked1.fvstrip ---
+        - version 11.2
+        - syntax [anything] [if] , [ dropomit expand onebyone NOIsily ]
+        - if "`expand'"~="" {
+        = if "expand"~="" {
+        - if "`onebyone'"=="" {
+        = if ""=="" {
+        - fvexpand `anything' `if'
+        = fvexpand longitude latitude houseage rooms bedrooms population households medinc if __000000
+        - local anything `r(varlist)'
+        = local anything longitude latitude houseage rooms bedrooms population households medinc
+        - }
+        - else {
+          foreach vn of local anything {
+          fvexpand `vn' `if'
+          local newlist `newlist' `r(varlist)'
+          }
+          local anything : list clean newlist
+          }
+        - }
+        - foreach vn of local anything {
+        - if "`dropomit'"~="" {
+        = if "dropomit"~="" {
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts longitude
+        - if ~`r(omit)' {
+        = if ~0 {
+        - local unstripped `unstripped' `vn'
+        = local unstripped  longitude
+        - }
+        - }
+        - else {
+          local unstripped `unstripped' `vn'
+          }
+        - }
+        - if "`dropomit'"~="" {
+        = if "dropomit"~="" {
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts latitude
+        - if ~`r(omit)' {
+        = if ~0 {
+        - local unstripped `unstripped' `vn'
+        = local unstripped longitude latitude
+        - }
+        - }
+        - else {
+          local unstripped `unstripped' `vn'
+          }
+        - }
+        - if "`dropomit'"~="" {
+        = if "dropomit"~="" {
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts houseage
+        - if ~`r(omit)' {
+        = if ~0 {
+        - local unstripped `unstripped' `vn'
+        = local unstripped longitude latitude houseage
+        - }
+        - }
+        - else {
+          local unstripped `unstripped' `vn'
+          }
+        - }
+        - if "`dropomit'"~="" {
+        = if "dropomit"~="" {
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts rooms
+        - if ~`r(omit)' {
+        = if ~0 {
+        - local unstripped `unstripped' `vn'
+        = local unstripped longitude latitude houseage rooms
+        - }
+        - }
+        - else {
+          local unstripped `unstripped' `vn'
+          }
+        - }
+        - if "`dropomit'"~="" {
+        = if "dropomit"~="" {
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts bedrooms
+        - if ~`r(omit)' {
+        = if ~0 {
+        - local unstripped `unstripped' `vn'
+        = local unstripped longitude latitude houseage rooms bedrooms
+        - }
+        - }
+        - else {
+          local unstripped `unstripped' `vn'
+          }
+        - }
+        - if "`dropomit'"~="" {
+        = if "dropomit"~="" {
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts population
+        - if ~`r(omit)' {
+        = if ~0 {
+        - local unstripped `unstripped' `vn'
+        = local unstripped longitude latitude houseage rooms bedrooms population
+        - }
+        - }
+        - else {
+          local unstripped `unstripped' `vn'
+          }
+        - }
+        - if "`dropomit'"~="" {
+        = if "dropomit"~="" {
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts households
+        - if ~`r(omit)' {
+        = if ~0 {
+        - local unstripped `unstripped' `vn'
+        = local unstripped longitude latitude houseage rooms bedrooms population households
+        - }
+        - }
+        - else {
+          local unstripped `unstripped' `vn'
+          }
+        - }
+        - if "`dropomit'"~="" {
+        = if "dropomit"~="" {
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts medinc
+        - if ~`r(omit)' {
+        = if ~0 {
+        - local unstripped `unstripped' `vn'
+        = local unstripped longitude latitude houseage rooms bedrooms population households medinc
+        - }
+        - }
+        - else {
+          local unstripped `unstripped' `vn'
+          }
+        - }
+        - foreach vn of local unstripped {
+        - local svn ""
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts longitude
+        - if "`r(type)'"=="variable" & "`r(op)'"=="" {
+        = if "variable"=="variable" & ""=="" {
+        - local svn `vn'
+        = local svn longitude
+        - }
+        - else if "`r(type)'"=="variable" & "`r(op)'"=="o" {
+        = else if "variable"=="variable" & ""=="o" {
+          local svn `r(name)'
+          }
+        - else if "`r(type)'"=="variable" {
+        = else if "variable"=="variable" {
+          local op `r(op)'
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if "`r(type)'"=="factor" {
+        = else if "variable"=="factor" {
+          local op `r(op)'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if"`r(type)'"=="interaction" {
+        = else if"variable"=="interaction" {
+          forvalues i=1/`r(k_names)' {
+          local op `r(op`i')'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local opv `op'.`r(name`i')'
+          if `i'==1 {
+          local svn `opv'
+          }
+          else {
+          local svn `svn'#`opv'
+          }
+          }
+          }
+        - else if "`r(type)'"=="product" {
+        = else if "variable"=="product" {
+          di as err "fvstrip error - type=product for `vn'"
+          exit 198
+          }
+        - else if "`r(type)'"=="error" {
+        = else if "variable"=="error" {
+          di as err "fvstrip error - type=error for `vn'"
+          exit 198
+          }
+        - else {
+          di as err "fvstrip error - unknown type for `vn'"
+          exit 198
+          }
+        - local stripped `stripped' `svn'
+        = local stripped  longitude
+        - }
+        - local svn ""
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts latitude
+        - if "`r(type)'"=="variable" & "`r(op)'"=="" {
+        = if "variable"=="variable" & ""=="" {
+        - local svn `vn'
+        = local svn latitude
+        - }
+        - else if "`r(type)'"=="variable" & "`r(op)'"=="o" {
+        = else if "variable"=="variable" & ""=="o" {
+          local svn `r(name)'
+          }
+        - else if "`r(type)'"=="variable" {
+        = else if "variable"=="variable" {
+          local op `r(op)'
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if "`r(type)'"=="factor" {
+        = else if "variable"=="factor" {
+          local op `r(op)'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if"`r(type)'"=="interaction" {
+        = else if"variable"=="interaction" {
+          forvalues i=1/`r(k_names)' {
+          local op `r(op`i')'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local opv `op'.`r(name`i')'
+          if `i'==1 {
+          local svn `opv'
+          }
+          else {
+          local svn `svn'#`opv'
+          }
+          }
+          }
+        - else if "`r(type)'"=="product" {
+        = else if "variable"=="product" {
+          di as err "fvstrip error - type=product for `vn'"
+          exit 198
+          }
+        - else if "`r(type)'"=="error" {
+        = else if "variable"=="error" {
+          di as err "fvstrip error - type=error for `vn'"
+          exit 198
+          }
+        - else {
+          di as err "fvstrip error - unknown type for `vn'"
+          exit 198
+          }
+        - local stripped `stripped' `svn'
+        = local stripped longitude latitude
+        - }
+        - local svn ""
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts houseage
+        - if "`r(type)'"=="variable" & "`r(op)'"=="" {
+        = if "variable"=="variable" & ""=="" {
+        - local svn `vn'
+        = local svn houseage
+        - }
+        - else if "`r(type)'"=="variable" & "`r(op)'"=="o" {
+        = else if "variable"=="variable" & ""=="o" {
+          local svn `r(name)'
+          }
+        - else if "`r(type)'"=="variable" {
+        = else if "variable"=="variable" {
+          local op `r(op)'
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if "`r(type)'"=="factor" {
+        = else if "variable"=="factor" {
+          local op `r(op)'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if"`r(type)'"=="interaction" {
+        = else if"variable"=="interaction" {
+          forvalues i=1/`r(k_names)' {
+          local op `r(op`i')'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local opv `op'.`r(name`i')'
+          if `i'==1 {
+          local svn `opv'
+          }
+          else {
+          local svn `svn'#`opv'
+          }
+          }
+          }
+        - else if "`r(type)'"=="product" {
+        = else if "variable"=="product" {
+          di as err "fvstrip error - type=product for `vn'"
+          exit 198
+          }
+        - else if "`r(type)'"=="error" {
+        = else if "variable"=="error" {
+          di as err "fvstrip error - type=error for `vn'"
+          exit 198
+          }
+        - else {
+          di as err "fvstrip error - unknown type for `vn'"
+          exit 198
+          }
+        - local stripped `stripped' `svn'
+        = local stripped longitude latitude houseage
+        - }
+        - local svn ""
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts rooms
+        - if "`r(type)'"=="variable" & "`r(op)'"=="" {
+        = if "variable"=="variable" & ""=="" {
+        - local svn `vn'
+        = local svn rooms
+        - }
+        - else if "`r(type)'"=="variable" & "`r(op)'"=="o" {
+        = else if "variable"=="variable" & ""=="o" {
+          local svn `r(name)'
+          }
+        - else if "`r(type)'"=="variable" {
+        = else if "variable"=="variable" {
+          local op `r(op)'
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if "`r(type)'"=="factor" {
+        = else if "variable"=="factor" {
+          local op `r(op)'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if"`r(type)'"=="interaction" {
+        = else if"variable"=="interaction" {
+          forvalues i=1/`r(k_names)' {
+          local op `r(op`i')'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local opv `op'.`r(name`i')'
+          if `i'==1 {
+          local svn `opv'
+          }
+          else {
+          local svn `svn'#`opv'
+          }
+          }
+          }
+        - else if "`r(type)'"=="product" {
+        = else if "variable"=="product" {
+          di as err "fvstrip error - type=product for `vn'"
+          exit 198
+          }
+        - else if "`r(type)'"=="error" {
+        = else if "variable"=="error" {
+          di as err "fvstrip error - type=error for `vn'"
+          exit 198
+          }
+        - else {
+          di as err "fvstrip error - unknown type for `vn'"
+          exit 198
+          }
+        - local stripped `stripped' `svn'
+        = local stripped longitude latitude houseage rooms
+        - }
+        - local svn ""
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts bedrooms
+        - if "`r(type)'"=="variable" & "`r(op)'"=="" {
+        = if "variable"=="variable" & ""=="" {
+        - local svn `vn'
+        = local svn bedrooms
+        - }
+        - else if "`r(type)'"=="variable" & "`r(op)'"=="o" {
+        = else if "variable"=="variable" & ""=="o" {
+          local svn `r(name)'
+          }
+        - else if "`r(type)'"=="variable" {
+        = else if "variable"=="variable" {
+          local op `r(op)'
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if "`r(type)'"=="factor" {
+        = else if "variable"=="factor" {
+          local op `r(op)'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if"`r(type)'"=="interaction" {
+        = else if"variable"=="interaction" {
+          forvalues i=1/`r(k_names)' {
+          local op `r(op`i')'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local opv `op'.`r(name`i')'
+          if `i'==1 {
+          local svn `opv'
+          }
+          else {
+          local svn `svn'#`opv'
+          }
+          }
+          }
+        - else if "`r(type)'"=="product" {
+        = else if "variable"=="product" {
+          di as err "fvstrip error - type=product for `vn'"
+          exit 198
+          }
+        - else if "`r(type)'"=="error" {
+        = else if "variable"=="error" {
+          di as err "fvstrip error - type=error for `vn'"
+          exit 198
+          }
+        - else {
+          di as err "fvstrip error - unknown type for `vn'"
+          exit 198
+          }
+        - local stripped `stripped' `svn'
+        = local stripped longitude latitude houseage rooms bedrooms
+        - }
+        - local svn ""
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts population
+        - if "`r(type)'"=="variable" & "`r(op)'"=="" {
+        = if "variable"=="variable" & ""=="" {
+        - local svn `vn'
+        = local svn population
+        - }
+        - else if "`r(type)'"=="variable" & "`r(op)'"=="o" {
+        = else if "variable"=="variable" & ""=="o" {
+          local svn `r(name)'
+          }
+        - else if "`r(type)'"=="variable" {
+        = else if "variable"=="variable" {
+          local op `r(op)'
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if "`r(type)'"=="factor" {
+        = else if "variable"=="factor" {
+          local op `r(op)'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if"`r(type)'"=="interaction" {
+        = else if"variable"=="interaction" {
+          forvalues i=1/`r(k_names)' {
+          local op `r(op`i')'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local opv `op'.`r(name`i')'
+          if `i'==1 {
+          local svn `opv'
+          }
+          else {
+          local svn `svn'#`opv'
+          }
+          }
+          }
+        - else if "`r(type)'"=="product" {
+        = else if "variable"=="product" {
+          di as err "fvstrip error - type=product for `vn'"
+          exit 198
+          }
+        - else if "`r(type)'"=="error" {
+        = else if "variable"=="error" {
+          di as err "fvstrip error - type=error for `vn'"
+          exit 198
+          }
+        - else {
+          di as err "fvstrip error - unknown type for `vn'"
+          exit 198
+          }
+        - local stripped `stripped' `svn'
+        = local stripped longitude latitude houseage rooms bedrooms population
+        - }
+        - local svn ""
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts households
+        - if "`r(type)'"=="variable" & "`r(op)'"=="" {
+        = if "variable"=="variable" & ""=="" {
+        - local svn `vn'
+        = local svn households
+        - }
+        - else if "`r(type)'"=="variable" & "`r(op)'"=="o" {
+        = else if "variable"=="variable" & ""=="o" {
+          local svn `r(name)'
+          }
+        - else if "`r(type)'"=="variable" {
+        = else if "variable"=="variable" {
+          local op `r(op)'
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if "`r(type)'"=="factor" {
+        = else if "variable"=="factor" {
+          local op `r(op)'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if"`r(type)'"=="interaction" {
+        = else if"variable"=="interaction" {
+          forvalues i=1/`r(k_names)' {
+          local op `r(op`i')'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local opv `op'.`r(name`i')'
+          if `i'==1 {
+          local svn `opv'
+          }
+          else {
+          local svn `svn'#`opv'
+          }
+          }
+          }
+        - else if "`r(type)'"=="product" {
+        = else if "variable"=="product" {
+          di as err "fvstrip error - type=product for `vn'"
+          exit 198
+          }
+        - else if "`r(type)'"=="error" {
+        = else if "variable"=="error" {
+          di as err "fvstrip error - type=error for `vn'"
+          exit 198
+          }
+        - else {
+          di as err "fvstrip error - unknown type for `vn'"
+          exit 198
+          }
+        - local stripped `stripped' `svn'
+        = local stripped longitude latitude houseage rooms bedrooms population households
+        - }
+        - local svn ""
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts medinc
+        - if "`r(type)'"=="variable" & "`r(op)'"=="" {
+        = if "variable"=="variable" & ""=="" {
+        - local svn `vn'
+        = local svn medinc
+        - }
+        - else if "`r(type)'"=="variable" & "`r(op)'"=="o" {
+        = else if "variable"=="variable" & ""=="o" {
+          local svn `r(name)'
+          }
+        - else if "`r(type)'"=="variable" {
+        = else if "variable"=="variable" {
+          local op `r(op)'
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if "`r(type)'"=="factor" {
+        = else if "variable"=="factor" {
+          local op `r(op)'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if"`r(type)'"=="interaction" {
+        = else if"variable"=="interaction" {
+          forvalues i=1/`r(k_names)' {
+          local op `r(op`i')'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local opv `op'.`r(name`i')'
+          if `i'==1 {
+          local svn `opv'
+          }
+          else {
+          local svn `svn'#`opv'
+          }
+          }
+          }
+        - else if "`r(type)'"=="product" {
+        = else if "variable"=="product" {
+          di as err "fvstrip error - type=product for `vn'"
+          exit 198
+          }
+        - else if "`r(type)'"=="error" {
+        = else if "variable"=="error" {
+          di as err "fvstrip error - type=error for `vn'"
+          exit 198
+          }
+        - else {
+          di as err "fvstrip error - unknown type for `vn'"
+          exit 198
+          }
+        - local stripped `stripped' `svn'
+        = local stripped longitude latitude houseage rooms bedrooms population households medinc
+        - }
+        - local stripped : list retokenize stripped
+        - if "`noisily'"~="" {
+        = if ""~="" {
+          di as result "`stripped'"
+          }
+        - return local varlist `stripped'
+        = return local varlist longitude latitude houseage rooms bedrooms population households medinc
+        -------------------------------------------------------------------------------------------------------------------- end pystacked1.fvstrip ---
+      - local xvars`i' `r(varlist)'
+      = local xvars1 longitude latitude houseage rooms bedrooms population households medinc
+      - local allxvars `allxvars' '`xvars`i''',
+      = local allxvars ( 'longitude latitude houseage rooms bedrooms population households medinc',
+      - local xvars_all `xvars_all' `xvars`i''
+      = local xvars_all  longitude latitude houseage rooms bedrooms population households medinc
+      - local tlist
+      - foreach v in `xvars`i'' {
+      = foreach v in longitude latitude houseage rooms bedrooms population households medinc {
+      - fvrevar `v' if `touse'
+      = fvrevar longitude if __000000
+      - local tlist `tlist' `r(varlist)'
+      = local tlist  longitude
+      - }
+      - fvrevar `v' if `touse'
+      = fvrevar latitude if __000000
+      - local tlist `tlist' `r(varlist)'
+      = local tlist longitude latitude
+      - }
+      - fvrevar `v' if `touse'
+      = fvrevar houseage if __000000
+      - local tlist `tlist' `r(varlist)'
+      = local tlist longitude latitude houseage
+      - }
+      - fvrevar `v' if `touse'
+      = fvrevar rooms if __000000
+      - local tlist `tlist' `r(varlist)'
+      = local tlist longitude latitude houseage rooms
+      - }
+      - fvrevar `v' if `touse'
+      = fvrevar bedrooms if __000000
+      - local tlist `tlist' `r(varlist)'
+      = local tlist longitude latitude houseage rooms bedrooms
+      - }
+      - fvrevar `v' if `touse'
+      = fvrevar population if __000000
+      - local tlist `tlist' `r(varlist)'
+      = local tlist longitude latitude houseage rooms bedrooms population
+      - }
+      - fvrevar `v' if `touse'
+      = fvrevar households if __000000
+      - local tlist `tlist' `r(varlist)'
+      = local tlist longitude latitude houseage rooms bedrooms population households
+      - }
+      - fvrevar `v' if `touse'
+      = fvrevar medinc if __000000
+      - local tlist `tlist' `r(varlist)'
+      = local tlist longitude latitude houseage rooms bedrooms population households medinc
+      - }
+      - local xvars`i' `tlist'
+      = local xvars1 longitude latitude houseage rooms bedrooms population households medinc
+      - if "`method`i''"=="ols" {
+      = if "ols"=="ols" {
+      - _rmcoll `xvars`i'' if `touse', forcedrop
+      = _rmcoll longitude latitude houseage rooms bedrooms population households medinc if __000000, forcedrop
+      - local xvars`i' `r(varlist)'
+      = local xvars1 longitude latitude houseage rooms bedrooms population households medinc
+      - }
+      - local xvars_all_t `xvars_all_t' `xvars`i''
+      = local xvars_all_t  longitude latitude houseage rooms bedrooms population households medinc
+      - local allxvars_t `allxvars_t' '`xvars`i''',
+      = local allxvars_t ( 'longitude latitude houseage rooms bedrooms population households medinc',
+      - }
+      - if "`xvars`i''"=="" {
+      = if ""=="" {
+      - local xvars`i' `xvars'
+      = local xvars2 longitude latitude houseage rooms bedrooms population households medinc
+      - }
+      - local xvars_orig`i' `xvars`i''
+      = local xvars_orig2 longitude latitude houseage rooms bedrooms population households medinc
+      - fvstrip `xvars`i'' if `touse', dropomit expand
+      = fvstrip longitude latitude houseage rooms bedrooms population households medinc if __000000, dropomit expand
+        ------------------------------------------------------------------------------------------------------------------ begin pystacked1.fvstrip ---
+        - version 11.2
+        - syntax [anything] [if] , [ dropomit expand onebyone NOIsily ]
+        - if "`expand'"~="" {
+        = if "expand"~="" {
+        - if "`onebyone'"=="" {
+        = if ""=="" {
+        - fvexpand `anything' `if'
+        = fvexpand longitude latitude houseage rooms bedrooms population households medinc if __000000
+        - local anything `r(varlist)'
+        = local anything longitude latitude houseage rooms bedrooms population households medinc
+        - }
+        - else {
+          foreach vn of local anything {
+          fvexpand `vn' `if'
+          local newlist `newlist' `r(varlist)'
+          }
+          local anything : list clean newlist
+          }
+        - }
+        - foreach vn of local anything {
+        - if "`dropomit'"~="" {
+        = if "dropomit"~="" {
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts longitude
+        - if ~`r(omit)' {
+        = if ~0 {
+        - local unstripped `unstripped' `vn'
+        = local unstripped  longitude
+        - }
+        - }
+        - else {
+          local unstripped `unstripped' `vn'
+          }
+        - }
+        - if "`dropomit'"~="" {
+        = if "dropomit"~="" {
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts latitude
+        - if ~`r(omit)' {
+        = if ~0 {
+        - local unstripped `unstripped' `vn'
+        = local unstripped longitude latitude
+        - }
+        - }
+        - else {
+          local unstripped `unstripped' `vn'
+          }
+        - }
+        - if "`dropomit'"~="" {
+        = if "dropomit"~="" {
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts houseage
+        - if ~`r(omit)' {
+        = if ~0 {
+        - local unstripped `unstripped' `vn'
+        = local unstripped longitude latitude houseage
+        - }
+        - }
+        - else {
+          local unstripped `unstripped' `vn'
+          }
+        - }
+        - if "`dropomit'"~="" {
+        = if "dropomit"~="" {
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts rooms
+        - if ~`r(omit)' {
+        = if ~0 {
+        - local unstripped `unstripped' `vn'
+        = local unstripped longitude latitude houseage rooms
+        - }
+        - }
+        - else {
+          local unstripped `unstripped' `vn'
+          }
+        - }
+        - if "`dropomit'"~="" {
+        = if "dropomit"~="" {
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts bedrooms
+        - if ~`r(omit)' {
+        = if ~0 {
+        - local unstripped `unstripped' `vn'
+        = local unstripped longitude latitude houseage rooms bedrooms
+        - }
+        - }
+        - else {
+          local unstripped `unstripped' `vn'
+          }
+        - }
+        - if "`dropomit'"~="" {
+        = if "dropomit"~="" {
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts population
+        - if ~`r(omit)' {
+        = if ~0 {
+        - local unstripped `unstripped' `vn'
+        = local unstripped longitude latitude houseage rooms bedrooms population
+        - }
+        - }
+        - else {
+          local unstripped `unstripped' `vn'
+          }
+        - }
+        - if "`dropomit'"~="" {
+        = if "dropomit"~="" {
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts households
+        - if ~`r(omit)' {
+        = if ~0 {
+        - local unstripped `unstripped' `vn'
+        = local unstripped longitude latitude houseage rooms bedrooms population households
+        - }
+        - }
+        - else {
+          local unstripped `unstripped' `vn'
+          }
+        - }
+        - if "`dropomit'"~="" {
+        = if "dropomit"~="" {
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts medinc
+        - if ~`r(omit)' {
+        = if ~0 {
+        - local unstripped `unstripped' `vn'
+        = local unstripped longitude latitude houseage rooms bedrooms population households medinc
+        - }
+        - }
+        - else {
+          local unstripped `unstripped' `vn'
+          }
+        - }
+        - foreach vn of local unstripped {
+        - local svn ""
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts longitude
+        - if "`r(type)'"=="variable" & "`r(op)'"=="" {
+        = if "variable"=="variable" & ""=="" {
+        - local svn `vn'
+        = local svn longitude
+        - }
+        - else if "`r(type)'"=="variable" & "`r(op)'"=="o" {
+        = else if "variable"=="variable" & ""=="o" {
+          local svn `r(name)'
+          }
+        - else if "`r(type)'"=="variable" {
+        = else if "variable"=="variable" {
+          local op `r(op)'
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if "`r(type)'"=="factor" {
+        = else if "variable"=="factor" {
+          local op `r(op)'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if"`r(type)'"=="interaction" {
+        = else if"variable"=="interaction" {
+          forvalues i=1/`r(k_names)' {
+          local op `r(op`i')'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local opv `op'.`r(name`i')'
+          if `i'==1 {
+          local svn `opv'
+          }
+          else {
+          local svn `svn'#`opv'
+          }
+          }
+          }
+        - else if "`r(type)'"=="product" {
+        = else if "variable"=="product" {
+          di as err "fvstrip error - type=product for `vn'"
+          exit 198
+          }
+        - else if "`r(type)'"=="error" {
+        = else if "variable"=="error" {
+          di as err "fvstrip error - type=error for `vn'"
+          exit 198
+          }
+        - else {
+          di as err "fvstrip error - unknown type for `vn'"
+          exit 198
+          }
+        - local stripped `stripped' `svn'
+        = local stripped  longitude
+        - }
+        - local svn ""
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts latitude
+        - if "`r(type)'"=="variable" & "`r(op)'"=="" {
+        = if "variable"=="variable" & ""=="" {
+        - local svn `vn'
+        = local svn latitude
+        - }
+        - else if "`r(type)'"=="variable" & "`r(op)'"=="o" {
+        = else if "variable"=="variable" & ""=="o" {
+          local svn `r(name)'
+          }
+        - else if "`r(type)'"=="variable" {
+        = else if "variable"=="variable" {
+          local op `r(op)'
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if "`r(type)'"=="factor" {
+        = else if "variable"=="factor" {
+          local op `r(op)'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if"`r(type)'"=="interaction" {
+        = else if"variable"=="interaction" {
+          forvalues i=1/`r(k_names)' {
+          local op `r(op`i')'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local opv `op'.`r(name`i')'
+          if `i'==1 {
+          local svn `opv'
+          }
+          else {
+          local svn `svn'#`opv'
+          }
+          }
+          }
+        - else if "`r(type)'"=="product" {
+        = else if "variable"=="product" {
+          di as err "fvstrip error - type=product for `vn'"
+          exit 198
+          }
+        - else if "`r(type)'"=="error" {
+        = else if "variable"=="error" {
+          di as err "fvstrip error - type=error for `vn'"
+          exit 198
+          }
+        - else {
+          di as err "fvstrip error - unknown type for `vn'"
+          exit 198
+          }
+        - local stripped `stripped' `svn'
+        = local stripped longitude latitude
+        - }
+        - local svn ""
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts houseage
+        - if "`r(type)'"=="variable" & "`r(op)'"=="" {
+        = if "variable"=="variable" & ""=="" {
+        - local svn `vn'
+        = local svn houseage
+        - }
+        - else if "`r(type)'"=="variable" & "`r(op)'"=="o" {
+        = else if "variable"=="variable" & ""=="o" {
+          local svn `r(name)'
+          }
+        - else if "`r(type)'"=="variable" {
+        = else if "variable"=="variable" {
+          local op `r(op)'
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if "`r(type)'"=="factor" {
+        = else if "variable"=="factor" {
+          local op `r(op)'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if"`r(type)'"=="interaction" {
+        = else if"variable"=="interaction" {
+          forvalues i=1/`r(k_names)' {
+          local op `r(op`i')'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local opv `op'.`r(name`i')'
+          if `i'==1 {
+          local svn `opv'
+          }
+          else {
+          local svn `svn'#`opv'
+          }
+          }
+          }
+        - else if "`r(type)'"=="product" {
+        = else if "variable"=="product" {
+          di as err "fvstrip error - type=product for `vn'"
+          exit 198
+          }
+        - else if "`r(type)'"=="error" {
+        = else if "variable"=="error" {
+          di as err "fvstrip error - type=error for `vn'"
+          exit 198
+          }
+        - else {
+          di as err "fvstrip error - unknown type for `vn'"
+          exit 198
+          }
+        - local stripped `stripped' `svn'
+        = local stripped longitude latitude houseage
+        - }
+        - local svn ""
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts rooms
+        - if "`r(type)'"=="variable" & "`r(op)'"=="" {
+        = if "variable"=="variable" & ""=="" {
+        - local svn `vn'
+        = local svn rooms
+        - }
+        - else if "`r(type)'"=="variable" & "`r(op)'"=="o" {
+        = else if "variable"=="variable" & ""=="o" {
+          local svn `r(name)'
+          }
+        - else if "`r(type)'"=="variable" {
+        = else if "variable"=="variable" {
+          local op `r(op)'
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if "`r(type)'"=="factor" {
+        = else if "variable"=="factor" {
+          local op `r(op)'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if"`r(type)'"=="interaction" {
+        = else if"variable"=="interaction" {
+          forvalues i=1/`r(k_names)' {
+          local op `r(op`i')'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local opv `op'.`r(name`i')'
+          if `i'==1 {
+          local svn `opv'
+          }
+          else {
+          local svn `svn'#`opv'
+          }
+          }
+          }
+        - else if "`r(type)'"=="product" {
+        = else if "variable"=="product" {
+          di as err "fvstrip error - type=product for `vn'"
+          exit 198
+          }
+        - else if "`r(type)'"=="error" {
+        = else if "variable"=="error" {
+          di as err "fvstrip error - type=error for `vn'"
+          exit 198
+          }
+        - else {
+          di as err "fvstrip error - unknown type for `vn'"
+          exit 198
+          }
+        - local stripped `stripped' `svn'
+        = local stripped longitude latitude houseage rooms
+        - }
+        - local svn ""
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts bedrooms
+        - if "`r(type)'"=="variable" & "`r(op)'"=="" {
+        = if "variable"=="variable" & ""=="" {
+        - local svn `vn'
+        = local svn bedrooms
+        - }
+        - else if "`r(type)'"=="variable" & "`r(op)'"=="o" {
+        = else if "variable"=="variable" & ""=="o" {
+          local svn `r(name)'
+          }
+        - else if "`r(type)'"=="variable" {
+        = else if "variable"=="variable" {
+          local op `r(op)'
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if "`r(type)'"=="factor" {
+        = else if "variable"=="factor" {
+          local op `r(op)'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if"`r(type)'"=="interaction" {
+        = else if"variable"=="interaction" {
+          forvalues i=1/`r(k_names)' {
+          local op `r(op`i')'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local opv `op'.`r(name`i')'
+          if `i'==1 {
+          local svn `opv'
+          }
+          else {
+          local svn `svn'#`opv'
+          }
+          }
+          }
+        - else if "`r(type)'"=="product" {
+        = else if "variable"=="product" {
+          di as err "fvstrip error - type=product for `vn'"
+          exit 198
+          }
+        - else if "`r(type)'"=="error" {
+        = else if "variable"=="error" {
+          di as err "fvstrip error - type=error for `vn'"
+          exit 198
+          }
+        - else {
+          di as err "fvstrip error - unknown type for `vn'"
+          exit 198
+          }
+        - local stripped `stripped' `svn'
+        = local stripped longitude latitude houseage rooms bedrooms
+        - }
+        - local svn ""
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts population
+        - if "`r(type)'"=="variable" & "`r(op)'"=="" {
+        = if "variable"=="variable" & ""=="" {
+        - local svn `vn'
+        = local svn population
+        - }
+        - else if "`r(type)'"=="variable" & "`r(op)'"=="o" {
+        = else if "variable"=="variable" & ""=="o" {
+          local svn `r(name)'
+          }
+        - else if "`r(type)'"=="variable" {
+        = else if "variable"=="variable" {
+          local op `r(op)'
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if "`r(type)'"=="factor" {
+        = else if "variable"=="factor" {
+          local op `r(op)'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if"`r(type)'"=="interaction" {
+        = else if"variable"=="interaction" {
+          forvalues i=1/`r(k_names)' {
+          local op `r(op`i')'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local opv `op'.`r(name`i')'
+          if `i'==1 {
+          local svn `opv'
+          }
+          else {
+          local svn `svn'#`opv'
+          }
+          }
+          }
+        - else if "`r(type)'"=="product" {
+        = else if "variable"=="product" {
+          di as err "fvstrip error - type=product for `vn'"
+          exit 198
+          }
+        - else if "`r(type)'"=="error" {
+        = else if "variable"=="error" {
+          di as err "fvstrip error - type=error for `vn'"
+          exit 198
+          }
+        - else {
+          di as err "fvstrip error - unknown type for `vn'"
+          exit 198
+          }
+        - local stripped `stripped' `svn'
+        = local stripped longitude latitude houseage rooms bedrooms population
+        - }
+        - local svn ""
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts households
+        - if "`r(type)'"=="variable" & "`r(op)'"=="" {
+        = if "variable"=="variable" & ""=="" {
+        - local svn `vn'
+        = local svn households
+        - }
+        - else if "`r(type)'"=="variable" & "`r(op)'"=="o" {
+        = else if "variable"=="variable" & ""=="o" {
+          local svn `r(name)'
+          }
+        - else if "`r(type)'"=="variable" {
+        = else if "variable"=="variable" {
+          local op `r(op)'
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if "`r(type)'"=="factor" {
+        = else if "variable"=="factor" {
+          local op `r(op)'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if"`r(type)'"=="interaction" {
+        = else if"variable"=="interaction" {
+          forvalues i=1/`r(k_names)' {
+          local op `r(op`i')'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local opv `op'.`r(name`i')'
+          if `i'==1 {
+          local svn `opv'
+          }
+          else {
+          local svn `svn'#`opv'
+          }
+          }
+          }
+        - else if "`r(type)'"=="product" {
+        = else if "variable"=="product" {
+          di as err "fvstrip error - type=product for `vn'"
+          exit 198
+          }
+        - else if "`r(type)'"=="error" {
+        = else if "variable"=="error" {
+          di as err "fvstrip error - type=error for `vn'"
+          exit 198
+          }
+        - else {
+          di as err "fvstrip error - unknown type for `vn'"
+          exit 198
+          }
+        - local stripped `stripped' `svn'
+        = local stripped longitude latitude houseage rooms bedrooms population households
+        - }
+        - local svn ""
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts medinc
+        - if "`r(type)'"=="variable" & "`r(op)'"=="" {
+        = if "variable"=="variable" & ""=="" {
+        - local svn `vn'
+        = local svn medinc
+        - }
+        - else if "`r(type)'"=="variable" & "`r(op)'"=="o" {
+        = else if "variable"=="variable" & ""=="o" {
+          local svn `r(name)'
+          }
+        - else if "`r(type)'"=="variable" {
+        = else if "variable"=="variable" {
+          local op `r(op)'
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if "`r(type)'"=="factor" {
+        = else if "variable"=="factor" {
+          local op `r(op)'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if"`r(type)'"=="interaction" {
+        = else if"variable"=="interaction" {
+          forvalues i=1/`r(k_names)' {
+          local op `r(op`i')'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local opv `op'.`r(name`i')'
+          if `i'==1 {
+          local svn `opv'
+          }
+          else {
+          local svn `svn'#`opv'
+          }
+          }
+          }
+        - else if "`r(type)'"=="product" {
+        = else if "variable"=="product" {
+          di as err "fvstrip error - type=product for `vn'"
+          exit 198
+          }
+        - else if "`r(type)'"=="error" {
+        = else if "variable"=="error" {
+          di as err "fvstrip error - type=error for `vn'"
+          exit 198
+          }
+        - else {
+          di as err "fvstrip error - unknown type for `vn'"
+          exit 198
+          }
+        - local stripped `stripped' `svn'
+        = local stripped longitude latitude houseage rooms bedrooms population households medinc
+        - }
+        - local stripped : list retokenize stripped
+        - if "`noisily'"~="" {
+        = if ""~="" {
+          di as result "`stripped'"
+          }
+        - return local varlist `stripped'
+        = return local varlist longitude latitude houseage rooms bedrooms population households medinc
+        -------------------------------------------------------------------------------------------------------------------- end pystacked1.fvstrip ---
+      - local xvars`i' `r(varlist)'
+      = local xvars2 longitude latitude houseage rooms bedrooms population households medinc
+      - local allxvars `allxvars' '`xvars`i''',
+      = local allxvars ( 'longitude latitude houseage rooms bedrooms population households medinc', 'longitude latitude houseage rooms bedrooms populat
+> ion households medinc',
+      - local xvars_all `xvars_all' `xvars`i''
+      = local xvars_all longitude latitude houseage rooms bedrooms population households medinc longitude latitude houseage rooms bedrooms population h
+> ouseholds medinc
+      - local tlist
+      - foreach v in `xvars`i'' {
+      = foreach v in longitude latitude houseage rooms bedrooms population households medinc {
+      - fvrevar `v' if `touse'
+      = fvrevar longitude if __000000
+      - local tlist `tlist' `r(varlist)'
+      = local tlist  longitude
+      - }
+      - fvrevar `v' if `touse'
+      = fvrevar latitude if __000000
+      - local tlist `tlist' `r(varlist)'
+      = local tlist longitude latitude
+      - }
+      - fvrevar `v' if `touse'
+      = fvrevar houseage if __000000
+      - local tlist `tlist' `r(varlist)'
+      = local tlist longitude latitude houseage
+      - }
+      - fvrevar `v' if `touse'
+      = fvrevar rooms if __000000
+      - local tlist `tlist' `r(varlist)'
+      = local tlist longitude latitude houseage rooms
+      - }
+      - fvrevar `v' if `touse'
+      = fvrevar bedrooms if __000000
+      - local tlist `tlist' `r(varlist)'
+      = local tlist longitude latitude houseage rooms bedrooms
+      - }
+      - fvrevar `v' if `touse'
+      = fvrevar population if __000000
+      - local tlist `tlist' `r(varlist)'
+      = local tlist longitude latitude houseage rooms bedrooms population
+      - }
+      - fvrevar `v' if `touse'
+      = fvrevar households if __000000
+      - local tlist `tlist' `r(varlist)'
+      = local tlist longitude latitude houseage rooms bedrooms population households
+      - }
+      - fvrevar `v' if `touse'
+      = fvrevar medinc if __000000
+      - local tlist `tlist' `r(varlist)'
+      = local tlist longitude latitude houseage rooms bedrooms population households medinc
+      - }
+      - local xvars`i' `tlist'
+      = local xvars2 longitude latitude houseage rooms bedrooms population households medinc
+      - if "`method`i''"=="ols" {
+      = if "lassocv"=="ols" {
+        _rmcoll `xvars`i'' if `touse', forcedrop
+        local xvars`i' `r(varlist)'
+        }
+      - local xvars_all_t `xvars_all_t' `xvars`i''
+      = local xvars_all_t longitude latitude houseage rooms bedrooms population households medinc longitude latitude houseage rooms bedrooms population
+>  households medinc
+      - local allxvars_t `allxvars_t' '`xvars`i''',
+      = local allxvars_t ( 'longitude latitude houseage rooms bedrooms population households medinc', 'longitude latitude houseage rooms bedrooms popul
+> ation households medinc',
+      - }
+      - if "`xvars`i''"=="" {
+      = if ""=="" {
+      - local xvars`i' `xvars'
+      = local xvars3 longitude latitude houseage rooms bedrooms population households medinc
+      - }
+      - local xvars_orig`i' `xvars`i''
+      = local xvars_orig3 longitude latitude houseage rooms bedrooms population households medinc
+      - fvstrip `xvars`i'' if `touse', dropomit expand
+      = fvstrip longitude latitude houseage rooms bedrooms population households medinc if __000000, dropomit expand
+        ------------------------------------------------------------------------------------------------------------------ begin pystacked1.fvstrip ---
+        - version 11.2
+        - syntax [anything] [if] , [ dropomit expand onebyone NOIsily ]
+        - if "`expand'"~="" {
+        = if "expand"~="" {
+        - if "`onebyone'"=="" {
+        = if ""=="" {
+        - fvexpand `anything' `if'
+        = fvexpand longitude latitude houseage rooms bedrooms population households medinc if __000000
+        - local anything `r(varlist)'
+        = local anything longitude latitude houseage rooms bedrooms population households medinc
+        - }
+        - else {
+          foreach vn of local anything {
+          fvexpand `vn' `if'
+          local newlist `newlist' `r(varlist)'
+          }
+          local anything : list clean newlist
+          }
+        - }
+        - foreach vn of local anything {
+        - if "`dropomit'"~="" {
+        = if "dropomit"~="" {
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts longitude
+        - if ~`r(omit)' {
+        = if ~0 {
+        - local unstripped `unstripped' `vn'
+        = local unstripped  longitude
+        - }
+        - }
+        - else {
+          local unstripped `unstripped' `vn'
+          }
+        - }
+        - if "`dropomit'"~="" {
+        = if "dropomit"~="" {
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts latitude
+        - if ~`r(omit)' {
+        = if ~0 {
+        - local unstripped `unstripped' `vn'
+        = local unstripped longitude latitude
+        - }
+        - }
+        - else {
+          local unstripped `unstripped' `vn'
+          }
+        - }
+        - if "`dropomit'"~="" {
+        = if "dropomit"~="" {
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts houseage
+        - if ~`r(omit)' {
+        = if ~0 {
+        - local unstripped `unstripped' `vn'
+        = local unstripped longitude latitude houseage
+        - }
+        - }
+        - else {
+          local unstripped `unstripped' `vn'
+          }
+        - }
+        - if "`dropomit'"~="" {
+        = if "dropomit"~="" {
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts rooms
+        - if ~`r(omit)' {
+        = if ~0 {
+        - local unstripped `unstripped' `vn'
+        = local unstripped longitude latitude houseage rooms
+        - }
+        - }
+        - else {
+          local unstripped `unstripped' `vn'
+          }
+        - }
+        - if "`dropomit'"~="" {
+        = if "dropomit"~="" {
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts bedrooms
+        - if ~`r(omit)' {
+        = if ~0 {
+        - local unstripped `unstripped' `vn'
+        = local unstripped longitude latitude houseage rooms bedrooms
+        - }
+        - }
+        - else {
+          local unstripped `unstripped' `vn'
+          }
+        - }
+        - if "`dropomit'"~="" {
+        = if "dropomit"~="" {
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts population
+        - if ~`r(omit)' {
+        = if ~0 {
+        - local unstripped `unstripped' `vn'
+        = local unstripped longitude latitude houseage rooms bedrooms population
+        - }
+        - }
+        - else {
+          local unstripped `unstripped' `vn'
+          }
+        - }
+        - if "`dropomit'"~="" {
+        = if "dropomit"~="" {
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts households
+        - if ~`r(omit)' {
+        = if ~0 {
+        - local unstripped `unstripped' `vn'
+        = local unstripped longitude latitude houseage rooms bedrooms population households
+        - }
+        - }
+        - else {
+          local unstripped `unstripped' `vn'
+          }
+        - }
+        - if "`dropomit'"~="" {
+        = if "dropomit"~="" {
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts medinc
+        - if ~`r(omit)' {
+        = if ~0 {
+        - local unstripped `unstripped' `vn'
+        = local unstripped longitude latitude houseage rooms bedrooms population households medinc
+        - }
+        - }
+        - else {
+          local unstripped `unstripped' `vn'
+          }
+        - }
+        - foreach vn of local unstripped {
+        - local svn ""
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts longitude
+        - if "`r(type)'"=="variable" & "`r(op)'"=="" {
+        = if "variable"=="variable" & ""=="" {
+        - local svn `vn'
+        = local svn longitude
+        - }
+        - else if "`r(type)'"=="variable" & "`r(op)'"=="o" {
+        = else if "variable"=="variable" & ""=="o" {
+          local svn `r(name)'
+          }
+        - else if "`r(type)'"=="variable" {
+        = else if "variable"=="variable" {
+          local op `r(op)'
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if "`r(type)'"=="factor" {
+        = else if "variable"=="factor" {
+          local op `r(op)'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if"`r(type)'"=="interaction" {
+        = else if"variable"=="interaction" {
+          forvalues i=1/`r(k_names)' {
+          local op `r(op`i')'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local opv `op'.`r(name`i')'
+          if `i'==1 {
+          local svn `opv'
+          }
+          else {
+          local svn `svn'#`opv'
+          }
+          }
+          }
+        - else if "`r(type)'"=="product" {
+        = else if "variable"=="product" {
+          di as err "fvstrip error - type=product for `vn'"
+          exit 198
+          }
+        - else if "`r(type)'"=="error" {
+        = else if "variable"=="error" {
+          di as err "fvstrip error - type=error for `vn'"
+          exit 198
+          }
+        - else {
+          di as err "fvstrip error - unknown type for `vn'"
+          exit 198
+          }
+        - local stripped `stripped' `svn'
+        = local stripped  longitude
+        - }
+        - local svn ""
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts latitude
+        - if "`r(type)'"=="variable" & "`r(op)'"=="" {
+        = if "variable"=="variable" & ""=="" {
+        - local svn `vn'
+        = local svn latitude
+        - }
+        - else if "`r(type)'"=="variable" & "`r(op)'"=="o" {
+        = else if "variable"=="variable" & ""=="o" {
+          local svn `r(name)'
+          }
+        - else if "`r(type)'"=="variable" {
+        = else if "variable"=="variable" {
+          local op `r(op)'
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if "`r(type)'"=="factor" {
+        = else if "variable"=="factor" {
+          local op `r(op)'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if"`r(type)'"=="interaction" {
+        = else if"variable"=="interaction" {
+          forvalues i=1/`r(k_names)' {
+          local op `r(op`i')'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local opv `op'.`r(name`i')'
+          if `i'==1 {
+          local svn `opv'
+          }
+          else {
+          local svn `svn'#`opv'
+          }
+          }
+          }
+        - else if "`r(type)'"=="product" {
+        = else if "variable"=="product" {
+          di as err "fvstrip error - type=product for `vn'"
+          exit 198
+          }
+        - else if "`r(type)'"=="error" {
+        = else if "variable"=="error" {
+          di as err "fvstrip error - type=error for `vn'"
+          exit 198
+          }
+        - else {
+          di as err "fvstrip error - unknown type for `vn'"
+          exit 198
+          }
+        - local stripped `stripped' `svn'
+        = local stripped longitude latitude
+        - }
+        - local svn ""
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts houseage
+        - if "`r(type)'"=="variable" & "`r(op)'"=="" {
+        = if "variable"=="variable" & ""=="" {
+        - local svn `vn'
+        = local svn houseage
+        - }
+        - else if "`r(type)'"=="variable" & "`r(op)'"=="o" {
+        = else if "variable"=="variable" & ""=="o" {
+          local svn `r(name)'
+          }
+        - else if "`r(type)'"=="variable" {
+        = else if "variable"=="variable" {
+          local op `r(op)'
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if "`r(type)'"=="factor" {
+        = else if "variable"=="factor" {
+          local op `r(op)'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if"`r(type)'"=="interaction" {
+        = else if"variable"=="interaction" {
+          forvalues i=1/`r(k_names)' {
+          local op `r(op`i')'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local opv `op'.`r(name`i')'
+          if `i'==1 {
+          local svn `opv'
+          }
+          else {
+          local svn `svn'#`opv'
+          }
+          }
+          }
+        - else if "`r(type)'"=="product" {
+        = else if "variable"=="product" {
+          di as err "fvstrip error - type=product for `vn'"
+          exit 198
+          }
+        - else if "`r(type)'"=="error" {
+        = else if "variable"=="error" {
+          di as err "fvstrip error - type=error for `vn'"
+          exit 198
+          }
+        - else {
+          di as err "fvstrip error - unknown type for `vn'"
+          exit 198
+          }
+        - local stripped `stripped' `svn'
+        = local stripped longitude latitude houseage
+        - }
+        - local svn ""
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts rooms
+        - if "`r(type)'"=="variable" & "`r(op)'"=="" {
+        = if "variable"=="variable" & ""=="" {
+        - local svn `vn'
+        = local svn rooms
+        - }
+        - else if "`r(type)'"=="variable" & "`r(op)'"=="o" {
+        = else if "variable"=="variable" & ""=="o" {
+          local svn `r(name)'
+          }
+        - else if "`r(type)'"=="variable" {
+        = else if "variable"=="variable" {
+          local op `r(op)'
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if "`r(type)'"=="factor" {
+        = else if "variable"=="factor" {
+          local op `r(op)'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if"`r(type)'"=="interaction" {
+        = else if"variable"=="interaction" {
+          forvalues i=1/`r(k_names)' {
+          local op `r(op`i')'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local opv `op'.`r(name`i')'
+          if `i'==1 {
+          local svn `opv'
+          }
+          else {
+          local svn `svn'#`opv'
+          }
+          }
+          }
+        - else if "`r(type)'"=="product" {
+        = else if "variable"=="product" {
+          di as err "fvstrip error - type=product for `vn'"
+          exit 198
+          }
+        - else if "`r(type)'"=="error" {
+        = else if "variable"=="error" {
+          di as err "fvstrip error - type=error for `vn'"
+          exit 198
+          }
+        - else {
+          di as err "fvstrip error - unknown type for `vn'"
+          exit 198
+          }
+        - local stripped `stripped' `svn'
+        = local stripped longitude latitude houseage rooms
+        - }
+        - local svn ""
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts bedrooms
+        - if "`r(type)'"=="variable" & "`r(op)'"=="" {
+        = if "variable"=="variable" & ""=="" {
+        - local svn `vn'
+        = local svn bedrooms
+        - }
+        - else if "`r(type)'"=="variable" & "`r(op)'"=="o" {
+        = else if "variable"=="variable" & ""=="o" {
+          local svn `r(name)'
+          }
+        - else if "`r(type)'"=="variable" {
+        = else if "variable"=="variable" {
+          local op `r(op)'
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if "`r(type)'"=="factor" {
+        = else if "variable"=="factor" {
+          local op `r(op)'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if"`r(type)'"=="interaction" {
+        = else if"variable"=="interaction" {
+          forvalues i=1/`r(k_names)' {
+          local op `r(op`i')'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local opv `op'.`r(name`i')'
+          if `i'==1 {
+          local svn `opv'
+          }
+          else {
+          local svn `svn'#`opv'
+          }
+          }
+          }
+        - else if "`r(type)'"=="product" {
+        = else if "variable"=="product" {
+          di as err "fvstrip error - type=product for `vn'"
+          exit 198
+          }
+        - else if "`r(type)'"=="error" {
+        = else if "variable"=="error" {
+          di as err "fvstrip error - type=error for `vn'"
+          exit 198
+          }
+        - else {
+          di as err "fvstrip error - unknown type for `vn'"
+          exit 198
+          }
+        - local stripped `stripped' `svn'
+        = local stripped longitude latitude houseage rooms bedrooms
+        - }
+        - local svn ""
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts population
+        - if "`r(type)'"=="variable" & "`r(op)'"=="" {
+        = if "variable"=="variable" & ""=="" {
+        - local svn `vn'
+        = local svn population
+        - }
+        - else if "`r(type)'"=="variable" & "`r(op)'"=="o" {
+        = else if "variable"=="variable" & ""=="o" {
+          local svn `r(name)'
+          }
+        - else if "`r(type)'"=="variable" {
+        = else if "variable"=="variable" {
+          local op `r(op)'
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if "`r(type)'"=="factor" {
+        = else if "variable"=="factor" {
+          local op `r(op)'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if"`r(type)'"=="interaction" {
+        = else if"variable"=="interaction" {
+          forvalues i=1/`r(k_names)' {
+          local op `r(op`i')'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local opv `op'.`r(name`i')'
+          if `i'==1 {
+          local svn `opv'
+          }
+          else {
+          local svn `svn'#`opv'
+          }
+          }
+          }
+        - else if "`r(type)'"=="product" {
+        = else if "variable"=="product" {
+          di as err "fvstrip error - type=product for `vn'"
+          exit 198
+          }
+        - else if "`r(type)'"=="error" {
+        = else if "variable"=="error" {
+          di as err "fvstrip error - type=error for `vn'"
+          exit 198
+          }
+        - else {
+          di as err "fvstrip error - unknown type for `vn'"
+          exit 198
+          }
+        - local stripped `stripped' `svn'
+        = local stripped longitude latitude houseage rooms bedrooms population
+        - }
+        - local svn ""
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts households
+        - if "`r(type)'"=="variable" & "`r(op)'"=="" {
+        = if "variable"=="variable" & ""=="" {
+        - local svn `vn'
+        = local svn households
+        - }
+        - else if "`r(type)'"=="variable" & "`r(op)'"=="o" {
+        = else if "variable"=="variable" & ""=="o" {
+          local svn `r(name)'
+          }
+        - else if "`r(type)'"=="variable" {
+        = else if "variable"=="variable" {
+          local op `r(op)'
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if "`r(type)'"=="factor" {
+        = else if "variable"=="factor" {
+          local op `r(op)'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if"`r(type)'"=="interaction" {
+        = else if"variable"=="interaction" {
+          forvalues i=1/`r(k_names)' {
+          local op `r(op`i')'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local opv `op'.`r(name`i')'
+          if `i'==1 {
+          local svn `opv'
+          }
+          else {
+          local svn `svn'#`opv'
+          }
+          }
+          }
+        - else if "`r(type)'"=="product" {
+        = else if "variable"=="product" {
+          di as err "fvstrip error - type=product for `vn'"
+          exit 198
+          }
+        - else if "`r(type)'"=="error" {
+        = else if "variable"=="error" {
+          di as err "fvstrip error - type=error for `vn'"
+          exit 198
+          }
+        - else {
+          di as err "fvstrip error - unknown type for `vn'"
+          exit 198
+          }
+        - local stripped `stripped' `svn'
+        = local stripped longitude latitude houseage rooms bedrooms population households
+        - }
+        - local svn ""
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts medinc
+        - if "`r(type)'"=="variable" & "`r(op)'"=="" {
+        = if "variable"=="variable" & ""=="" {
+        - local svn `vn'
+        = local svn medinc
+        - }
+        - else if "`r(type)'"=="variable" & "`r(op)'"=="o" {
+        = else if "variable"=="variable" & ""=="o" {
+          local svn `r(name)'
+          }
+        - else if "`r(type)'"=="variable" {
+        = else if "variable"=="variable" {
+          local op `r(op)'
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if "`r(type)'"=="factor" {
+        = else if "variable"=="factor" {
+          local op `r(op)'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if"`r(type)'"=="interaction" {
+        = else if"variable"=="interaction" {
+          forvalues i=1/`r(k_names)' {
+          local op `r(op`i')'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local opv `op'.`r(name`i')'
+          if `i'==1 {
+          local svn `opv'
+          }
+          else {
+          local svn `svn'#`opv'
+          }
+          }
+          }
+        - else if "`r(type)'"=="product" {
+        = else if "variable"=="product" {
+          di as err "fvstrip error - type=product for `vn'"
+          exit 198
+          }
+        - else if "`r(type)'"=="error" {
+        = else if "variable"=="error" {
+          di as err "fvstrip error - type=error for `vn'"
+          exit 198
+          }
+        - else {
+          di as err "fvstrip error - unknown type for `vn'"
+          exit 198
+          }
+        - local stripped `stripped' `svn'
+        = local stripped longitude latitude houseage rooms bedrooms population households medinc
+        - }
+        - local stripped : list retokenize stripped
+        - if "`noisily'"~="" {
+        = if ""~="" {
+          di as result "`stripped'"
+          }
+        - return local varlist `stripped'
+        = return local varlist longitude latitude houseage rooms bedrooms population households medinc
+        -------------------------------------------------------------------------------------------------------------------- end pystacked1.fvstrip ---
+      - local xvars`i' `r(varlist)'
+      = local xvars3 longitude latitude houseage rooms bedrooms population households medinc
+      - local allxvars `allxvars' '`xvars`i''',
+      = local allxvars ( 'longitude latitude houseage rooms bedrooms population households medinc', 'longitude latitude houseage rooms bedrooms populat
+> ion households medinc', 'longitude latitude houseage rooms bedrooms population households medinc',
+      - local xvars_all `xvars_all' `xvars`i''
+      = local xvars_all longitude latitude houseage rooms bedrooms population households medinc longitude latitude houseage rooms bedrooms population h
+> ouseholds medinc longitude latitude houseage rooms bedrooms population households medinc
+      - local tlist
+      - foreach v in `xvars`i'' {
+      = foreach v in longitude latitude houseage rooms bedrooms population households medinc {
+      - fvrevar `v' if `touse'
+      = fvrevar longitude if __000000
+      - local tlist `tlist' `r(varlist)'
+      = local tlist  longitude
+      - }
+      - fvrevar `v' if `touse'
+      = fvrevar latitude if __000000
+      - local tlist `tlist' `r(varlist)'
+      = local tlist longitude latitude
+      - }
+      - fvrevar `v' if `touse'
+      = fvrevar houseage if __000000
+      - local tlist `tlist' `r(varlist)'
+      = local tlist longitude latitude houseage
+      - }
+      - fvrevar `v' if `touse'
+      = fvrevar rooms if __000000
+      - local tlist `tlist' `r(varlist)'
+      = local tlist longitude latitude houseage rooms
+      - }
+      - fvrevar `v' if `touse'
+      = fvrevar bedrooms if __000000
+      - local tlist `tlist' `r(varlist)'
+      = local tlist longitude latitude houseage rooms bedrooms
+      - }
+      - fvrevar `v' if `touse'
+      = fvrevar population if __000000
+      - local tlist `tlist' `r(varlist)'
+      = local tlist longitude latitude houseage rooms bedrooms population
+      - }
+      - fvrevar `v' if `touse'
+      = fvrevar households if __000000
+      - local tlist `tlist' `r(varlist)'
+      = local tlist longitude latitude houseage rooms bedrooms population households
+      - }
+      - fvrevar `v' if `touse'
+      = fvrevar medinc if __000000
+      - local tlist `tlist' `r(varlist)'
+      = local tlist longitude latitude houseage rooms bedrooms population households medinc
+      - }
+      - local xvars`i' `tlist'
+      = local xvars3 longitude latitude houseage rooms bedrooms population households medinc
+      - if "`method`i''"=="ols" {
+      = if "gradboost"=="ols" {
+        _rmcoll `xvars`i'' if `touse', forcedrop
+        local xvars`i' `r(varlist)'
+        }
+      - local xvars_all_t `xvars_all_t' `xvars`i''
+      = local xvars_all_t longitude latitude houseage rooms bedrooms population households medinc longitude latitude houseage rooms bedrooms population
+>  households medinc longitude latitude houseage rooms bedrooms population households medinc
+      - local allxvars_t `allxvars_t' '`xvars`i''',
+      = local allxvars_t ( 'longitude latitude houseage rooms bedrooms population households medinc', 'longitude latitude houseage rooms bedrooms popul
+> ation households medinc', 'longitude latitude houseage rooms bedrooms population households medinc',
+      - }
+      - local allxvars `allxvars')
+      = local allxvars ( 'longitude latitude houseage rooms bedrooms population households medinc', 'longitude latitude houseage rooms bedrooms populat
+> ion households medinc', 'longitude latitude houseage rooms bedrooms population households medinc',)
+      - local allxvars_t `allxvars_t')
+      = local allxvars_t ( 'longitude latitude houseage rooms bedrooms population households medinc', 'longitude latitude houseage rooms bedrooms popul
+> ation households medinc', 'longitude latitude houseage rooms bedrooms population households medinc',)
+      - local xvars_all_t : list uniq xvars_all_t
+      - local xvars_all : list uniq xvars_all
+      - fvstrip `yvar' if `touse', dropomit expand
+      = fvstrip medhousevalue if __000000, dropomit expand
+        ------------------------------------------------------------------------------------------------------------------ begin pystacked1.fvstrip ---
+        - version 11.2
+        - syntax [anything] [if] , [ dropomit expand onebyone NOIsily ]
+        - if "`expand'"~="" {
+        = if "expand"~="" {
+        - if "`onebyone'"=="" {
+        = if ""=="" {
+        - fvexpand `anything' `if'
+        = fvexpand medhousevalue if __000000
+        - local anything `r(varlist)'
+        = local anything medhousevalue
+        - }
+        - else {
+          foreach vn of local anything {
+          fvexpand `vn' `if'
+          local newlist `newlist' `r(varlist)'
+          }
+          local anything : list clean newlist
+          }
+        - }
+        - foreach vn of local anything {
+        - if "`dropomit'"~="" {
+        = if "dropomit"~="" {
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts medhousevalue
+        - if ~`r(omit)' {
+        = if ~0 {
+        - local unstripped `unstripped' `vn'
+        = local unstripped  medhousevalue
+        - }
+        - }
+        - else {
+          local unstripped `unstripped' `vn'
+          }
+        - }
+        - foreach vn of local unstripped {
+        - local svn ""
+        - _ms_parse_parts `vn'
+        = _ms_parse_parts medhousevalue
+        - if "`r(type)'"=="variable" & "`r(op)'"=="" {
+        = if "variable"=="variable" & ""=="" {
+        - local svn `vn'
+        = local svn medhousevalue
+        - }
+        - else if "`r(type)'"=="variable" & "`r(op)'"=="o" {
+        = else if "variable"=="variable" & ""=="o" {
+          local svn `r(name)'
+          }
+        - else if "`r(type)'"=="variable" {
+        = else if "variable"=="variable" {
+          local op `r(op)'
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if "`r(type)'"=="factor" {
+        = else if "variable"=="factor" {
+          local op `r(op)'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local svn `op'.`r(name)'
+          }
+        - else if"`r(type)'"=="interaction" {
+        = else if"variable"=="interaction" {
+          forvalues i=1/`r(k_names)' {
+          local op `r(op`i')'
+          local op : subinstr local op "b" "", all
+          local op : subinstr local op "n" "", all
+          local op : subinstr local op "o" "", all
+          local opv `op'.`r(name`i')'
+          if `i'==1 {
+          local svn `opv'
+          }
+          else {
+          local svn `svn'#`opv'
+          }
+          }
+          }
+        - else if "`r(type)'"=="product" {
+        = else if "variable"=="product" {
+          di as err "fvstrip error - type=product for `vn'"
+          exit 198
+          }
+        - else if "`r(type)'"=="error" {
+        = else if "variable"=="error" {
+          di as err "fvstrip error - type=error for `vn'"
+          exit 198
+          }
+        - else {
+          di as err "fvstrip error - unknown type for `vn'"
+          exit 198
+          }
+        - local stripped `stripped' `svn'
+        = local stripped  medhousevalue
+        - }
+        - local stripped : list retokenize stripped
+        - if "`noisily'"~="" {
+        = if ""~="" {
+          di as result "`stripped'"
+          }
+        - return local varlist `stripped'
+        = return local varlist medhousevalue
+        -------------------------------------------------------------------------------------------------------------------- end pystacked1.fvstrip ---
+      - local yvar_t `r(varlist)'
+      = local yvar_t medhousevalue
+      - fvrevar `yvar_t' if `touse'
+      = fvrevar medhousevalue if __000000
+      - local yvar_t `r(varlist)'
+      = local yvar_t medhousevalue
+      - if ("`debug'"!="") {
+      = if (""!="") {
+        di "Default predictors = `xvars'"
+        di "All predictors = `xvars_all'"
+        di "All predictors (temp) = `xvars_all_t'"
+        di "Predictors for each learner = `allxvars'"
+        di "Predictors for each learner (temp) = `allxvars_t'"
+        forvalues i = 1(1)`mcount' {
+        di "xvars`i' = `xvars`i''"
+        }
+        di "Summarize yvar_t and xvars_all_t:"
+        sum `yvar_t' `xvars_all_t' if `touse'
+        }
+      - tempvar esample
+      - qui gen byte `esample' = `touse'
+      = qui gen byte __000005 = __000000
+      - ereturn post, depname(`yvar') esample(`esample') obs(`N')
+      = ereturn post, depname(medhousevalue) esample(__000005) obs(20640)
+      - if "`noestimate'"=="" {
+      = if ""=="" {
+      - python: run_stacked( "`type'", "`finalest'", "`allmethods'", "`yvar_t'", "`xvars_all_t'", "`wvar'", "`training_var'", "`allpyopt'", "`allpipe'"
+> , "`allxvars_t'", "`touse'", `pyseed', "`nosavepred'", "`nosavebasexb'", "`voting'" , "`votetype'", "`voteweights'", `njobs' , "`fid'", "`prefit'", "
+> `cv'", `bfolds', `shuffle', "`id'", `cvc', "`showpymessages'", "`backend'", "`sparse'", "`showoptions'" )
+      = python: run_stacked( "reg", "nnls1", "ols lassocv gradboost", "medhousevalue", "longitude latitude houseage rooms bedrooms population household
+> s medinc", "", "", "[{'fit_intercept':True,'positive':False} , {'alphas':None,'l1_ratio':1,'eps':.001,'n_alphas':100,'fit_intercept':True,'max_iter':
+> 1000,'tol':.0001,'n_jobs':None,'positive':False,'selection':'cyclic','random_state':rng} , {'loss':'squared_error','learning_rate':.1,'n_estimators':
+> 100,'subsample':1,'criterion':'friedman_mse','min_samples_split':2,'min_samples_leaf':1,'min_weight_fraction_leaf':0,'max_depth':3,'min_impurity_decr
+> ease':0,'init':None,'random_state':rng,'max_features':None,'alpha':.9,'max_leaf_nodes':None,'warm_start':False,'validation_fraction':.1,'n_iter_no_ch
+> ange':None,'tol':.0001,'ccp_alpha':0}]", "( 'passthrough', 'stdscaler', 'passthrough',)", "( 'longitude latitude houseage rooms bedrooms population h
+> ouseholds medinc', 'longitude latitude houseage rooms bedrooms population households medinc', 'longitude latitude houseage rooms bedrooms population 
+> households medinc',)", "__000000", 33182714, "", "", "" , "", "", 0 , "__000003", "", "", 5, 1, "__000004", 500, "", "threading", "", "" )
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/Users/kahrens/MyProjects/pystacked/pystacked.py", line 644, in run_stacked
+    print(Tx)
+          ^^
+UnboundLocalError: cannot access local variable 'Tx' where it is not associated with a value
+        }
+      ------------------------------------------------------------------------------------------------------------------- end pystacked1._pystacked ---
+      }
+    -------------------------------------------------------------------------------------------------------------------------------- end pystacked1 ---
+    }
+  ----------------------------------------------------------------------------------------------------------------------------------- end pystacked ---
+r(7102);
 
-. 
-. foreach meth in lassocv elasticcv ridgecv rf gradboost {
-  2.         pystacked v58 v1-v57, type(class) m(logit `meth') showc
-  3. }
+end of do-file
 
-Stacking weights:
----------------------------------------
-  Method         |      Weight
------------------+---------------------
-  logit          |      0.6739518
-  lassocv        |      0.3260482
+r(7102);
 
-Coefficients logit:
-----------------------------------------
-  Predictor       |      Value
-------------------+---------------------
-  v1              |     -0.1179569
-  v2              |     -0.1900100
-  v3              |      0.0581990
-  v4              |      5.3697248
-  v5              |      0.3795651
-  v6              |      0.2380470
-  v7              |      0.8980884
-  v8              |      0.2277181
-  v9              |      0.1992870
-  v10             |      0.0830520
-  v11             |     -0.0505583
-  v12             |     -0.1205222
-  v13             |     -0.0258984
-  v14             |      0.0469273
-  v15             |      0.3218610
-  v16             |      0.8646395
-  v17             |      0.4195419
-  v18             |      0.0639255
-  v19             |      0.1425000
-  v20             |      0.5225859
-  v21             |      0.2921303
-  v22             |      0.2075705
-  v23             |      0.7907717
-  v24             |      0.1876249
-  v25             |     -3.1780905
-  v26             |     -0.9711114
-  v27             |    -35.5968972
-  v28             |      0.2426810
-  v29             |     -1.2685533
-  v30             |     -0.1515458
-  v31             |     -0.0739819
-  v32             |      0.8836881
-  v33             |     -0.4070677
-  v34             |      0.1678270
-  v35             |     -1.1232154
-  v36             |      0.3752010
-  v37             |      0.0178832
-  v38             |     -0.1347784
-  v39             |     -0.3787394
-  v40             |     -0.1097709
-  v41             |    -14.2160216
-  v42             |     -2.0756730
-  v43             |     -0.2731493
-  v44             |     -0.9848931
-  v45             |     -0.7940632
-  v46             |     -1.2974393
-  v47             |     -0.1757831
-  v48             |     -1.1157710
-  v49             |     -0.3168069
-  v50             |     -0.0501774
-  v51             |     -0.0725830
-  v52             |      0.2863579
-  v53             |      1.3153398
-  v54             |      1.0699341
-  v55             |      0.2032155
-  v56             |      1.7614043
-  v57             |      0.5055226
-  _cons           |    -10.9866960
-Note: Coefficients correspond to decision boundary function.
-
-Coefficients lassocv:
-----------------------------------------
-  Predictor       |      Value
-------------------+---------------------
-  v1              |     -0.0927524
-  v2              |     -0.2087767
-  v3              |      0.0713842
-  v4              |      0.8026795
-  v5              |      0.3675217
-  v6              |      0.1745002
-  v7              |      0.9521076
-  v8              |      0.2259153
-  v9              |      0.1538970
-  v10             |      0.0725012
-  v11             |     -0.0451868
-  v12             |     -0.1304141
-  v13             |     -0.0299883
-  v14             |      0.0342585
-  v15             |      0.2485486
-  v16             |      0.8363669
-  v17             |      0.4116139
-  v18             |      0.0737981
-  v19             |      0.1497646
-  v20             |      0.4734683
-  v21             |      0.2808785
-  v22             |      0.2961755
-  v23             |      0.8962999
-  v24             |      0.2381985
-  v25             |     -2.6561784
-  v26             |     -1.0617995
-  v27             |     -3.6930977
-  v28             |      0.2339028
-  v29             |     -0.9617245
-  v30             |     -0.1514536
-  v31             |     -0.4798314
-  v32             |     -0.1653773
-  v33             |     -0.5046302
-  v34             |     -0.2216528
-  v35             |     -0.9496137
-  v36             |      0.3643417
-  v37             |      0.0028702
-  v38             |     -0.1266692
-  v39             |     -0.3308447
-  v40             |     -0.1887239
-  v41             |     -1.2131609
-  v42             |     -1.4872199
-  v43             |     -0.2313890
-  v44             |     -0.9268591
-  v45             |     -0.8128207
-  v46             |     -1.2851569
-  v47             |     -0.1666576
-  v48             |     -0.9109827
-  v49             |     -0.3281005
-  v50             |     -0.0577573
-  v51             |     -0.1367399
-  v52             |      0.3456474
-  v53             |      1.3566301
-  v54             |      0.8239033
-  v55             |     -0.1222615
-  v56             |      1.3008071
-  v57             |      0.4150875
-  _cons           |     -2.5026034
-Note: Coefficients correspond to decision boundary function.
-
-Stacking weights:
----------------------------------------
-  Method         |      Weight
------------------+---------------------
-  logit          |      0.7936633
-  elasticcv      |      0.2063367
-
-Coefficients logit:
-----------------------------------------
-  Predictor       |      Value
-------------------+---------------------
-  v1              |     -0.1179569
-  v2              |     -0.1900100
-  v3              |      0.0581990
-  v4              |      5.3697248
-  v5              |      0.3795651
-  v6              |      0.2380470
-  v7              |      0.8980884
-  v8              |      0.2277181
-  v9              |      0.1992870
-  v10             |      0.0830520
-  v11             |     -0.0505583
-  v12             |     -0.1205222
-  v13             |     -0.0258984
-  v14             |      0.0469273
-  v15             |      0.3218610
-  v16             |      0.8646395
-  v17             |      0.4195419
-  v18             |      0.0639255
-  v19             |      0.1425000
-  v20             |      0.5225859
-  v21             |      0.2921303
-  v22             |      0.2075705
-  v23             |      0.7907717
-  v24             |      0.1876249
-  v25             |     -3.1780905
-  v26             |     -0.9711114
-  v27             |    -35.5968972
-  v28             |      0.2426810
-  v29             |     -1.2685533
-  v30             |     -0.1515458
-  v31             |     -0.0739819
-  v32             |      0.8836881
-  v33             |     -0.4070677
-  v34             |      0.1678270
-  v35             |     -1.1232154
-  v36             |      0.3752010
-  v37             |      0.0178832
-  v38             |     -0.1347784
-  v39             |     -0.3787394
-  v40             |     -0.1097709
-  v41             |    -14.2160216
-  v42             |     -2.0756730
-  v43             |     -0.2731493
-  v44             |     -0.9848931
-  v45             |     -0.7940632
-  v46             |     -1.2974393
-  v47             |     -0.1757831
-  v48             |     -1.1157710
-  v49             |     -0.3168069
-  v50             |     -0.0501774
-  v51             |     -0.0725830
-  v52             |      0.2863579
-  v53             |      1.3153398
-  v54             |      1.0699341
-  v55             |      0.2032155
-  v56             |      1.7614043
-  v57             |      0.5055226
-  _cons           |    -10.9866960
-Note: Coefficients correspond to decision boundary function.
-
-Coefficients elasticcv:
-----------------------------------------
-  Predictor       |      Value
-------------------+---------------------
-  v1              |     -0.0939449
-  v2              |     -0.2087687
-  v3              |      0.0711424
-  v4              |      0.8322985
-  v5              |      0.3674088
-  v6              |      0.1750651
-  v7              |      0.9487451
-  v8              |      0.2255434
-  v9              |      0.1549128
-  v10             |      0.0722846
-  v11             |     -0.0456211
-  v12             |     -0.1298287
-  v13             |     -0.0301083
-  v14             |      0.0348886
-  v15             |      0.2481631
-  v16             |      0.8418445
-  v17             |      0.4100889
-  v18             |      0.0735661
-  v19             |      0.1492821
-  v20             |      0.4687352
-  v21             |      0.2815580
-  v22             |      0.2919727
-  v23             |      0.8978450
-  v24             |      0.2373671
-  v25             |     -2.6219283
-  v26             |     -1.1052138
-  v27             |     -3.7565029
-  v28             |      0.2355017
-  v29             |     -1.0034278
-  v30             |     -0.1501052
-  v31             |     -0.5491865
-  v32             |     -0.1919725
-  v33             |     -0.4998247
-  v34             |     -0.2065952
-  v35             |     -0.9856720
-  v36             |      0.3640279
-  v37             |      0.0026734
-  v38             |     -0.1276458
-  v39             |     -0.3325274
-  v40             |     -0.1807252
-  v41             |     -1.2653273
-  v42             |     -1.4913100
-  v43             |     -0.2290622
-  v44             |     -0.9304369
-  v45             |     -0.8125845
-  v46             |     -1.2804159
-  v47             |     -0.1668555
-  v48             |     -0.9061920
-  v49             |     -0.3282946
-  v50             |     -0.0572943
-  v51             |     -0.1362474
-  v52             |      0.3436530
-  v53             |      1.3519903
-  v54             |      0.8501562
-  v55             |     -0.0810669
-  v56             |      1.2900648
-  v57             |      0.4166264
-  _cons           |     -2.5433030
-Note: Coefficients correspond to decision boundary function.
+. exit, clear

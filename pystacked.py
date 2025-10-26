@@ -171,6 +171,51 @@ def get_index(lst, w):
             sel.append(ix)
     return(sel)
 
+def cvc(Yhat1, Yhat2, fid, bootnum=500, random_state=None):
+    Yhat1 = np.asarray(Yhat1)
+    if Yhat1.ndim == 1:
+        Yhat1 = Yhat1[:, None]
+    Yhat2 = np.asarray(Yhat2)
+    fid = np.asarray(fid)
+    
+    N = Yhat1.shape[0]
+    
+    # step 1
+    zeta = (Yhat1**2) - (Yhat2**2)
+    
+    # step 2: compute group means manually
+    fid_uni = np.unique(fid)
+    mu = np.zeros((len(fid_uni), zeta.shape[1]))
+    for i, f in enumerate(fid_uni):
+        mu[i, :] = zeta[fid == f, :].mean(axis=0)
+    
+    # step 3: group centering
+    zeta_til = zeta.copy()
+    for i, f in enumerate(fid_uni):
+        zeta_til[fid == f, :] = zeta_til[fid == f, :] - mu[i, :]
+    
+    # step 4
+    zeta_m = zeta.mean(axis=0)
+    zeta_sd = zeta_til.std(axis=0, ddof=1)
+    
+    # step 5
+    Tx = np.max(np.sqrt(N) * zeta_m / zeta_sd)
+    
+    # step 6
+    rng = (random_state if isinstance(random_state, np.random.Generator)
+           else np.random.default_rng(random_state))
+    S = zeta_til / zeta_sd
+    
+    Txb = np.empty(bootnum)
+    for b in range(bootnum):
+        eps = rng.normal(size=N)
+        boot_vec = (S * eps[:, None]).sum(axis=0) / np.sqrt(N)
+        Txb[b] = np.max(boot_vec)
+    
+    # step 7
+    Pval = np.mean(Txb > Tx)
+    return Pval
+
 def build_pipeline(pipes,xvars,xvar_sel):
     #
     #builds the pipeline for each base learner
@@ -621,36 +666,15 @@ def run_stacked(type, # regression or classification
             __main__.cvalid = np.empty((cv0,cv1))*np.nan
 
     # cvc
-    if type=="reg" and len(methods)>0:
+    if (type=="reg") and (len(methods)>1):
         nobs = len(y)
         residuals = y[...,None] - __main__.cvalid
         fid_list = np.unique(fid)
         cvc_p = [0]*len(methods)
         for i in range(len(methods)):
-            yhat1 = residuals[:,i]
-            yhat1 = np.repeat(yhat1.reshape(-1,1),len(methods)-1,1)
-            yhat2 = np.delete(residuals,i,1)
-            zeta = np.square(yhat1) - np.square(yhat2)
-            zeta_til = []
-            for j in fid_list:
-                zeta_m_j = np.mean(zeta[(fid==j)],0)
-                zeta_til_j = zeta[(fid==j)] - zeta_m_j
-                if len(zeta_til)==0:
-                    zeta_til = zeta_til_j
-                else:
-                    zeta_til = np.append(zeta_til, zeta_til_j, axis=0)
-            zeta_m = np.mean(zeta,0)
-            zeta_sd = np.sqrt(np.diagonal(np.cov(zeta_til,rowvar=False)))
-            Tx = np.max(np.sqrt(nobs) * zeta_m / zeta_sd)
-            Txb_count = 0
-            B = 1
-            while B <= cvcbootnum:
-                bw = np.random.normal(0, 1, nobs)
-                Txb = np.max(1/np.sqrt(nobs)*np.sum((zeta_til / zeta_sd)*bw[...,None]))
-                if Txb > Tx:
-                    Txb_count = Txb_count+1
-                B = B+1
-            pval=Txb_count/B
+            yhat1 = residuals[:,i] 
+            yhat2 = np.delete(residuals,i,axis=1)
+            pval = cvc(yhat1,yhat2,fid,random_state=seed)
             cvc_p[i] = pval
         sfi.Matrix.store("e(cvc_p)",cvc_p)
 

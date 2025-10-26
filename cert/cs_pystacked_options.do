@@ -10,7 +10,7 @@ global model lpsa lcavol lweight age lbph svi lcp gleason pgg45
 *******************************************************************************
 
 clear
-insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
+insheet using ../data/prostate.data,  tab clear
 
 sum lpsa, meanonly
 replace lpsa = lpsa > `r(mean)'
@@ -116,7 +116,7 @@ pystacked $model, method(svm) type(class) ///
 *******************************************************************************
 
 clear
-insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
+insheet using ../data/prostate.data,  tab clear
 
 pystacked $model, method(linsvm) ///
 			cmdopt1( ///

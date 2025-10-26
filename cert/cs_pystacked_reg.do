@@ -10,9 +10,26 @@ global xvars crim-lstat
 *******************************************************************************
 
 clear all
-use https://statalasso.github.io/dta/cal_housing.dta, clear
+use ../data/cal_housing.dta, clear
 set seed 42
 pystacked medh longi-medi 
+
+*******************************************************************************
+*** check that pipeline works										 		***
+*******************************************************************************
+
+clear all
+use ../data/cal_housing.dta, clear
+set seed 42
+
+replace rooms = . if latitude>39
+
+pystacked1 medh longi-medi , m(lassocv)  
+
+foreach p in minmaxscaler stdscaler stdscaler0 medianimputer poly2 {
+	di "`p'"
+	pystacked medh longi-medi , m(ols) pipe1(`p')
+}
 
 
 *******************************************************************************
@@ -20,10 +37,11 @@ pystacked medh longi-medi
 *******************************************************************************
 
 clear all
-use https://statalasso.github.io/dta/cal_housing.dta, clear
+use ../data/cal_housing.dta, clear
 set seed 42
 
 foreach meth in lassocv elasticcv ridgecv rf gradboost {
+	di "`meth'"
 	pystacked medh longi-medi , m(ols `meth') showc
 }
 
@@ -33,7 +51,7 @@ foreach meth in lassocv elasticcv ridgecv rf gradboost {
 *******************************************************************************
 
 clear all
-use https://statalasso.github.io/dta/cal_housing.dta, clear
+use ../data/cal_housing.dta, clear
 set seed 42
 
 foreach meth in lassocv elasticcv ridgecv rf gradboost {
@@ -46,7 +64,7 @@ foreach meth in lassocv elasticcv ridgecv rf gradboost {
 *******************************************************************************
 
 clear all
-use https://statalasso.github.io/dta/cal_housing.dta, clear
+use ../data/cal_housing.dta, clear
 set seed 42
 gen train=runiform()
 replace train=train<.75
@@ -71,7 +89,7 @@ assert reldif(0.1617286,el(W,5,1))<0.005
 *** foldvar															 		***
 *******************************************************************************
 
-insheet using "/Users/kahrens/MyProjects/pystacked/data/housing.csv", ///
+insheet using "../data/housing.csv", ///
 	clear comma
 
 gen fid = 1 + (_n>250)
@@ -107,7 +125,7 @@ assert reldif(xhat1,xhat2)<10e-6
 *** check stdscaler default with regularized linear learners		 		***
 *******************************************************************************
 
-insheet using "/Users/kahrens/MyProjects/pystacked/data/housing.csv", ///
+insheet using "../data/housing.csv", ///
 	clear comma
 
 pystacked medv $xvars, method(gradboost lassocv)   
@@ -131,7 +149,7 @@ assert "`e(pipe2)'"=="passthrough"
 *** xvar option 													 		***
 *******************************************************************************
 
-insheet using "/Users/kahrens/MyProjects/pystacked/data/housing.csv", ///
+insheet using "../data/housing.csv", ///
 	clear comma
 	
 global xuse c.(crim lstat)##c.(crim lstat)
@@ -168,7 +186,7 @@ assert xb!=xb5
 *** xvar vs pipeline												 		***
 *******************************************************************************
 
-insheet using "/Users/kahrens/MyProjects/pystacked/data/housing.csv", ///
+insheet using "../data/housing.csv", ///
 	clear comma
 	
 set seed 789
@@ -187,7 +205,7 @@ assert reldif(xb1,xb2)<1e-4
 *******************************************************************************
 
 clear
-insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data, tab clear
+insheet using "../data/prostate.data", tab clear
 
 global xvars lcavol-pgg
 
@@ -212,7 +230,7 @@ assert _rc == 198
 *******************************************************************************
 
 clear
-insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
+insheet using "../data/prostate.data", tab clear
 global xvars lcavol-pgg
 
 
@@ -239,7 +257,7 @@ assert reldif(a2,b2)<1e-5
 *******************************************************************************
 
 
-insheet using https://statalasso.github.io/dta/housing.csv, clear
+insheet using ../data/housing.csv, clear
 
 set seed 789
 pystacked medv crim lstat, method(gradboost lassocv) pyseed(-1)
@@ -259,7 +277,7 @@ assert reldif(xb,xb3)<10e-9
 
 *** with factor variables
 
-insheet using https://statalasso.github.io/dta/housing.csv, clear
+insheet using ../data/housing.csv, clear
 
 set seed 789
 pystacked medv i.rad##c.crim, method(gradboost lassocv) pyseed(-1)
@@ -281,7 +299,7 @@ assert reldif(xb,xb3)<10e-9
 *** try various combinations of estimators							 		***
 *******************************************************************************
 
-insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
+insheet using ../data/prostate.data,  tab clear
 
 local m1 ols lassocv gradboost nnet
 local m2 ols lassocv rf nnet
@@ -368,7 +386,7 @@ foreach m in "`m1'" "`m2'" "`m3'" "`m4'" "`m5'" {
 *** check that predicted value = weighted avg of transform variables 		***
 *******************************************************************************
 
-insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
+insheet using ../data/prostate.data,  tab clear
 
 set seed 124345
 
@@ -391,7 +409,7 @@ assert reldif(yhat,myhat)<0.0001
 *******************************************************************************
 
 clear
-insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
+insheet using ../data/prostate.data,  tab clear
 
 set seed 124345
 
@@ -408,7 +426,7 @@ assert _rc != 0
 *******************************************************************************
 
 clear
-insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
+insheet using ../data/prostate.data,  tab clear
 global xvars lcavol-pgg
 
 set seed 124345
@@ -460,7 +478,7 @@ pystacked, table holdout(h1)
 *******************************************************************************
 
 clear
-insheet using https://web.stanford.edu/~hastie/ElemStatLearn/datasets/prostate.data,  tab clear
+insheet using ../data/prostate.data,  tab clear
 global xvars lcavol-pgg
 
 set seed 124345
