@@ -11,7 +11,6 @@ else if "`c(username)'"=="ecomes" {
 }
 
 local ver `1'
-local ver 170
 
 python set exec "/Users/kahrens/python_envs/sk`ver'/bin/python3"
 

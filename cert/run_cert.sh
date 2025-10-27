@@ -7,9 +7,10 @@
 export PATH=$PATH:/Applications/StataNow/StataSE.app/Contents/MacOS/
 StataSE -b do cs_pystacked_runall.do 130 &
 StataSE -b do cs_pystacked_runall.do 132 &
-#StataSE -b do cs_pystacked_runall.do 140 &
-#StataSE -b do cs_pystacked_runall.do 142 &
-#StataSE -b do cs_pystacked_runall.do 152 &
-#StataSE -b do cs_pystacked_runall.do 160 &
-#StataSE -b do cs_pystacked_runall.do 170 &
-#StataSE -b do cs_pystacked_runall.do 172 &
+StataSE -b do cs_pystacked_runall.do 140 &
+StataSE -b do cs_pystacked_runall.do 142 &
+StataSE -b do cs_pystacked_runall.do 152 &
+StataSE -b do cs_pystacked_runall.do 160 &
+StataSE -b do cs_pystacked_runall.do 170 &
+StataSE -b do cs_pystacked_runall.do 172 &
+wait
