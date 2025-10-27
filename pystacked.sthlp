@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 26oct2025}{...}
+{* *! version 27oct2025}{...}
 {hline}
 {cmd:help pystacked}{right: v0.7.9}
 {hline}
@@ -271,6 +271,16 @@ use the sparse pipeline to use sparse matrices for some learners, but not for ot
 shows, for each base learner, the coefficient estimates (in the case of ols, 
 logit, regularized regression) or variable importance measures 
 (random forests and gradient boosting)
+{p_end}
+{synopt:{opt cvc}[{cmd:(}{it:bootnum}{cmd:)}]}
+(regression-type models only) display, for each base learner,
+the p-values of the "cross-validation with confidence" test ({helpb pystacked##Lei2020:Lei 2020}).
+Under H0, the respective learner has the lowest predictive risk among all candidate learners.
+Under the alternative, there is another learner with lower predictive risk.
+The number of bootstrap repetitions (default=500) can be specified with {it:bootnum}.
+The {opt cvc} test is always calculated at estimation and the p-values saved in the macro {opt e(cvc_p)};
+specifying {opt cvc} with the estimation, on replay or with postestimation
+just requests that the results are displayed.
 {p_end}
 {synopt:{opt pyseed(int)}} 
 set the Python seed. Note that since {cmd:pystacked} uses
@@ -1037,6 +1047,12 @@ vol.5, 81-102, 1978.
 Hastie, T., Tibshirani, R., & Friedman, J. (2009). 
 The elements of statistical learning: data mining, inference,
 and prediction. Springer Science & Business Media.
+
+{marker Lei2020}{...}
+{pstd}
+Lei, Jing. Cross-Validation with Confidence.
+{it:Journal of the American Statistical Association} 115.532 (2020): 1978-1997.
+{browse "https://doi.org/10.1080/01621459.2019.1672556"}
 
 {marker Wolpert1992}{...}
 {pstd}
