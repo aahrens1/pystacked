@@ -1,5 +1,5 @@
 *! pystacked v0.7.9
-*! last edited: 26oct2025
+*! last edited: 27oct2025
 *! authors: aa/ms
 *! pystacked2 = uses python code appended to the file
 
@@ -294,7 +294,9 @@ program define pystacked2, eclass
         tempname pmat
         mat `pmat'=e(cvc_p)
         di
-        di as res "CVC test p-values:"
+        di as res `"CVC test ({browse "https://doi.org/10.1080/01621459.2019.1672556":Lei 2020}):"'
+        di as res "H0: " as text "Learner has the lowest predictive risk among all candidate learners."
+        di as res "HA: " as text "There is another learner with lower predictive risk."
         di as text "{hline 17}{c TT}{hline 21}"
         di as text "  Method" _c
         di as text _col(18) "{c |}      p-value"
