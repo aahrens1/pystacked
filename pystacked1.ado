@@ -512,6 +512,11 @@ version 16.0
 
     qui count if `touse'
     local N        = r(N)
+    // check if no observations
+    if `N'==0 {
+    	di as err "no observations"
+    	exit 2000
+    }
     tempvar id 
     gen long `id'=_n
     local shuffle=("`noshuffle'"=="")
