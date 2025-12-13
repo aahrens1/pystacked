@@ -294,6 +294,23 @@ list xb* if _n<5
 assert reldif(xb,xb2)<10e-9
 assert reldif(xb,xb3)<10e-9
 
+*** with time-series operators
+use http://fmwww.bc.edu/ec-p/data/wooldridge/phillips.dta, clear
+tsset year, yearly
+set seed 789
+pystacked cinf L(1/6).unem, showcoef
+mat coefs1=e(coefs1)
+mat coefs2=e(coefs2)
+mat coefs3=e(coefs3)
+forvalues i=1/6 {
+	qui gen unem_L_`i' = L`i'.unem
+}
+set seed 789
+pystacked cinf unem_L_*, showcoef
+assert mreldif(coefs1,e(coefs1))<10e-9
+assert mreldif(coefs2,e(coefs2))<10e-9
+assert mreldif(coefs3,e(coefs3))<10e-9
+
 
 *******************************************************************************
 *** try various combinations of estimators							 		***

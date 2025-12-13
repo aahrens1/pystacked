@@ -335,7 +335,7 @@ version 16.0
     local doublebarsyntax = ("`2'"=="|")*("`3'"=="|")
     if `doublebarsyntax'==0 {
         // required to allow for numbered options
-        syntax varlist(min=2 fv) [if] [in] [aweight fweight] [, Methods(string) TYpe(string) *]
+        syntax varlist(min=1 fv ts) [if] [in] [aweight fweight] [, Methods(string) TYpe(string) *]
         // set default
         if ("`type'"=="") {
             local type reg
@@ -351,12 +351,12 @@ version 16.0
             local methodsopt methods(`methods')
         }
         forv i = 1/`:list sizeof methods' {
-            local numopts `numopts' cmdopt`i'(string asis) pipe`i'(string asis) xvars`i'(varlist fv)
+            local numopts `numopts' cmdopt`i'(string asis) pipe`i'(string asis) xvars`i'(varlist fv ts)
         }
     }
-    syntax varlist(min=2 fv) [if] [in] [aweight fweight], [*]
+    syntax varlist(min=1 fv ts) [if] [in] [aweight fweight], [*]
     local globalopt `options'
-    syntax varlist(min=2 fv) [if] [in] [aweight fweight], ///
+    syntax varlist(min=1 fv ts) [if] [in] [aweight fweight], ///
                 [ ///
                     TYpe(string) /// classification or regression
                     FINALest(string) ///
@@ -733,7 +733,11 @@ version 16.0
     local allxvars_o : list uniq allxvars_o
     ereturn local allxvars_o `allxvars_o'
     // get data signature based on depvar, xvars and foldvar
-    qui _datasignature `yvar' `allxvars_o' `foldvar'
+    fvrevar `yvar' `allxvars_o' `foldvar', list
+    local dslist `r(varlist)'
+    local dslist : list uniq dslist
+    // qui _datasignature `yvar' `allxvars_o' `foldvar'
+    qui _datasignature `dslist'
     ereturn local datasignature `r(datasignature)'
     // set sort info for pystacked_p
     local sortvars : sortedby
@@ -764,7 +768,7 @@ program define syntax_parse, rclass
     local allmethods
     forvalues i=1(1)`mcount' {
         local 0 ", `part`i''"
-        syntax , [Method(string asis) OPTions(string asis) PIPEline(string asis) XVARs(varlist fv) ]
+        syntax , [Method(string asis) OPTions(string asis) PIPEline(string asis) XVARs(varlist fv ts) ]
         local allmethods `allmethods' `method'
         return local method`i' `method'
         return local opt`i' `options'

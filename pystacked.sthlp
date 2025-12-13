@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 27oct2025}{...}
+{* *! version 13dec2025}{...}
 {hline}
 {cmd:help pystacked}{right: v0.7.9}
 {hline}
@@ -131,6 +131,9 @@ Furthermore, {opt xvars*(varlist)} allows to specify a learner-specific varlist 
 In the second syntax, base learners are added before the comma 
 using {opt method(string)} together with {opt opt(string)} and separated by
 "||". 
+
+{pstd}
+Both {it:predictors} and {it:varlists} may contain factor variables or time-series operators.
 
 {marker syntax1}{...}
 {title:Syntax 1}
