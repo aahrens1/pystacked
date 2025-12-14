@@ -608,9 +608,17 @@ version 16.0
             local tlist `tlist' `r(varlist)'
         }
         local xvars`i' `tlist'
-        ** remove collinear predictors for OLS only
+        ** remove collinear predictors for OLS only; 
         if "`method`i''"=="ols" { 
-            _rmcoll `xvars`i'' if `touse', forcedrop
+            // mean-only model allowed if constant provided as separate predictor + nocons option
+            local temp_opt : subinstr local opt`i' "nocons" "nocons", count(local has_nocons)
+            if `has_nocons' {
+                local nocons nocons
+            }
+            else {
+                local nocons
+            }
+            _rmcoll `xvars`i'' if `touse', forcedrop `nocons'
             local xvars`i'  `r(varlist)'
         }
         local xvars_all_t `xvars_all_t' `xvars`i''

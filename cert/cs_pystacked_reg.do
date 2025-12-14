@@ -122,6 +122,28 @@ assert reldif(xhat1,xhat2)<10e-6
 
 
 *******************************************************************************
+*** pystacked with mean-only model (no predictors)					 		***
+*******************************************************************************
+
+sysuse auto , clear
+qui gen byte one=1
+pystacked price one, type(reg) m(ols) cmdopt1(nocons)
+predict double xhat1a
+pystacked price, type(reg) m(ols) xvars1(one) cmdopt1(nocons)
+predict double xhat1b
+
+reg price
+predict double xhat2 
+
+assert reldif(xhat1a,xhat2)<10e-6
+assert reldif(xhat1b,xhat2)<10e-6
+
+// multiple learners
+pystacked price, type(reg) m(ols lassocv) xvars1(one) xvars2(weight) cmdopt1(nocons), type(reg)
+pystacked price || method(ols) xvars(one) opt(nocons) || method(lassocv) xvars(weight), type(reg)
+
+
+*******************************************************************************
 *** check stdscaler default with regularized linear learners		 		***
 *******************************************************************************
 

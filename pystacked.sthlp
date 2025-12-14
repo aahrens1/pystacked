@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 13dec2025}{...}
+{* *! version 14dec2025}{...}
 {hline}
 {cmd:help pystacked}{right: v0.7.9}
 {hline}
@@ -565,6 +565,11 @@ Methods {it:ols} {break}
 {stata "pystacked, type(reg) method(ols) printopt":Show options}
 
 {pstd}
+NB: To specify a mean-only model with no predictors,
+create a variable which is a vector of ones, use this as the only predictor,
+and specify that the ols method uses the nocons option.
+
+{pstd}
 {ul:Logistic regression} {break}
 Methods: {it:logit} {break}
 Type: {it:class} {break}
@@ -572,6 +577,11 @@ Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklear
 
 {pstd}
 {stata "pystacked, type(class) method(logit) printopt":Show options}
+
+{pstd}
+NB: To specify an intercept-only model with no predictors,
+create a variable which is a vector of zeros and use this as the only predictor.
+The zeros variable will be reported in e.g. the list of coefficients but can be ignored.
 
 {pstd}
 {ul:Penalized regression with information criteria} {break}
