@@ -7,7 +7,7 @@ if "`c(username)'"=="kahrens" {
 	adopath + "/Users/kahrens/MyProjects/pystacked"
 }
 else if "`c(username)'"=="ecomes" {
-	adopath + "/Users/ecomes/GitHub/pystacked/cert"
+	adopath + "C:/LocalStore/ecomes/GitHub/pystacked/cert"
 }
 
 local ver `1'

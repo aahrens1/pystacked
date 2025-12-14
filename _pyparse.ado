@@ -39,7 +39,7 @@ program _pyparse
 		}
 		if (`sklearn_ver'>108) {
 		    di as err "Warning: your sklearn version (`sklearn1'.`sklearn2'.`sklearn3') might not be supported."
-	        di as err "pystacked has only been tested against up to 1.7.0."
+	        di as err "pystacked has only been tested against up to 1.8."
 	        di as err "Check for a new pystacked version. If you encounter an error, please contact the authors."	
 		}
 
