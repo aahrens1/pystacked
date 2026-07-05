@@ -1,5 +1,5 @@
-*! pystacked v0.7.9
-*! last edited: 27oct2025
+*! pystacked v0.7.10
+*! last edited: 7july2026
 *! authors: aa/ms
 *! pystacked1 = pystacked with core python code loaded from pystacked.py
 *!              using python import in parent program pystacked1

@@ -1,5 +1,5 @@
-*! pystacked v0.7.9
-*! last edited: 26oct2025
+*! pystacked v0.7.10
+*! last edited: 7july2026
 *! authors: aa/ms
 *! pystacked wrapper - calls pystacked1 (default) or pystacked2 (altpython option)
 
