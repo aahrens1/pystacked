@@ -122,6 +122,28 @@ assert reldif(xhat1,xhat2)<10e-6
 
 
 *******************************************************************************
+*** pystacked with mean-only model (no predictors)					 		***
+*******************************************************************************
+
+sysuse auto , clear
+qui gen byte one=1
+pystacked price one, type(reg) m(ols) cmdopt1(nocons)
+predict double xhat1a
+pystacked price, type(reg) m(ols) xvars1(one) cmdopt1(nocons)
+predict double xhat1b
+
+reg price
+predict double xhat2 
+
+assert reldif(xhat1a,xhat2)<10e-6
+assert reldif(xhat1b,xhat2)<10e-6
+
+// multiple learners
+pystacked price, type(reg) m(ols lassocv) xvars1(one) xvars2(weight) cmdopt1(nocons), type(reg)
+pystacked price || method(ols) xvars(one) opt(nocons) || method(lassocv) xvars(weight), type(reg)
+
+
+*******************************************************************************
 *** check stdscaler default with regularized linear learners		 		***
 *******************************************************************************
 
@@ -293,6 +315,23 @@ predict double xb3
 list xb* if _n<5
 assert reldif(xb,xb2)<10e-9
 assert reldif(xb,xb3)<10e-9
+
+*** with time-series operators
+use http://fmwww.bc.edu/ec-p/data/wooldridge/phillips.dta, clear
+tsset year, yearly
+set seed 789
+pystacked cinf L(1/6).unem, showcoef
+mat coefs1=e(coefs1)
+mat coefs2=e(coefs2)
+mat coefs3=e(coefs3)
+forvalues i=1/6 {
+	qui gen unem_L_`i' = L`i'.unem
+}
+set seed 789
+pystacked cinf unem_L_*, showcoef
+assert mreldif(coefs1,e(coefs1))<10e-9
+assert mreldif(coefs2,e(coefs2))<10e-9
+assert mreldif(coefs3,e(coefs3))<10e-9
 
 
 *******************************************************************************
