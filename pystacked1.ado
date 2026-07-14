@@ -1,5 +1,5 @@
-*! pystacked v0.7.10
-*! last edited: 7july2026
+*! pystacked v0.8.0
+*! last edited: 14july2026
 *! authors: aa/ms
 *! pystacked1 = pystacked with core python code loaded from pystacked.py
 *!              using python import in parent program pystacked1
@@ -35,8 +35,23 @@ program define pystacked1, eclass
         _pystacked `0'
     }
     else if replay() & `printopt_on' {
-        // just print options and leave
-        _pyparse `0'
+        // just print options and leave;
+        // query sklearn version of the active Python so that the
+        // displayed translation matches the user's setup
+        cap python: import sfi
+        cap python: from sklearn import __version__ as sklearn_version
+        cap python: sfi.Macro.setLocal("sklearn_ver1",format(sklearn_version).split(".")[0])
+        cap python: sfi.Macro.setLocal("sklearn_ver2",format(sklearn_version).split(".")[1])
+        cap python: sfi.Macro.setLocal("sklearn_ver3",format(sklearn_version).split(".")[2])
+        cap confirm number `sklearn_ver3'
+        if _rc local sklearn_ver3 0
+        if "`sklearn_ver1'"=="" | "`sklearn_ver2'"=="" {
+            // version could not be detected (e.g. no sklearn); use _pyparse defaults
+            _pyparse `0'
+        }
+        else {
+            _pyparse `0' sklearn1(`sklearn_ver1') sklearn2(`sklearn_ver2') sklearn3(`sklearn_ver3')
+        }
         exit
     }
     else {

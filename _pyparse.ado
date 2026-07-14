@@ -1,5 +1,5 @@
-*! pystacked v0.7.10
-*! last edited: 7july2026
+*! pystacked v0.8.0
+*! last edited: 14july2026
 *! authors: aa/ms
 
 program _pyparse 
@@ -37,9 +37,10 @@ program _pyparse
 	        di as err "pystacked requires at least sklearn 0.24.0."	
 	        exit 198
 		}
-		if (`sklearn_ver'>108) {
+		** encoding is 100*major+minor+patch/10, so e.g. 1.9.2 = 109.2; warn from 1.10.0 upwards
+		if (`sklearn_ver'>=110) {
 		    di as err "Warning: your sklearn version (`sklearn1'.`sklearn2'.`sklearn3') might not be supported."
-	        di as err "pystacked has only been tested against up to 1.8."
+	        di as err "pystacked has only been tested against up to 1.9."
 	        di as err "Check for a new pystacked version. If you encounter an error, please contact the authors."	
 		}
 
@@ -130,7 +131,7 @@ program _pyparse
 	else {
 		return_nothing
 	}
-	if "`debug'"!="" _printopt_tool `optstr'
+	if "`debug'"!="" _print_tool `optstr'
 end
 
 program define parse_LinearRegression, rclass
@@ -198,15 +199,32 @@ program define parse_Logit, rclass
 		local optstr `optstr' 'fit_intercept':True,
 	}
 	** penalty
+	** deprecated in sklearn 1.8 and removed in 1.10;
+	** replaced by l1_ratio, and by C=np.inf for unpenalized logit
 	if "`penalty'"=="none" | "`penalty'"=="None" {
 		local penalty
 	}
-	if "`penalty'"!="" {
+	if (`sklearn_ver'>=108) {
+		if "`penalty'"=="l1" {
+			local optstr `optstr' 'l1_ratio':1,
+		}
+		else if "`penalty'"=="l2" {
+			local optstr `optstr' 'l1_ratio':0,
+		}
+		else if "`penalty'"!="" {
+			di as err "penalty(`penalty') not supported with sklearn>=1.8"
+			error 197
+		}
+		else {
+			local optstr `optstr' 'C':np.inf,
+		}
+	}
+	else if "`penalty'"!="" {
 		local optstr `optstr' 'penalty':'`penalty'',
 	}
 	else if `sklearn_ver'<102 {
 		local optstr `optstr' 'penalty':'none',
-	} 
+	}
 	else {
 		local optstr `optstr' 'penalty':None,
 	}
@@ -269,11 +287,15 @@ program define parse_LassoLogitCV, rclass
 	*	local optstr `optstr' 'cv':`cv',
 	*}
 	** penalty
-	if "`penalty'"=="l1"|"`penalty'"=="elasticnet"|"`penalty'"=="l2" {
-		local optstr `optstr' 'penalty':'`penalty'',
-	}
-	else {
-		local optstr `optstr' 'penalty':'l2',
+	** deprecated in sklearn 1.8 and removed in 1.10;
+	** from 1.8 onwards replaced by l1_ratios (see below)
+	if (`sklearn_ver'<108) {
+		if "`penalty'"=="l1"|"`penalty'"=="elasticnet"|"`penalty'"=="l2" {
+			local optstr `optstr' 'penalty':'`penalty'',
+		}
+		else {
+			local optstr `optstr' 'penalty':'l2',
+		}
 	}
 	** solver
 	if "`solver'"=="newton-cg"|"`solver'"=="lbfgs"|"`solver'"=="liblinear"|"`solver'"=="sag"|"`solver'"=="saga" {
@@ -321,6 +343,16 @@ program define parse_LassoLogitCV, rclass
 			local l1_ratios_list `l1_ratios_list'`i',
 		}
 		local optstr `optstr' 'l1_ratios':(`l1_ratios_list'),
+	}
+	else if (`sklearn_ver'>=108) {
+		** from sklearn 1.8 onwards, l1_ratios replaces penalty:
+		** (1,) for l1, (0,) for l2 (also the default)
+		if "`penalty'"=="l1" {
+			local optstr `optstr' 'l1_ratios':(1,),
+		}
+		else {
+			local optstr `optstr' 'l1_ratios':(0,),
+		}
 	}
 	local optstr {`optstr'}
 	local optstr = subinstr("`optstr'",",}","}",.)
@@ -373,14 +405,26 @@ program define parse_ElasticCV, rclass
 	local optstr 
 
 	** alphas
+	** n_alphas is deprecated in sklearn 1.7 and removed in 1.9;
+	** from 1.7 onwards, an integer alphas replaces n_alphas
 	if ("`alphas'"==""&`l1_ratio'>0) {
-		local optstr `optstr' 'alphas':None,
+		if (`sklearn_ver'>=107) {
+			if (`n_alphas'>0) {
+				local optstr `optstr' 'alphas':`n_alphas',
+			}
+			else {
+				local optstr `optstr' 'alphas':100,
+			}
+		}
+		else {
+			local optstr `optstr' 'alphas':None,
+		}
 	}
 	else if ("`alphas'"==""&`l1_ratio'==0) {
 		local optstr `optstr' 'alphas':[0,1,10],
 	}
 	else {
-		local allist 
+		local allist
 		foreach i of numlist `alphas' {
 			local allist `allist'`i',
 		}
@@ -395,9 +439,10 @@ program define parse_ElasticCV, rclass
 		local optstr `optstr' 'eps':`eps',
 	} 
 	** n alphas
-	if (`n_alphas'>0) {
+	** only passed for sklearn <1.7; from 1.7 onwards folded into alphas above
+	if (`n_alphas'>0) & (`sklearn_ver'<107) {
 		local optstr `optstr' 'n_alphas':`n_alphas',
-	} 
+	}
 	** intercept
 	if "`noconstant'"!="" {
 		local optstr `optstr' 'fit_intercept':False,
@@ -938,14 +983,16 @@ program define parse_gradboostReg, rclass
 		local optstr `optstr' 'subsample':`subsample',
 	}
 	** criterion
+	** deprecated in sklearn 1.9 (has no effect) and removed in 1.11;
+	** from 1.9 onwards only passed if specified by the user
 	if strpos("friedman_mse squared_error mse mae","`criterion'")!=0 & "`criterion'"!="" {
-		local optstr `optstr' 'criterion':'`criterion'',		
+		local optstr `optstr' 'criterion':'`criterion'',
 	}
-	else if "`criterion'"=="" {
+	else if "`criterion'"=="" & `sklearn_ver'<109 {
 		// use default
-		local optstr `optstr' 'criterion':'friedman_mse',	
+		local optstr `optstr' 'criterion':'friedman_mse',
 	}
-	else {
+	else if "`criterion'"!="" {
 		di as err "criterion(`criterion') not allowed"
 		error 197
 	}
@@ -1116,14 +1163,16 @@ program define parse_gradboostClass, rclass
 		local optstr `optstr' 'n_estimators':`n_estimators',
 	}
 	** criterion
+	** deprecated in sklearn 1.9 (has no effect) and removed in 1.11;
+	** from 1.9 onwards only passed if specified by the user
 	if strpos("friedman_mse squared_error mse mae","`criterion'")!=0 & "`criterion'"!="" {
-		local optstr `optstr' 'criterion':'`criterion'',		
+		local optstr `optstr' 'criterion':'`criterion'',
 	}
-	else if "`criterion'"=="" {
+	else if "`criterion'"=="" & `sklearn_ver'<109 {
 		// use default
-		local optstr `optstr' 'criterion':'friedman_mse',	
+		local optstr `optstr' 'criterion':'friedman_mse',
 	}
-	else {
+	else if "`criterion'"!="" {
 		di as err "criterion(`criterion') not allowed"
 		error 197
 	}

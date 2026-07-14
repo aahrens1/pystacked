@@ -13,4 +13,6 @@ StataSE -b do cs_pystacked_runall.do 152 &
 StataSE -b do cs_pystacked_runall.do 160 &
 StataSE -b do cs_pystacked_runall.do 170 &
 StataSE -b do cs_pystacked_runall.do 172 &
+StataSE -b do cs_pystacked_runall.do 180 &
+StataSE -b do cs_pystacked_runall.do 190 &
 wait
