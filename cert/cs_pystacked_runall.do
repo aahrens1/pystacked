@@ -4,7 +4,7 @@ cap cd "/Users/kahrens/MyProjects/pystacked/cert"
 cap cd "C:/LocalStore/ecomes/GitHub/pystacked/cert"
 
 if "`c(username)'"=="kahrens" {
-	adopath + "/Users/kahrens/MyProjects/pystacked"
+	adopath ++ "/Users/kahrens/MyProjects/pystacked"
 }
 else if "`c(username)'"=="ecomes" {
 	adopath + "C:/LocalStore/ecomes/GitHub/pystacked/cert"

@@ -139,7 +139,7 @@ assert reldif(xhat1a,xhat2)<10e-6
 assert reldif(xhat1b,xhat2)<10e-6
 
 // multiple learners
-pystacked price, type(reg) m(ols lassocv) xvars1(one) xvars2(weight) cmdopt1(nocons), type(reg)
+pystacked price, type(reg) m(ols lassocv) xvars1(one) xvars2(weight) cmdopt1(nocons)
 pystacked price || method(ols) xvars(one) opt(nocons) || method(lassocv) xvars(weight), type(reg)
 
 
