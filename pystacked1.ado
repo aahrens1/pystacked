@@ -1,5 +1,5 @@
-*! pystacked v0.7.9
-*! last edited: 27oct2025
+*! pystacked v0.8.0
+*! last edited: 14july2026
 *! authors: aa/ms
 *! pystacked1 = pystacked with core python code loaded from pystacked.py
 *!              using python import in parent program pystacked1
@@ -35,8 +35,23 @@ program define pystacked1, eclass
         _pystacked `0'
     }
     else if replay() & `printopt_on' {
-        // just print options and leave
-        _pyparse `0'
+        // just print options and leave;
+        // query sklearn version of the active Python so that the
+        // displayed translation matches the user's setup
+        cap python: import sfi
+        cap python: from sklearn import __version__ as sklearn_version
+        cap python: sfi.Macro.setLocal("sklearn_ver1",format(sklearn_version).split(".")[0])
+        cap python: sfi.Macro.setLocal("sklearn_ver2",format(sklearn_version).split(".")[1])
+        cap python: sfi.Macro.setLocal("sklearn_ver3",format(sklearn_version).split(".")[2])
+        cap confirm number `sklearn_ver3'
+        if _rc local sklearn_ver3 0
+        if "`sklearn_ver1'"=="" | "`sklearn_ver2'"=="" {
+            // version could not be detected (e.g. no sklearn); use _pyparse defaults
+            _pyparse `0'
+        }
+        else {
+            _pyparse `0' sklearn1(`sklearn_ver1') sklearn2(`sklearn_ver2') sklearn3(`sklearn_ver3')
+        }
         exit
     }
     else {
@@ -335,7 +350,7 @@ version 16.0
     local doublebarsyntax = ("`2'"=="|")*("`3'"=="|")
     if `doublebarsyntax'==0 {
         // required to allow for numbered options
-        syntax varlist(min=2 fv) [if] [in] [aweight fweight] [, Methods(string) TYpe(string) *]
+        syntax varlist(min=1 fv ts) [if] [in] [aweight fweight] [, Methods(string) TYpe(string) *]
         // set default
         if ("`type'"=="") {
             local type reg
@@ -351,12 +366,12 @@ version 16.0
             local methodsopt methods(`methods')
         }
         forv i = 1/`:list sizeof methods' {
-            local numopts `numopts' cmdopt`i'(string asis) pipe`i'(string asis) xvars`i'(varlist fv)
+            local numopts `numopts' cmdopt`i'(string asis) pipe`i'(string asis) xvars`i'(varlist fv ts)
         }
     }
-    syntax varlist(min=2 fv) [if] [in] [aweight fweight], [*]
+    syntax varlist(min=1 fv ts) [if] [in] [aweight fweight], [*]
     local globalopt `options'
-    syntax varlist(min=2 fv) [if] [in] [aweight fweight], ///
+    syntax varlist(min=1 fv ts) [if] [in] [aweight fweight], ///
                 [ ///
                     TYpe(string) /// classification or regression
                     FINALest(string) ///
@@ -512,6 +527,11 @@ version 16.0
 
     qui count if `touse'
     local N        = r(N)
+    // check if no observations
+    if `N'==0 {
+    	di as err "no observations"
+    	exit 2000
+    }
     tempvar id 
     gen long `id'=_n
     local shuffle=("`noshuffle'"=="")
@@ -603,9 +623,17 @@ version 16.0
             local tlist `tlist' `r(varlist)'
         }
         local xvars`i' `tlist'
-        ** remove collinear predictors for OLS only
+        ** remove collinear predictors for OLS only; 
         if "`method`i''"=="ols" { 
-            _rmcoll `xvars`i'' if `touse', forcedrop
+            // mean-only model allowed if constant provided as separate predictor + nocons option
+            local temp_opt : subinstr local opt`i' "nocons" "nocons", count(local has_nocons)
+            if `has_nocons' {
+                local nocons nocons
+            }
+            else {
+                local nocons
+            }
+            _rmcoll `xvars`i'' if `touse', forcedrop `nocons'
             local xvars`i'  `r(varlist)'
         }
         local xvars_all_t `xvars_all_t' `xvars`i''
@@ -728,7 +756,11 @@ version 16.0
     local allxvars_o : list uniq allxvars_o
     ereturn local allxvars_o `allxvars_o'
     // get data signature based on depvar, xvars and foldvar
-    qui _datasignature `yvar' `allxvars_o' `foldvar'
+    fvrevar `yvar' `allxvars_o' `foldvar', list
+    local dslist `r(varlist)'
+    local dslist : list uniq dslist
+    // qui _datasignature `yvar' `allxvars_o' `foldvar'
+    qui _datasignature `dslist'
     ereturn local datasignature `r(datasignature)'
     // set sort info for pystacked_p
     local sortvars : sortedby
@@ -759,7 +791,7 @@ program define syntax_parse, rclass
     local allmethods
     forvalues i=1(1)`mcount' {
         local 0 ", `part`i''"
-        syntax , [Method(string asis) OPTions(string asis) PIPEline(string asis) XVARs(varlist fv) ]
+        syntax , [Method(string asis) OPTions(string asis) PIPEline(string asis) XVARs(varlist fv ts) ]
         local allmethods `allmethods' `method'
         return local method`i' `method'
         return local opt`i' `options'

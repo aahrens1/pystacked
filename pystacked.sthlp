@@ -1,7 +1,7 @@
 {smcl}
-{* *! version 27oct2025}{...}
+{* *! version 14july2026}{...}
 {hline}
-{cmd:help pystacked}{right: v0.7.9}
+{cmd:help pystacked}{right: v0.8.0}
 {hline}
 
 {title:Title}
@@ -36,7 +36,7 @@ algorithms.
 a Python installation and scikit-learn (0.24 or higher). {opt pystacked}
 has been 
 {browse "https://github.com/aahrens1/pystacked/tree/main/cert":tested} 
-with scikit-learn 1.3.0, 1.3.2, 1.4.0, 1.4.2, 1.5.2, 1.6.0, and 1.7.0.
+with scikit-learn 1.3.0 to 1.9.0.
 See {helpb python:here} and {browse "https://blog.stata.com/2020/08/18/stata-python-integration-part-1-setting-up-stata-to-use-python/":here} 
 for how to set up Python for Stata on your system.
 
@@ -131,6 +131,9 @@ Furthermore, {opt xvars*(varlist)} allows to specify a learner-specific varlist 
 In the second syntax, base learners are added before the comma 
 using {opt method(string)} together with {opt opt(string)} and separated by
 "||". 
+
+{pstd}
+Both {it:predictors} and {it:varlists} may contain factor variables or time-series operators.
 
 {marker syntax1}{...}
 {title:Syntax 1}
@@ -562,6 +565,11 @@ Methods {it:ols} {break}
 {stata "pystacked, type(reg) method(ols) printopt":Show options}
 
 {pstd}
+NB: To specify a mean-only model with no predictors,
+create a variable which is a vector of ones, use this as the only predictor,
+and specify that the ols method uses the nocons option.
+
+{pstd}
 {ul:Logistic regression} {break}
 Methods: {it:logit} {break}
 Type: {it:class} {break}
@@ -569,6 +577,11 @@ Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklear
 
 {pstd}
 {stata "pystacked, type(class) method(logit) printopt":Show options}
+
+{pstd}
+NB: To specify an intercept-only model with no predictors,
+create a variable which is a vector of zeros and use this as the only predictor.
+The zeros variable will be reported in e.g. the list of coefficients but can be ignored.
 
 {pstd}
 {ul:Penalized regression with information criteria} {break}
@@ -622,6 +635,15 @@ Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklear
 {stata "pystacked, type(reg) method(rf) printopt":Show options}
 
 {pstd}
+{ul:Gradient boosted classification trees} {break}
+Method: {it:gradboost} {break}
+Type: {it:class} {break}
+Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingClassifier.html":ensemble.GradientBoostingClassifier}
+
+{pstd}
+{stata "pystacked, type(class) method(gradboost) printopt":Show options}
+
+{pstd}
 {ul:Gradient boosted regression trees} {break}
 Method: {it:gradboost} {break}
 Type: {it:reg} {break}
@@ -642,7 +664,7 @@ Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklear
 {pstd}
 {ul:SVM (SVR)} {break}
 Method: {it:svm} {break}
-Type: {it:class} {break}
+Type: {it:reg} {break}
 Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVR.html":svm.SVR}
 
 {pstd}
@@ -651,7 +673,7 @@ Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklear
 {pstd}
 {ul:SVM (SVC)} {break}
 Method: {it:svm} {break}
-Type: {it:reg} {break}
+Type: {it:class} {break}
 Documentation: {browse "https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html":svm.SVC}
 
 {pstd}

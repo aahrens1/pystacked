@@ -1,5 +1,5 @@
-#! pystacked v0.7.9
-#! last edited: 26oct2025
+#! pystacked v0.8.0
+#! last edited: 14july2026
 #! authors: aa/ms
 
 # Import required Python modules
@@ -46,7 +46,8 @@ class SingleBest(RegressorMixin,BaseEstimator):
         X, y = check_X_y(X, y, accept_sparse=True)
         self.is_fitted_ = True
         ncols = X.shape[1]
-        lowest_mse = np.mean((y-np.mean(y)) ** 2)
+        best = 0
+        lowest_mse = np.inf
         for i in range(ncols):
             this_mse=np.mean((y-X[:, i]) ** 2)
             if this_mse < lowest_mse:

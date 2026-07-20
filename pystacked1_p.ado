@@ -1,5 +1,5 @@
-*! pystacked v0.7.9
-*! last edited: 26oct2025
+*! pystacked v0.8.0
+*! last edited: 14july2026
 *! authors: aa/ms
 *! pystacked1_p = pystacked_p with core python code loaded from pystacked_p.py
 *!                using python import in parent program pystacked1_p
@@ -21,8 +21,11 @@ program define pystacked1_p, rclass
     python: from pystacked_p import *
 
     if ("`force'"=="") {
-    	// check datasignature based on depvar, xvars and foldvar
-    	qui _datasignature `e(depvar)' `e(allxvars_o)' `e(foldvar)'
+        // check datasignature based on depvar, xvars and foldvar
+        fvrevar `e(depvar)' `e(allxvars_o)' `e(foldvar)', list
+        local dslist `r(varlist)'
+        local dslist : list uniq dslist
+        qui _datasignature `dslist'
         if "`e(datasignature)'"~="`r(datasignature)'" {
             di as err "error: data in memory has changed since last -pystacked- call"
             di as err "you are not allowed to change data in memory between -pystacked- fit and -predict-"

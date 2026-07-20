@@ -134,6 +134,21 @@ predict double xhat2
 assert reldif(xhat1,xhat2)<0.0001
 
 *******************************************************************************
+*** constant-only model (no predictors)										***
+*******************************************************************************
+
+use `testdata', clear
+qui gen byte zero=0
+
+pystacked v58 zero, type(class) m(logit)
+predict double xhat1
+
+logit v58
+predict double xhat2 
+
+assert reldif(xhat1,xhat2)<0.0001
+
+*******************************************************************************
 *** predicted values/classes										 		***
 *******************************************************************************
 
